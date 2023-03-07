@@ -5,7 +5,7 @@ on: [push]
 env:
   API_LOCATION: .\Source\API
 jobs:
-  Build-Coding-Solution:
+  Build-API-Solution:
 
     runs-on: windows-latest
     strategy:
@@ -19,8 +19,8 @@ jobs:
         with:
           dotnet-version: ${{ matrix.dotnet-version }}
       - name: Install dependencies
-        run: dotnet restore $API_LOCATION
+        run: dotnet restore "$API_LOCATION"
       - name: Build
-        run: dotnet build $API_LOCATION --configuration Release --no-restore
+        run: dotnet build "$API_LOCATION" --configuration Release --no-restore
       - name: Test
-        run: dotnet build $API_LOCATION --no-restore --verbosity normal
+        run: dotnet test "$API_LOCATION" --no-restore --verbosity normal

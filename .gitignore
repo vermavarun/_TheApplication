@@ -1,0 +1,6 @@
+#API
+Source/API/bin/
+Source/API/obj/
+
+#UI
+Source/UI/node_modules

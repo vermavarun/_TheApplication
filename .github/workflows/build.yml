@@ -6,15 +6,15 @@ name: Build-API-Solution
 on: [push]
 
 env:
-  API_LOCATION: .\Source\API
+  API_LOCATION: /Source/API
 
 jobs:
   Build-API-Solution:
 
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: "$API_LOCATION"
+        working-directory: $API_LOCATION
     strategy:
       matrix:
         dotnet-version: ['6.0.x' ]

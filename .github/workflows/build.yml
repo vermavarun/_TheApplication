@@ -21,24 +21,9 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '6.0.x'
-      # - name: Install dependencies
-      #   run: dotnet restore 
-      # - name: Build
-      #   run: dotnet build --configuration Release --no-restore
-      # - name: Test
-      #   run: dotnet test --no-restore --verbosity normal
-      - name: ACR build
-        id: acr
-        uses: azure/acr-build@v1
-        with:
-          service_principal: ${{ secrets.service_principal_id }}
-          service_principal_password: ${{ secrets.service_principal_password }}
-          tenant: ${{ secrets.tenant }}
-          registry: ${{ secrets.registry }}
-          repository: ${{ secrets.dotnet }}
-          image: image
-          git_access_token: ${{ secrets.git_access_token }}
-          folder: _TheApplication/Source/API\
-          dockerfile: _TheApplication\Source\API\DockerFile
-          branch: master
-          build_args: ''
+      - name: Install dependencies
+        run: dotnet restore 
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+      - name: Test
+        run: dotnet test --no-restore --verbosity normal

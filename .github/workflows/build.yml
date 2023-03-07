@@ -7,7 +7,7 @@ on: [push]
 
 env:
   API_LOCATION: .\Source\API
-  
+
 jobs:
   Build-API-Solution:
 
@@ -25,7 +25,6 @@ jobs:
         with:
           dotnet-version: ${{ matrix.dotnet-version }}
       - name: Install dependencies
-        working-directory: ./app
         run: dotnet restore 
       - name: Build
         run: dotnet build --configuration Release --no-restore

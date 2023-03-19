@@ -52,9 +52,6 @@ jobs:
 
   Build-UI-Solution:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ${{env.UI_LOCATION}}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v3
@@ -62,5 +59,8 @@ jobs:
           node-version: 16
           cache: 'npm'
       - run: npm ci
+        working-directory: ${{env.UI_LOCATION}}
       - run: npm run build --if-present
+        working-directory: ${{env.UI_LOCATION}}
       - run: npm test
+        working-directory: ${{env.UI_LOCATION}}

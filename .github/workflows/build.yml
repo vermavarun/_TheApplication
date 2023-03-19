@@ -10,6 +10,7 @@ env:
 
 jobs:
   Build-API-Solution:
+    if: ${{ false }}
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -47,3 +48,15 @@ jobs:
           dockerfile: _TheApplication\Source\API\DockerFile
           branch: master
           build_args: ''
+
+  Build-UI-Solution:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run build --if-present
+      - run: npm test

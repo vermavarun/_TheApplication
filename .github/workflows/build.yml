@@ -59,8 +59,8 @@ jobs:
           node-version: 16
           cache: 'npm'
       - run: npm ci
-        working-directory: ${{env.UI_LOCATION}}
+        working-directory: ./Source/ui
       - run: npm run build --if-present
-        working-directory: ${{env.UI_LOCATION}}
+        working-directory: ./Source/ui
       - run: npm test
-        working-directory: ${{env.UI_LOCATION}}
+        working-directory: ./Source/ui

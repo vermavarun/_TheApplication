@@ -65,10 +65,19 @@ jobs:
       - run: npm ci
       - run: npm run build --if-present
       - run: npm test
+      
+      - name: upload deployable package to the run instance
+        uses: actions/upload-artifact@v3
+        with:
+          name: release-artifact.zip
+          path: ${{ github.workspace }}/Source/ui/build/
 
   Deploy-UI:
     needs: [Build-UI]
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: './Source/ui'
     steps:
       - name: Setup Azure SPN Certificate file inside the runner
         env:
@@ -80,18 +89,17 @@ jobs:
         run: |
           az login --service-principal -u ${{ secrets.SPN_ID }} -p file.pem --tenant ${{ secrets.Tenant_ID }}
 
+      - name: Download Release
+        uses: actions/download-artifact@v3
+        with:
+          name: release-artifact.zip
+
       - name: 'Deploy UI'
         uses: azure/webapps-deploy@v2
         with: 
           app-name: vv-ui
-          package: 'source/ui/build'
+          package: release-artifact.zip
 
       - name: logout
         run: |
           az logout 
-
-      - name: Publish Artifacts UI
-        uses: actions/upload-artifact@v1.0.0
-        with:
-          name: webapp-ui
-          path: 'source/ui/build'

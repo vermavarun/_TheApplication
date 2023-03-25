@@ -36,6 +36,7 @@ jobs:
           path: api/publish/
 
   Deploy-API:
+    needs: [Build-API]
     runs-on: ubuntu-latest
     steps:
       - name: Setup Azure SPN Certificate file inside the runner

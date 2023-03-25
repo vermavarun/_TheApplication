@@ -60,7 +60,7 @@ jobs:
       - name: Zip release artifact
         run: |
           zip -r release-artifact-api.zip . -x file.pem
-      - name: 'Deploy UI'
+      - name: 'Deploy API'
         uses: azure/webapps-deploy@v2
         with: 
           app-name: vv-api

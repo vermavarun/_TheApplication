@@ -3,8 +3,7 @@ import "./App.css";
 
 function callApi() {
   fetch("https://vv-api.azurewebsites.net/", { method: "GET" })
-    .then((data) => data.json()) // Parsing the data into a JavaScript object
-    .then((json) => alert(JSON.stringify(json))); // Displaying the stringified data in an alert popup
+    .then((data) => document.getElementsByClassName("App")[0].innerHTML=data) // Parsing the data into a JavaScript object
 }
 
 function App() {

@@ -100,6 +100,7 @@ jobs:
         with: 
           app-name: vv-ui
           package: './release-artifact.zip'
+          startup-command: 'pm2 serve /home/site/wwwroot/ --no-daemon --spa'
 
       - name: logout
         run: |

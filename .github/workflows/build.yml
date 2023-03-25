@@ -91,6 +91,10 @@ jobs:
         with:
           name: release-artifact.zip
       
+      - name: Delete Pem
+        run: |
+          rm file.pem
+      
       - name: RUN Commands
         run: |
           ls -l

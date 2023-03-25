@@ -95,7 +95,7 @@ jobs:
         uses: azure/webapps-deploy@v2
         with: 
           app-name: vv-ui
-          package: release-artifact.zip
+          package: '${{ github.workspace }}/release-artifact.zip'
 
       - name: logout
         run: |

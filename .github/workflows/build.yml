@@ -97,7 +97,7 @@ jobs:
       
       - name: Zip release artifact
         run: |
-          zip --junk-paths release-artifact.zip *
+          zip -r release-artifact.zip .
 
       - name: 'Deploy UI'
         uses: azure/webapps-deploy@v2

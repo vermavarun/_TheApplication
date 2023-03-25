@@ -50,7 +50,7 @@ jobs:
           branch: master
           build_args: ''
 
-  Build-UI-Solution:
+  Build-UI:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -65,3 +65,33 @@ jobs:
       - run: npm ci
       - run: npm run build --if-present
       - run: npm test
+
+  Deploy-UI:
+    needs: [Build-UI]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Azure SPN Certificate file inside the runner
+        env:
+          CERT: ${{ secrets.CERTIFICATE }}
+        run: |
+          echo "$CERT" > file.pem
+      
+      - name: Login to Azure
+        run: |
+          az login --service-principal -u ${{ secrets.SPN_ID }} -p file.pem --tenant ${{ secrets.Tenant_ID }}
+
+      - name: 'Deploy UI'
+        uses: azure/webapps-deploy@v2
+        with: 
+          app-name: vv-ui
+          package: 'source/ui/build'
+
+      - name: logout
+        run: |
+          az logout 
+
+      - name: Publish Artifacts UI
+        uses: actions/upload-artifact@v1.0.0
+        with:
+          name: webapp-ui
+          path: 'source/ui/build'

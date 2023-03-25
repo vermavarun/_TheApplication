@@ -10,8 +10,7 @@ env:
   UI_LOCATION: ./Source/UI
 
 jobs:
-  Build-API-Solution:
-    if: ${{ false }}
+  Build-API:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -28,8 +27,52 @@ jobs:
         run: dotnet build --configuration Release --no-restore
       - name: Test
         run: dotnet test --no-restore --verbosity normal
+      - name: Publish
+        run: dotnet publish --configuration Release --no-build --output "${{ github.workspace }}/Source/Api/publish"
+      
+      - name: upload deployable package to the run instance
+        uses: actions/upload-artifact@v3
+        with:
+          name: release-artifact-api.zip
+          path: ${{ github.workspace }}/Source/Api/publish
 
-  Build-ACR-Solution:
+  Deploy-API:
+    needs: [Build-API]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Azure SPN Certificate file inside the runner
+        env:
+          CERT: ${{ secrets.CERTIFICATE }}
+        run: |
+          echo "$CERT" > file.pem
+      
+      - name: Login to Azure
+        run: |
+          az login --service-principal -u ${{ secrets.SPN_ID }} -p file.pem --tenant ${{ secrets.Tenant_ID }}
+      - name: Download Release
+        uses: actions/download-artifact@v3
+        with:
+          name: release-artifact-api.zip
+      
+      - name: RUN Commands
+        run: |
+          ls -l
+      
+      - name: Zip release artifact
+        run: |
+          zip -r release-artifact-api.zip . -x file.pem
+      - name: 'Deploy API'
+        uses: azure/webapps-deploy@v2
+        with: 
+          app-name: vv-api
+          package: './release-artifact-api.zip'
+          startup-command: 'dotnet api.dll'
+
+      - name: logout
+        run: |
+          az logout 
+
+  Build-ACR:
     if: ${{ false }}
     runs-on: ubuntu-latest
     steps:

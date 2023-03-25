@@ -90,12 +90,16 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: release-artifact.zip
+      
+      - name: Zip release artifact
+        run: |
+          zip --junk-paths release-artifact.zip ${{ github.workspace }}/*
 
       - name: 'Deploy UI'
         uses: azure/webapps-deploy@v2
         with: 
           app-name: vv-ui
-          package: '${{ github.workspace }}/release-artifact.zip'
+          package: './release-artifact.zip'
 
       - name: logout
         run: |

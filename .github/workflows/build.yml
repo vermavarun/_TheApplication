@@ -61,7 +61,7 @@ jobs:
         with:
           node-version: 16
           cache: 'npm'
-          cache-dependency-path: '**/package-lock.json'
+          cach  e-dependency-path: '**/package-lock.json'
       - run: npm ci
       - run: npm run build --if-present
       - run: npm test
@@ -91,9 +91,13 @@ jobs:
         with:
           name: release-artifact.zip
       
+      - name: RUN Commands
+        run: |
+          ls -l
+      
       - name: Zip release artifact
         run: |
-          zip --junk-paths release-artifact.zip ${{ github.workspace }}/*
+          zip --junk-paths release-artifact.zip ${{ github.workspace }}/release-artifact.zip/*
 
       - name: 'Deploy UI'
         uses: azure/webapps-deploy@v2

@@ -72,26 +72,30 @@ jobs:
         run: |
           az logout 
 
-  Build-ACR:
-    if: ${{ false }}
+  Push-Images:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: './Source/ui'
     steps:
-      - uses: actions/checkout@v3
-      - name: ACR build
-        id: acr
-        uses: azure/acr-build@v1
-        with:
-          service_principal: ${{ secrets.service_principal_id }}
-          service_principal_password: ${{ secrets.service_principal_password }}
-          tenant: ${{ secrets.tenant }}
-          registry: ${{ secrets.registry }}
-          repository: ${{ secrets.dotnet }}
-          image: image
-          git_access_token: ${{ secrets.git_access_token }}
-          folder: _TheApplication/Source/API\
-          dockerfile: _TheApplication\Source\API\DockerFile
-          branch: master
-          build_args: ''
+      - name: Setup Azure SPN Certificate file inside the runner
+        env:
+          CERT: ${{ secrets.CERTIFICATE }}
+        run: |
+          echo "$CERT" > file.pem
+      
+      - name: Login to Azure
+        run: |
+          az login --service-principal -u ${{ secrets.SPN_ID }} -p file.pem --tenant ${{ secrets.Tenant_ID }}
+
+      - name: Build api Image
+        run: |
+          docker build -t ${{var.ACR_NAME}}.azurecr.io/api .
+          docker push ${{var.ACR_NAME}}.azurecr.io/api .
+
+      - name: logout
+        run: |
+          az logout 
 
   Build-UI:
     runs-on: ubuntu-latest

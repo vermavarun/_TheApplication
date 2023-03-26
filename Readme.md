@@ -9,7 +9,11 @@ Current Status of the builds:
 https://vv-ui.azurewebsites.net/
 https://vv-api.azurewebsites.net/
 
+Key Commands:
+
+`docker run -d -p 8080:80 --name myapp vvacrtry.azurecr.io/api` 
+
 
 TODO:
 
-API Docker run not working. 
+Infra

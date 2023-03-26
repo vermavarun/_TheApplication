@@ -90,8 +90,8 @@ jobs:
 
       - name: Build api Image
         run: |
-          docker build -t ${{var.ACR_NAME}}.azurecr.io/api .
-          docker push ${{var.ACR_NAME}}.azurecr.io/api .
+          docker build -t ${{vars.ACR_NAME}}.azurecr.io/api .
+          docker push ${{vars.ACR_NAME}}.azurecr.io/api .
 
       - name: logout
         run: |

@@ -91,16 +91,15 @@ jobs:
         run: |
           az login --service-principal -u ${{ secrets.SPN_ID }} -p file.pem --tenant ${{ secrets.Tenant_ID }}
 
-      - name: Build api Image
+      - name: Build Push api Image
         run: |
           az acr login --name ${{vars.ACR_NAME}} 
           docker build -t ${{vars.ACR_NAME}}.azurecr.io/api .
           docker push ${{vars.ACR_NAME}}.azurecr.io/api
       
-      - name: Build ui Image
+      - name: Build Push ui Image
         run: |
           cd ../ui
-          az acr login --name ${{vars.ACR_NAME}} 
           docker build -t ${{vars.ACR_NAME}}.azurecr.io/ui .
           docker push ${{vars.ACR_NAME}}.azurecr.io/ui
 

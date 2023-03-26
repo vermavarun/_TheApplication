@@ -78,6 +78,7 @@ jobs:
       run:
         working-directory: ${{env.API_LOCATION}}
     steps:
+      - uses: actions/checkout@v3
       - name: Setup Azure SPN Certificate file inside the runner
         env:
           CERT: ${{ secrets.CERTIFICATE }}

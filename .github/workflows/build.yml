@@ -11,6 +11,7 @@ env:
 
 jobs:
   Build-API:
+    if: ${{ false }}
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -37,6 +38,7 @@ jobs:
           path: ${{ github.workspace }}/Source/Api/publish
 
   Deploy-API:
+    if: ${{ false }}
     needs: [Build-API]
     runs-on: ubuntu-latest
     steps:
@@ -91,6 +93,7 @@ jobs:
 
       - name: Build api Image
         run: |
+          ls -l
           docker build -t ${{vars.ACR_NAME}}.azurecr.io/api .
           docker push ${{vars.ACR_NAME}}.azurecr.io/api .
 
@@ -99,6 +102,7 @@ jobs:
           az logout 
 
   Build-UI:
+    if: ${{ false }}
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -128,6 +132,7 @@ jobs:
           path: ${{ github.workspace }}/Source/ui/build/
 
   Deploy-UI:
+    if: ${{ false }}
     needs: [Build-UI]
     runs-on: ubuntu-latest
     steps:

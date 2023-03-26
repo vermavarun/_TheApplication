@@ -1,0 +1,14 @@
+---
+name: Infra Deployment
+
+# Controls when the action will run.
+on:
+  workflow_dispatch:
+
+jobs:
+  Create-Infra:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Hey
+        run: |
+          echo "Hello its in progress"

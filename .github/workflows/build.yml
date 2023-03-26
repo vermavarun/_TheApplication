@@ -66,7 +66,7 @@ jobs:
       - name: 'Deploy API'
         uses: azure/webapps-deploy@v2
         with: 
-          app-name: vv-api
+          app-name: ${{vars.Azure_Web_App_API_Name}}
           package: './release-artifact-api.zip'
           startup-command: 'dotnet api.dll'
 
@@ -169,7 +169,7 @@ jobs:
       - name: 'Deploy UI'
         uses: azure/webapps-deploy@v2
         with: 
-          app-name: vv-ui
+          app-name: ${{vars.Azure_Web_App_UI_Name}}
           package: './release-artifact.zip'
           startup-command: 'pm2 serve /home/site/wwwroot/ --no-daemon --spa'
 

@@ -95,7 +95,7 @@ jobs:
         run: |
           ls -l
           docker build -t ${{vars.ACR_NAME}}.azurecr.io/api .
-          docker push ${{vars.ACR_NAME}}.azurecr.io/api .
+          docker push ${{vars.ACR_NAME}}.azurecr.io/api
 
       - name: logout
         run: |

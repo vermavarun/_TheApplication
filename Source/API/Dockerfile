@@ -1,19 +1,20 @@
-# to build docker build -t vermavarun/api
-
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build-env
+FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 WORKDIR /app
+EXPOSE 80
 
-# Copy everything
-COPY . ./
-# Restore as distinct layers
-RUN dotnet restore
-# Build and publish a release
-RUN dotnet publish -c Release -o out
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+ENV DOTNET_URLS=http://+:5000
+WORKDIR /src
+COPY ["API.csproj", "."]
+RUN dotnet restore "./API.csproj"
+COPY . .
+WORKDIR "/src/."
+RUN dotnet build "API.csproj" -c Release -o /app/build
 
-# Build runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:6.0
+FROM build AS publish
+RUN dotnet publish "API.csproj" -c Release -o /app/publish
+
+FROM base AS final
 WORKDIR /app
-COPY --from=build-env /app/out .
-#ENV ASPNETCORE_URLS=http://+:5000
-#EXPOSE 5000
-ENTRYPOINT ["dotnet", "api.dll"]
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "API.dll"]

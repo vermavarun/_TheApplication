@@ -3,9 +3,12 @@ import "./App.css";
 callApi();
 
 function callApi() {
-  fetch("https://vv-api.azurewebsites.net/", { method: "GET" })
+  var apiUrl = process.env.REACT_APP_API_URL;
+  console.log(apiUrl);
+  fetch(apiUrl, { method: "GET" })
     .then(response => response.text())
-    .then((data) => document.getElementsByClassName("appspan")[0].innerHTML=data);  // Parsing the data into a JavaScript object
+    .then((data) => document.getElementsByClassName("appspan")[0].innerHTML=data);  
+
 }
 
 function App() {

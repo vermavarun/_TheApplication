@@ -96,6 +96,13 @@ jobs:
           az acr login --name ${{vars.ACR_NAME}} 
           docker build -t ${{vars.ACR_NAME}}.azurecr.io/api .
           docker push ${{vars.ACR_NAME}}.azurecr.io/api
+      
+      - name: Build ui Image
+        run: |
+          cd ../ui
+          az acr login --name ${{vars.ACR_NAME}} 
+          docker build -t ${{vars.ACR_NAME}}.azurecr.io/ui .
+          docker push ${{vars.ACR_NAME}}.azurecr.io/ui
 
       - name: logout
         run: |

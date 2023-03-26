@@ -8,3 +8,8 @@ Current Status of the builds:
 
 https://vv-ui.azurewebsites.net/
 https://vv-api.azurewebsites.net/
+
+
+TODO:
+
+API Docker run not working. 

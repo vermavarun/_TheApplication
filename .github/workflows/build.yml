@@ -11,8 +11,8 @@ env:
 
 jobs:
   Build-API:
-    if: ${{ false }}
     runs-on: ubuntu-latest
+    if: ${{github.ref == 'refs/heads/api'  || github.ref == 'refs/heads/master' }}
     defaults:
       run:
         working-directory: ${{env.API_LOCATION}}
@@ -38,9 +38,9 @@ jobs:
           path: ${{ github.workspace }}/Source/Api/publish
 
   Deploy-API:
-    if: ${{ false }}
     needs: [Build-API]
     runs-on: ubuntu-latest
+    if: ${{github.ref == 'refs/heads/api'  || github.ref == 'refs/heads/master' }}
     steps:
       - name: Setup Azure SPN Certificate file inside the runner
         env:
@@ -76,6 +76,7 @@ jobs:
 
   Push-Images:
     runs-on: ubuntu-latest
+    if: ${{github.ref == 'refs/heads/container'  || github.ref == 'refs/heads/master' }}
     defaults:
       run:
         working-directory: ${{env.API_LOCATION}}
@@ -108,7 +109,7 @@ jobs:
           az logout 
 
   Build-UI:
-    if: ${{ false }}
+    if: ${{github.ref == 'refs/heads/ui'  || github.ref == 'refs/heads/master' }}
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -138,7 +139,7 @@ jobs:
           path: ${{ github.workspace }}/Source/ui/build/
 
   Deploy-UI:
-    if: ${{ false }}
+    if: ${{github.ref == 'refs/heads/ui' || github.ref == 'refs/heads/master' }}
     needs: [Build-UI]
     runs-on: ubuntu-latest
     steps:

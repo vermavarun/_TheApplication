@@ -76,7 +76,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: './Source/ui'
+        working-directory: ${{env.API_LOCATION}}
     steps:
       - name: Setup Azure SPN Certificate file inside the runner
         env:

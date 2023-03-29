@@ -3,7 +3,7 @@ import "./App.css";
 callApi();
 
 function callApi() {
-  var apiUrl = process.env.REACT_APP_API_URL;
+  var apiUrl = "https://10.0.0.4";
   console.log(apiUrl);
   fetch(apiUrl, { method: "GET" })
     .then(response => response.text())

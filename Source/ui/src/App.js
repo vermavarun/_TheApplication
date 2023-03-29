@@ -3,7 +3,7 @@ import "./App.css";
 callApi();
 
 function callApi() {
-  var apiUrl = "https://10.0.0.4";
+  var apiUrl = "https://vv-api.azurewebsites.net/";
   console.log(apiUrl);
   fetch(apiUrl, { method: "GET" })
     .then(response => response.text())

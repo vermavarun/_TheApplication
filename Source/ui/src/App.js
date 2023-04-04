@@ -15,7 +15,7 @@ function App() {
   return (
 
     <div className="App">
-     From API: <span className="appspan"></span>
+     Response From API: <span className="appspan"></span>
     </div>
   );
 }

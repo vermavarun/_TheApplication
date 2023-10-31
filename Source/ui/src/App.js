@@ -1,4 +1,6 @@
 import "./App.css";
+import Calculator from './components/calculator/calculator'
+import TopBar from './components/topbar/topbar';
 
 callApi();
 
@@ -15,7 +17,9 @@ function App() {
   return (
 
     <div className="App">
+      <TopBar/>
      Response From API: <span className="appspan"></span>
+     <Calculator/>
     </div>
   );
 }

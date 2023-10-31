@@ -7,7 +7,7 @@ function callApi() {
   console.log(apiUrl);
   fetch(apiUrl, { method: "GET" })
     .then(response => response.text())
-    .then((data) => document.getElementsByClassName("appspan")[0].innerHTML=data);  
+    .then((data) => document.getElementsByClassName("appspan")[0].innerHTML=data);
 
 }
 

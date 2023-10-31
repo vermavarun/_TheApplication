@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ms-api
+  labels:
+    app: ms-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: ms-api
+  template:
+    metadata:
+      labels:
+        app: ms-api
+        service: ms-api
+    spec:
+      containers:
+        - name: ms-api
+          image: k8s:api
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+              protocol: TCP
+          env:
+            - name: ASPNETCORE_URLS
+              value: http://+:80
+          resources:
+            limits:
+              memory: 512Mi
+              cpu: "1"
+            requests:
+              memory: 256Mi
+              cpu: "0.2"

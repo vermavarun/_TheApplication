@@ -31,7 +31,6 @@ if (app.Environment.IsDevelopment())
 
 
 app.UseHttpsRedirection();
-app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()); // TODO: Specific domain to whitelist from config settings
 app.UseAuthorization();
 
 app.MapControllers();

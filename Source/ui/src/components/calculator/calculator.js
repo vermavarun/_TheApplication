@@ -30,10 +30,12 @@ function Calculator() {
         <br/>
         Result is :: {result}
       </pre>
+      <div className="caloperations">
       <Add num1={num1} num2={num2} onResultCalculated={setResult} />
       <Sub num1={num1} num2={num2} onResultCalculated={setResult} />
       <Mul num1={num1} num2={num2} onResultCalculated={setResult} />
       <Div num1={num1} num2={num2} onResultCalculated={setResult} />
+      </div>
     </div>
   );
 }

@@ -14,9 +14,8 @@ html, body {
   background-color: beige;
 }
 
-.appspan{
-  color:red;
-  font-weight: bold;
+.caloperations {
+  display: inline-flex;
 }
 
 .calculator{

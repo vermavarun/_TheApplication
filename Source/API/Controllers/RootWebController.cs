@@ -38,8 +38,15 @@ public class RootWebController : ControllerBase
     }
 
     [HttpGet("div/", Name="Div")]
-    public int Div(int num1, int num2)
+    public string Div(int num1, int num2)
     {
-       return num1 / num2;
+        var result = string.Empty;
+        try{
+         result = (num1 / num2).ToString();
+        }
+        catch (Exception e) {
+            return e.Message;
+        }
+       return result.ToString();
     }
 }

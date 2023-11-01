@@ -25,6 +25,7 @@ html, body {
   background-color:red;
   top: 0;
   text-align: center;
+  color: white;
 }
 .footer {
   position: fixed;

@@ -8,7 +8,6 @@ function App() {
     <>
       <TopBar />
       <div className="App">
-        <div className="AppData"></div>
         <Calculator />
       </div>
       <Footer />

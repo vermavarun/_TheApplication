@@ -17,24 +17,45 @@ public class RootWebController : ControllerBase
     [HttpGet("")]
     public string Get()
     {
-       return "I am here!";
+       return "Service is Up!";
     }
     [HttpGet("add/",Name="Add")]
-    public int Add(int num1, int num2)
+    public string Add(int num1, int num2)
     {
-       return num1 + num2;
+        var result = string.Empty;
+        try{
+         result = (num1 + num2).ToString();
+        }
+        catch (Exception e) {
+            return e.Message;
+        }
+       return result.ToString();
     }
 
     [HttpGet("sub/", Name="Sub")]
-    public int Sub(int num1, int num2)
+    public string Sub(int num1, int num2)
     {
-       return num1 - num2;
+        var result = string.Empty;
+        try{
+         result = (num1 - num2).ToString();
+        }
+        catch (Exception e) {
+            return e.Message;
+        }
+       return result.ToString();
     }
 
     [HttpGet("mul/", Name="Mul")]
-    public int Mul(int num1, int num2)
+    public string Mul(int num1, int num2)
     {
-       return num1 * num2;
+        var result = string.Empty;
+        try{
+         result = (num1 * num2).ToString();
+        }
+        catch (Exception e) {
+            return e.Message;
+        }
+       return result.ToString();
     }
 
     [HttpGet("div/", Name="Div")]

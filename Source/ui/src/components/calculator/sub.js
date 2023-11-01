@@ -12,7 +12,7 @@ function Sub(props) {
 
   return (
     <div className="sub">
-      <button onClick={() => callApi(props.num1, props.num2)}>Sub</button>
+      <button onClick={() => callApi(props.num1, props.num2)} disabled={props.num1 == '' || props.num2 == ''} >Sub</button>
     </div>
   );
 }

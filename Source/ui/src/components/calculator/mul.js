@@ -12,7 +12,7 @@ function Mul(props) {
 
   return (
     <div className="mul">
-      <button onClick={() => callApi(props.num1, props.num2)}>Mul</button>
+      <button onClick={() => callApi(props.num1, props.num2)} disabled={props.num1 == '' || props.num2 == ''} >Mul</button>
     </div>
   );
 }

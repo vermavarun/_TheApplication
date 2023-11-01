@@ -1,15 +1,27 @@
+import React, { useState } from "react";
+
 import Add from "./add";
 
-
 function Calculator() {
+  const [num1, setValue1] = useState(0);
+  const [num2, setValue2] = useState(0);
+
+  const handleNum1Change = (event) => {
+    setValue1(event.target.value);
+  };
+
+  const handleNum2Change = (event) => {
+    setValue2(event.target.value);
+  };
+
   return (
     <div className="calculator">
       <pre>
-       Number 1 <input type="number"></input>
-       <br/>
-       Number 2 <input type="number"></input>
-       </pre>
-      <Add />
+        Number 1 <input type="number" min={0} onChange={handleNum1Change} value={num1}></input>
+        <br />
+        Number 2 <input type="number" min={0} onChange={handleNum2Change} value={num2}></input>
+      </pre>
+      <Add num1={num1} num2={num2} />
     </div>
   );
 }

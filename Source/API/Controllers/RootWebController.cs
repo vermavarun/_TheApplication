@@ -19,9 +19,27 @@ public class RootWebController : ControllerBase
     {
        return "I am here!";
     }
-    [HttpGet("add/")]
-    public int Get(int num1, int num2)
+    [HttpGet("add/",Name="Add")]
+    public int Add(int num1, int num2)
     {
        return num1 + num2;
+    }
+
+    [HttpGet("sub/", Name="Sub")]
+    public int Sub(int num1, int num2)
+    {
+       return num1 - num2;
+    }
+
+    [HttpGet("mul/", Name="Mul")]
+    public int Mul(int num1, int num2)
+    {
+       return num1 * num2;
+    }
+
+    [HttpGet("div/", Name="Div")]
+    public int Div(int num1, int num2)
+    {
+       return num1 / num2;
     }
 }

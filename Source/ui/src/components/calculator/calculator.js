@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 
 import Add from "./add";
+import Sub from "./sub";
+import Mul from "./mul";
+import Div from "./div";
 
 function Calculator() {
   const [num1, setValue1] = useState(0);
@@ -19,6 +22,8 @@ function Calculator() {
   return (
     <div className="calculator">
       <pre>
+        <label>Coz I am a Calculator !</label>
+        <br/>
         Number 1 <input type="number" min={0} onChange={handleNum1Change} value={num1}></input>
         <br />
         Number 2 <input type="number" min={0} onChange={handleNum2Change} value={num2}></input>
@@ -26,6 +31,9 @@ function Calculator() {
         Result is :: {result}
       </pre>
       <Add num1={num1} num2={num2} onResultCalculated={setResult} />
+      <Sub num1={num1} num2={num2} onResultCalculated={setResult} />
+      <Mul num1={num1} num2={num2} onResultCalculated={setResult} />
+      <Div num1={num1} num2={num2} onResultCalculated={setResult} />
     </div>
   );
 }

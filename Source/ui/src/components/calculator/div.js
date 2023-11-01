@@ -12,7 +12,7 @@ function Div(props) {
 
   return (
     <div className="div">
-      <button onClick={() => callApi(props.num1, props.num2)} disabled={props.num1 == '' || props.num2 == ''} >Div</button>
+      <button onClick={() => callApi(props.num1, props.num2)} disabled={props.num1 === '' || props.num2 === ''} >Div</button>
     </div>
   );
 }

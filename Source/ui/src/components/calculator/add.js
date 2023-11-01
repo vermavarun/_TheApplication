@@ -12,7 +12,7 @@ function Add(props) {
 
   return (
     <div className="add">
-      <button onClick={() => callApi(props.num1, props.num2)} disabled={props.num1 == '' || props.num2 == ''} >Add</button>
+      <button onClick={() => callApi(props.num1, props.num2)} disabled={props.num1 === '' || props.num2 === ''} >Add</button>
     </div>
   );
 }

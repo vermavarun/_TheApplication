@@ -1,22 +1,17 @@
 import "./App.css";
-
-callApi();
-
-function callApi() {
-  var apiUrl = process.env.REACT_APP_API_URL;
-  console.log(apiUrl);
-  fetch(apiUrl, { method: "GET" })
-    .then(response => response.text())
-    .then((data) => document.getElementsByClassName("appspan")[0].innerHTML=data);
-
-}
+import Calculator from "./components/calculator/calculator";
+import TopBar from "./components/topbar/topbar";
+import Footer from "./components/footer/footer";
 
 function App() {
   return (
-
-    <div className="App">
-     Response From API: <span className="appspan"></span>
-    </div>
+    <>
+      <TopBar />
+      <div className="App">
+        <Calculator />
+      </div>
+      <Footer />
+    </>
   );
 }
 

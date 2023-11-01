@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: react-ui
-          image: k8s:ui
+          image: theapplication:ui
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 4000

@@ -1,21 +1,22 @@
-function callApi(num1, num2) {
-  var apiUrl =
-    process.env.REACT_APP_API_URL + "/add?num1=" + num1 + "&num2=" + num2;
-  console.log(apiUrl);
-  console.log(num1);
-  fetch(apiUrl, { method: "GET" })
-    .then((response) => response.text())
-    .then(
-      (data) =>
-        (document.getElementsByClassName("addresult")[0].innerHTML = data)
-    );
-}
+import React, { useState , useEffect} from "react";
 
-function Add(data) {
+function Add(props) {
+
+
+
+  const callApi = (num1, num2) => {
+    var apiUrl =
+      process.env.REACT_APP_API_URL + "/add?num1=" + num1 + "&num2=" + num2;
+    console.log(apiUrl);
+    fetch(apiUrl, { method: "GET" })
+      .then((response) => response.text())
+      .then((data) => props.onResultCalculated(data));
+  };
+
   return (
     <div className="add">
-      <button onClick={() => callApi(data.num1, data.num2)}>Add</button>
-      <div className="addresult"></div>
+      <button onClick={() => callApi(props.num1, props.num2)}>Add</button>
+      {/* from child {result} */}
     </div>
   );
 }

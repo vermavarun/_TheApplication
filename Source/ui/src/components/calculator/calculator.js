@@ -14,14 +14,18 @@ function Calculator() {
     setValue2(event.target.value);
   };
 
+  const [result, setResult] = useState(0);
+
   return (
     <div className="calculator">
       <pre>
         Number 1 <input type="number" min={0} onChange={handleNum1Change} value={num1}></input>
         <br />
         Number 2 <input type="number" min={0} onChange={handleNum2Change} value={num2}></input>
+        <br/>
+        Result is :: {result}
       </pre>
-      <Add num1={num1} num2={num2} />
+      <Add num1={num1} num2={num2} onResultCalculated={setResult} />
     </div>
   );
 }

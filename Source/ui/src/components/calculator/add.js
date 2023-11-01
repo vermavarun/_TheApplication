@@ -1,10 +1,7 @@
-import React, { useState , useEffect} from "react";
 
 function Add(props) {
 
-
-
-  const callApi = (num1, num2) => {
+    const callApi = (num1, num2) => {
     var apiUrl =
       process.env.REACT_APP_API_URL + "/add?num1=" + num1 + "&num2=" + num2;
     console.log(apiUrl);
@@ -16,7 +13,6 @@ function Add(props) {
   return (
     <div className="add">
       <button onClick={() => callApi(props.num1, props.num2)}>Add</button>
-      {/* from child {result} */}
     </div>
   );
 }

@@ -4,7 +4,11 @@ import Add from "./add";
 function Calculator() {
   return (
     <div className="calculator">
-      Hi, I am a Calculator!
+      <pre>
+       Number 1 <input type="number"></input>
+       <br/>
+       Number 2 <input type="number"></input>
+       </pre>
       <Add />
     </div>
   );

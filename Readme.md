@@ -11,9 +11,10 @@ https://vv-api.azurewebsites.net/
 
 Key Commands:
 
-`docker run -d -p 8080:80 --name myapp vvacrtry.azurecr.io/api` 
+`docker run -d -p 8080:80 --name myapp vvacrtry.azurecr.io/api`
 
 
 TODO:
 
-Infra
+React Lint
+React Toast ... https://react-hot-toast.com/

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import toast, { Toaster } from 'react-hot-toast';
 
 import Add from "./add";
 import Sub from "./sub";
@@ -19,6 +20,14 @@ function Calculator() {
 
   const [result, setResult] = useState(0);
 
+  function handleSetResult (data) {
+    setResult(data);
+    if (isNaN(data))
+     toast.error(data)
+    else
+    toast.success(data)
+  };
+
   return (
     <div className="calculator">
       <pre>
@@ -31,11 +40,12 @@ function Calculator() {
         Result is :: {result}
       </pre>
       <div className="caloperations">
-      <Add num1={num1} num2={num2} onResultCalculated={setResult} />
-      <Sub num1={num1} num2={num2} onResultCalculated={setResult} />
-      <Mul num1={num1} num2={num2} onResultCalculated={setResult} />
-      <Div num1={num1} num2={num2} onResultCalculated={setResult} />
+      <Add num1={num1} num2={num2} onResultCalculated={handleSetResult} />
+      <Sub num1={num1} num2={num2} onResultCalculated={handleSetResult} />
+      <Mul num1={num1} num2={num2} onResultCalculated={handleSetResult} />
+      <Div num1={num1} num2={num2} onResultCalculated={handleSetResult} />
       </div>
+      <div><Toaster  position="top-right" reverseOrder={false}/></div>
     </div>
   );
 }

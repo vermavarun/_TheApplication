@@ -22,7 +22,7 @@ html, body {
   border: 1px solid black;
 }
 .topbar {
-  background-color:red;
+  background-color: blue;
   top: 0;
   position: relative;
   color: white;
@@ -38,7 +38,7 @@ html, body {
   left: 0;
   bottom: 0;
   width: 100%;
-  background-color: red;
+  background-color: blue;
   color: white;
   text-align: center;
 }

@@ -1,3 +1,4 @@
+import Button from "react-bootstrap/Button";
 
 function Sub(props) {
 
@@ -12,7 +13,7 @@ function Sub(props) {
 
   return (
     <div className="sub">
-      <button onClick={() => callApi(props.num1, props.num2)} disabled={props.num1 === '' || props.num2 === ''} >Sub</button>
+      <Button as="input" type="button" value="Sub"  onClick={() => callApi(props.num1, props.num2)} disabled={props.num1 === '' || props.num2 === ''} />
     </div>
   );
 }

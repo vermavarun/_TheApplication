@@ -1,3 +1,4 @@
+import Button from "react-bootstrap/Button";
 
 function Mul(props) {
 
@@ -12,7 +13,7 @@ function Mul(props) {
 
   return (
     <div className="mul">
-      <button onClick={() => callApi(props.num1, props.num2)} disabled={props.num1 === '' || props.num2 === ''} >Mul</button>
+      <Button as="input" type="button" value="Mul"  onClick={() => callApi(props.num1, props.num2)} disabled={props.num1 === '' || props.num2 === ''} />
     </div>
   );
 }

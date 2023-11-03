@@ -1,4 +1,6 @@
 
+import Button from 'react-bootstrap/Button';
+
 function Add(props) {
 
     const callApi = (num1, num2) => {
@@ -15,7 +17,7 @@ function Add(props) {
 
   return (
     <div className="add">
-      <button onClick={() => callApi(props.num1, props.num2)} disabled={props.num1 === '' || props.num2 === ''} >Add</button>
+      <Button as="input" type="button" value="Add" onClick={() => callApi(props.num1, props.num2)} disabled={props.num1 === '' || props.num2 === ''} />
     </div>
   );
 }

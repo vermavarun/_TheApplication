@@ -17,6 +17,7 @@ Key Commands:
 TODO:
 
 React Lint
+React Logout
 
 API Authentication AAD
 API Authorization AAD

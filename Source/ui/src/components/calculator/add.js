@@ -5,9 +5,12 @@ function Add(props) {
     var apiUrl =
       process.env.REACT_APP_API_URL + "/add?num1=" + num1 + "&num2=" + num2;
     console.log(apiUrl);
-    fetch(apiUrl, { method: "GET" })
+    
+
+    fetch(apiUrl, { method: "GET", headers: 'Bearer {token}' })
       .then((response) => response.text())
-      .then((data) => props.onResultCalculated(data));
+      .then((data) => props.onResultCalculated(data))
+      .catch( error => console.error(error));
   };
 
   return (

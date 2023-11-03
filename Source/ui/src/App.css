@@ -24,8 +24,24 @@ html, body {
 .topbar {
   background-color:red;
   top: 0;
-  text-align: center;
+  position: relative;
   color: white;
+  text-align: center;
+}
+.welcomename {
+  text-align: left;
+  position: relative;
+  left:10%;
+}
+.apptitle{
+  position: relative;
+  left:35%;
+}
+.logoutspn {
+  cursor: pointer;
+  text-align: right;
+  position: absolute;
+  right: 10%;
 }
 .footer {
   position: fixed;

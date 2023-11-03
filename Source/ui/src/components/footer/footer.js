@@ -1,6 +1,6 @@
 function Footer() {
     return <div className="footer">
-        This is a footer!
+        🎯 ShaksZ Pvt Limited
     </div>
 }
 export default Footer;

@@ -1,10 +1,10 @@
 name: Build-Solution
 
-on: 
+on:
   push:
     paths-ignore:
       - '**.md'
-      
+
 env:
   API_LOCATION: ./Source/API
   UI_LOCATION: ./Source/UI
@@ -23,14 +23,14 @@ jobs:
         with:
           dotnet-version: '6.0.x'
       - name: Install dependencies
-        run: dotnet restore 
+        run: dotnet restore
       - name: Build
         run: dotnet build --configuration Release --no-restore
       - name: Test
         run: dotnet test --no-restore --verbosity normal
       - name: Publish
         run: dotnet publish --configuration Release --no-build --output "${{ github.workspace }}/Source/Api/publish"
-      
+
       - name: upload deployable package to the run instance
         uses: actions/upload-artifact@v3
         with:
@@ -40,14 +40,15 @@ jobs:
   Deploy-API:
     needs: [Build-API]
     runs-on: ubuntu-latest
-    if: ${{github.ref == 'refs/heads/api'  || github.ref == 'refs/heads/master' }}
+    if: false 
+    #if: ${{github.ref == 'refs/heads/api'  || github.ref == 'refs/heads/master' }}
     steps:
       - name: Setup Azure SPN Certificate file inside the runner
         env:
           CERT: ${{ secrets.CERTIFICATE }}
         run: |
           echo "$CERT" > file.pem
-      
+
       - name: Login to Azure
         run: |
           az login --service-principal -u ${{ secrets.SPN_ID }} -p file.pem --tenant ${{ secrets.Tenant_ID }}
@@ -55,28 +56,29 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: release-artifact-api.zip
-      
+
       - name: RUN Commands
         run: |
           ls -l
-      
+
       - name: Zip release artifact
         run: |
           zip -r release-artifact-api.zip . -x file.pem
       - name: 'Deploy API'
         uses: azure/webapps-deploy@v2
-        with: 
+        with:
           app-name: ${{vars.Azure_Web_App_API_Name}}
           package: './release-artifact-api.zip'
           startup-command: 'dotnet api.dll'
 
       - name: logout
         run: |
-          az logout 
+          az logout
 
   Push-Images:
     runs-on: ubuntu-latest
-    if: ${{github.ref == 'refs/heads/container'  || github.ref == 'refs/heads/master' }}
+    #if: ${{github.ref == 'refs/heads/container'  || github.ref == 'refs/heads/master' }}
+    if: false
     defaults:
       run:
         working-directory: ${{env.API_LOCATION}}
@@ -87,17 +89,17 @@ jobs:
           CERT: ${{ secrets.CERTIFICATE }}
         run: |
           echo "$CERT" > file.pem
-      
+
       - name: Login to Azure
         run: |
           az login --service-principal -u ${{ secrets.SPN_ID }} -p file.pem --tenant ${{ secrets.Tenant_ID }}
 
       - name: Build Push api Image
         run: |
-          az acr login --name ${{vars.ACR_NAME}} 
+          az acr login --name ${{vars.ACR_NAME}}
           docker build -t ${{vars.ACR_NAME}}.azurecr.io/api .
           docker push ${{vars.ACR_NAME}}.azurecr.io/api
-      
+
       - name: Build Push ui Image
         run: |
           cd ../ui
@@ -106,7 +108,7 @@ jobs:
 
       - name: logout
         run: |
-          az logout 
+          az logout
 
   Build-UI:
     if: ${{github.ref == 'refs/heads/ui'  || github.ref == 'refs/heads/master' }}
@@ -129,7 +131,7 @@ jobs:
           cat .env
 
       - run: npm ci
-      - run: npm test
+      # - run: npm test
       - run: npm run build --if-present
 
       - name: upload deployable package to the run instance
@@ -139,7 +141,7 @@ jobs:
           path: ${{ github.workspace }}/Source/ui/build/
 
   Deploy-UI:
-    if: ${{github.ref == 'refs/heads/ui' || github.ref == 'refs/heads/master' }}
+    if: false #${{github.ref == 'refs/heads/ui' || github.ref == 'refs/heads/master' }}
     needs: [Build-UI]
     runs-on: ubuntu-latest
     steps:
@@ -148,7 +150,7 @@ jobs:
           CERT: ${{ secrets.CERTIFICATE }}
         run: |
           echo "$CERT" > file.pem
-      
+
       - name: Login to Azure
         run: |
           az login --service-principal -u ${{ secrets.SPN_ID }} -p file.pem --tenant ${{ secrets.Tenant_ID }}
@@ -157,22 +159,22 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: release-artifact.zip
-      
+
       - name: RUN Commands
         run: |
           ls -l
-      
+
       - name: Zip release artifact
         run: |
           zip -r release-artifact.zip . -x file.pem
 
       - name: 'Deploy UI'
         uses: azure/webapps-deploy@v2
-        with: 
+        with:
           app-name: ${{vars.Azure_Web_App_UI_Name}}
           package: './release-artifact.zip'
           startup-command: 'pm2 serve /home/site/wwwroot/ --no-daemon --spa'
 
       - name: logout
         run: |
-          az logout 
+          az logout

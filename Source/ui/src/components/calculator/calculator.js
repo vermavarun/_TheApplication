@@ -1,6 +1,7 @@
+
+
 import React, { useState } from "react";
 import toast, { Toaster } from 'react-hot-toast';
-
 import Add from "./add";
 import Sub from "./sub";
 import Mul from "./mul";
@@ -29,6 +30,7 @@ function Calculator() {
   };
 
   return (
+    
     <div className="calculator">
       <pre>
         <label>Coz I am a Calculator !</label>

@@ -24,8 +24,14 @@ html, body {
 .topbar {
   background-color:red;
   top: 0;
-  text-align: center;
+  position: relative;
   color: white;
+  text-align: center;
+}
+
+.logout {
+  cursor: pointer;
+
 }
 .footer {
   position: fixed;

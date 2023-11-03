@@ -17,4 +17,7 @@ Key Commands:
 TODO:
 
 React Lint
-React Toast ... https://react-hot-toast.com/
+React Logout
+
+API Authentication AAD
+API Authorization AAD

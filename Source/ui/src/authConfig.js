@@ -13,8 +13,8 @@ import { LogLevel } from '@azure/msal-browser';
 
 export const msalConfig = {
     auth: {
-        clientId: '4925c369-9a12-4860-879e-8875e448ba67', // This is the ONLY mandatory field that you need to supply.
-        authority: 'https://login.microsoftonline.com/0a8a3f69-168e-4087-b2f8-3a1708ef7ab4/', // Replace the placeholder with your tenant subdomain
+        clientId: process.env.REACT_APP_CLIENT_ID, // This is the ONLY mandatory field that you need to supply.
+        authority: 'https://login.microsoftonline.com/'+process.env.REACT_APP_TENANT_ID+'/', // Replace the placeholder with your tenant subdomain
         redirectUri: '/', // Points to window.location.origin. You must register this URI on Azure Portal/App Registration.
         postLogoutRedirectUri: '/', // Indicates the page to navigate after logout.
         navigateToLoginRequestUrl: false, // If "true", will navigate back to the original request location before processing the auth code response.
@@ -49,6 +49,7 @@ export const msalConfig = {
         },
     },
 };
+console.log(msalConfig)
 
 /**
  * Scopes you add here will be prompted for user consent during sign-in.

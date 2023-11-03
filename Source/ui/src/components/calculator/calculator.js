@@ -35,7 +35,7 @@ function Calculator() {
 
     <div className="calculator">
       <pre>
-        <label>Coz I am a Calculator !</label>
+        <label>Calculator</label>
         <br />
         Number 1 <input type="number" min={0} onChange={handleNum1Change} value={num1}></input>
         <br />

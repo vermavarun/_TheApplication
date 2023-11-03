@@ -16,7 +16,7 @@ function TopBar(props) {
           <Row>
             <Col>Welcome {props.activeAccount?.name}! </Col>
             <Col>💥 The Application 💥</Col>
-            <Col onClick={handleLogout}>Logout</Col>
+            <Col className="logout" onClick={handleLogout}>Logout</Col>
           </Row>
         </Container>
       </div>

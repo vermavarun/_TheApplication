@@ -28,20 +28,10 @@ html, body {
   color: white;
   text-align: center;
 }
-.welcomename {
-  text-align: left;
-  position: relative;
-  left:10%;
-}
-.apptitle{
-  position: relative;
-  left:35%;
-}
-.logoutspn {
+
+.logout {
   cursor: pointer;
-  text-align: right;
-  position: absolute;
-  right: 10%;
+
 }
 .footer {
   position: fixed;

@@ -48,16 +48,23 @@ To get IP address
 <li>kubectl set env deployment/react-ui REACT_APP_API_URL=http://10.97.38.222/</li>
 <li>kubectl get svc</li> // to get ip of api service
 
+
 <hr/>
 <h1>Latest update</h1>
 
 To create API and UI running
 
-    ./k8-create.sh
+    ./create.sh
 
-Visit [API](http://localhost:80) and [UI](http://localhost:8081) in browser
+RUN
+
+    kubectl get svc // get service IP of ms-api service
+    kubectl set env deployment/react-ui APP_SERVICE_URL=http://{SERVICE_IP}
+
+
+Visit [UI](http://localhost:1234) in browser
 
 
 To Delete API and UI
 
-    ./k8-delete.sh
+    ./delete.sh

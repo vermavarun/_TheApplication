@@ -7,9 +7,14 @@ metadata:
     service: react-ui
 spec:
   ports:
-    - port: 8081
+    - port: 1234
+      targetPort: 5000
+      protocol: TCP
+      name: ui-port
+    - port: 3000
       targetPort: 3000
       protocol: TCP
+      name: node-port
   type: LoadBalancer
   selector:
     service: react-ui

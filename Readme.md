@@ -9,3 +9,10 @@ TODO:
 React Lint
 React Authorization
 API Authorization AAD
+
+Debugging config for:
+- .Net
+- Node
+- React
+
+Remove logs in browser console window

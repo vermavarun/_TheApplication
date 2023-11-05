@@ -16,7 +16,10 @@ function add(req, res) {
     .then(text => {
         res.send(text);
     })
-    .catch(error => console.error(error));
+    .catch(error => {
+        res.send(error)
+        console.error(error)
+    });
 }
 
 function sub(req, res) {
@@ -27,7 +30,10 @@ function sub(req, res) {
     .then(text => {
         res.send(text);
     })
-    .catch(error => console.error(error));
+    .catch(error => {
+        res.send(error)
+        console.error(error)
+    });
 }
 
 function mul(req, res) {
@@ -38,7 +44,10 @@ function mul(req, res) {
     .then(text => {
         res.send(text);
     })
-    .catch(error => console.error(error));
+    .catch(error => {
+        res.send(error)
+        console.error(error)
+    });
 }
 
 function div(req, res) {
@@ -49,7 +58,10 @@ function div(req, res) {
     .then(text => {
         res.send(text);
     })
-    .catch(error => console.error(error));
+    .catch(error => {
+        res.send(error)
+        console.error(error)
+    });
 }
 
 function getRootAppMessage(req,res) {
@@ -58,8 +70,10 @@ function getRootAppMessage(req,res) {
     .then(text => {
         res.send(`Node running on ${os.hostname()} ${text}`);
     })
-    .catch(error => console.error(error));
-
+    .catch(error => {
+        res.send(error)
+        console.error(error)
+    });
 }
 
 app.get('/',getRootAppMessage);
@@ -69,8 +83,6 @@ app.get('/mul', mul);
 app.get('/div', div);
 
 // Start the server
-
-
 
 app.listen(port, () => {
   console.log(`API is running on port ${port}`);

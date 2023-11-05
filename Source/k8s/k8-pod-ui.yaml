@@ -20,11 +20,27 @@ spec:
           image: theapplication:ui
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 4000
+            - containerPort: 5000
               protocol: TCP
           env:
             - name: REACT_APP_API_URL
-              value: "http://10.106.197.197/"
+              value: http://localhost:3000
+          resources:
+            limits:
+              memory: 512Mi
+              cpu: "1"
+            requests:
+              memory: 256Mi
+              cpu: "0.2"
+        - name: node-api
+          image: theapplication:nodeapi
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+              protocol: TCP
+          env:
+            - name: APP_SERVICE_URL
+              value: http://ms-api:80
           resources:
             limits:
               memory: 512Mi

@@ -1,5 +1,6 @@
-docker build -t theapplication:ui ../ui
-docker build -t theapplication:api ../API
+# docker build -t theapplication:ui ../ui
+# docker build -t theapplication:api ../API
+# docker build -t theapplication:nodeapi ../node/api
 
 kubectl describe ns the-application || kubectl create namespace the-application
 

@@ -7,3 +7,6 @@ Source/UI/node_modules
 Source/UI/node_modules/
 .DS_Store
 Source/.DS_Store
+
+#Node
+Source/node/api/node_modules/

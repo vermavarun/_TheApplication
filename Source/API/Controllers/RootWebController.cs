@@ -17,7 +17,7 @@ public class RootWebController : ControllerBase
     [HttpGet("")]
     public string Get()
     {
-       return "Service is Up!";
+       return $"Service is Up on {Environment.MachineName}";
     }
     [HttpGet("add/",Name="Add")]
     public string Add(int num1, int num2)

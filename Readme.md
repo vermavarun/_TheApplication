@@ -7,7 +7,5 @@ Current Status of the builds:
 TODO:
 
 React Lint
-
 React Authorization
-
 API Authorization AAD

@@ -11,8 +11,8 @@ React Authorization
 API Authorization AAD
 
 Debugging config for:
-- .Net
-- Node
-- React
+- .Net : .NET Core Launch (web)
+- Node : Node.js Launch Program
+- React: React APP  # Should be running npm run start
 
 Remove logs in browser console window

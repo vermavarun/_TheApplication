@@ -3,10 +3,12 @@ const express = require('express');
 var cors = require('cors')
 require('dotenv').config()
 const app = express();
+app.use(cors())
 const port = 3000;
 
 // Create the getGreeting function
 function add(req, res) {
+    console.log(`${process.env.APP_SERVICE_URL}/add?num1=${req.query.num1}`)
     num1 = req.query.num1
     num2 = req.query.num2
     fetch(process.env.APP_SERVICE_URL+`/add?num1=${num1}&num2=${num2}`)
@@ -66,15 +68,10 @@ app.get('/sub', sub);
 app.get('/mul', mul);
 app.get('/div', div);
 
-
 // Start the server
 
 
-app.use(cors())
 
 app.listen(port, () => {
   console.log(`API is running on port ${port}`);
 });
-
-
-//https://stackabuse.com/handling-cors-with-node-js/

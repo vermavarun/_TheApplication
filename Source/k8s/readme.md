@@ -56,12 +56,6 @@ To create API and UI running
 
     ./create.sh
 
-RUN
-
-    kubectl get svc // get service IP of ms-api service
-    kubectl set env deployment/react-ui APP_SERVICE_URL=http://{SERVICE_IP}
-
-
 Visit [UI](http://localhost:1234) in browser
 
 

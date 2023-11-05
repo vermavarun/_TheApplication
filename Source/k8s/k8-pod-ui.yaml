@@ -40,7 +40,7 @@ spec:
               protocol: TCP
           env:
             - name: APP_SERVICE_URL
-              value: http://10.106.197.197/
+              value: http://ms-api:80
           resources:
             limits:
               memory: 512Mi

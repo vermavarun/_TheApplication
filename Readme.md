@@ -18,7 +18,8 @@ Key Commands:
 TODO:
 
 React Lint
-React Logout
+node api use cors
+k8s simple
 
 API Authentication AAD
 API Authorization AAD

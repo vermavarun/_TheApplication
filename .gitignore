@@ -5,5 +5,9 @@ Source/API/obj/
 #UI
 Source/UI/node_modules
 Source/UI/node_modules/
+
+#node
+Source/node/api/node_modules
+
 .DS_Store
 Source/.DS_Store

@@ -1,23 +1,46 @@
 import "./App.css";
+import {
+  MsalProvider,
+  AuthenticatedTemplate,
+  useMsal,
+} from "@azure/msal-react";
+import Calculator from "./components/calculator/calculator";
+import TopBar from "./components/topbar/topbar";
+import Footer from "./components/footer/footer";
+import { useEffect } from "react";
 
-callApi();
+import { loginRequest } from "../src/authConfig";
 
-function callApi() {
-  var apiUrl = process.env.REACT_APP_API_URL;
-  console.log(apiUrl);
-  fetch(apiUrl, { method: "GET" })
-    .then(response => response.text())
-    .then((data) => document.getElementsByClassName("appspan")[0].innerHTML=data);
-
-}
-
-function App() {
+function App({ instance }) {
   return (
-
-    <div className="App">
-     Response From API: <span className="appspan"></span>
-    </div>
+    <MsalProvider instance={instance}>
+      <MainContent />
+    </MsalProvider>
   );
 }
 
 export default App;
+
+const MainContent = () => {
+  const { instance } = useMsal();
+
+  let activeAccount;
+
+  if (instance) {
+    activeAccount = instance.getActiveAccount();
+  }
+
+  useEffect(() => {
+    if (!activeAccount)
+      instance.loginRedirect(loginRequest).catch((error) => console.log(error));
+  });
+  return (
+    <AuthenticatedTemplate>
+      <TopBar activeAccount={activeAccount} />
+      <div className="App">
+        <Calculator />
+      </div>
+      <Footer />
+    </AuthenticatedTemplate>
+  );
+};

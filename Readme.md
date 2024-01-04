@@ -2,18 +2,18 @@ This repo will have everything related to technology.
 
 Current Status of the builds:
 
-[![Build-API-Solution](https://github.com/vermavarun/_TheApplication/actions/workflows/build.yml/badge.svg)](https://github.com/vermavarun/_TheApplication/actions/workflows/build.yml)
+[![Build-API](https://github.com/vermavarun/_TheApplication/actions/workflows/build.yml/badge.svg)](https://github.com/vermavarun/_TheApplication/actions/workflows/build.yml)
 
 
-
-https://vv-ui.azurewebsites.net/
-https://vv-api.azurewebsites.net/
-
-Key Commands:
-
-`docker run -d -p 8080:80 --name myapp vvacrtry.azurecr.io/api` 
-
+Debugging config for:
+- .Net : .NET Core Launch (web)
+- Node : Node.js Launch Program
+- React: React APP  # Should be running npm run start
 
 TODO:
 
-Infra
+React Lint
+React Authorization
+React Routes
+API Authorization AAD
+Remove logs in browser console window

@@ -14,3 +14,13 @@ Source/.DS_Store
 
 #Node
 Source/node/api/node_modules/
+
+#Next-App
+Source/next-app/node_modules/
+Source/next-app/.next/
+Source/next-app/.env
+
+#Identity
+Source/identity/bin
+Source/identity/obj
+Source/identity/Migrations

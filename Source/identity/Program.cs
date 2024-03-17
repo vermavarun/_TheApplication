@@ -84,5 +84,17 @@ app.MapGet("/ping", () =>
 .WithName("ping")
 .WithOpenApi();
 ////////////////////////////////
-
+// app.MapGet("/addusertorole", (string userEmail) =>
+// {
+//     UserManager<IdentityUser> userManager = app.Services.GetRequiredService<UserManager<IdentityUser>>();
+//     var user = userManager.FindByEmailAsync(userEmail).Result;
+//     var result = userManager.AddToRoleAsync(user, "Admin").Result;
+//     return result;
+// })
+// .WithName("AddUserToRole")
+// .WithOpenApi()
+// .RequireAuthorization();
+////////////////////////////////
+app.MapUserEndpoints();
+////////////////////////////////
 app.Run();

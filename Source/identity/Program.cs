@@ -1,8 +1,9 @@
-
+// Namespaces
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
+// Builder
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -10,15 +11,17 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<ApplicationDbContext>(options => {
-        options.UseSqlServer(builder.Configuration.GetConnectionString("identitydb"));
-    });
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("identitydb"));
+});
 
 builder.Services.AddIdentityApiEndpoints<IdentityUser>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.AddAuthorization();
 
+// App
 var app = builder.Build();
-
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -26,32 +29,29 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+// order is important here
+app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
 app.UseHttpsRedirection();
 app.MapIdentityApi<IdentityUser>();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
 
-app.MapGet("/weatherforecast", () =>
+////////////////////////////////
+app.MapGet("/secretinfo", () =>
 {
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
+    return "This is a secret information. You should not be able to see this unless you are authenticated.";
 })
-.WithName("GetWeatherForecast")
+.WithName("GetSecretInfo")
+.WithOpenApi()
+.RequireAuthorization();
+////////////////////////////////
+app.MapGet("/ping", () =>
+{
+    return "pong";
+})
+.WithName("ping")
 .WithOpenApi();
+////////////////////////////////
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}

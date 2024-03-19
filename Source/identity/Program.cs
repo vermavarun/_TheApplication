@@ -15,16 +15,16 @@ builder.Services.AddSwaggerGen(
 
     config =>
     {
-       config.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    {
-        Type = SecuritySchemeType.Http,
-        In = ParameterLocation.Header,
-        Scheme = "Bearer",
-        BearerFormat = "JWT",
-        Description = "JWT Authorization header using the Bearer scheme."
-    });
+        config.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+        {
+            Type = SecuritySchemeType.Http,
+            In = ParameterLocation.Header,
+            Scheme = "Bearer",
+            BearerFormat = "JWT",
+            Description = "JWT Authorization header using the Bearer scheme."
+        });
 
-    config.AddSecurityRequirement(new OpenApiSecurityRequirement
+        config.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
             new OpenApiSecurityScheme
@@ -48,8 +48,19 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 });
 
 builder.Services.AddIdentityApiEndpoints<IdentityUser>()
+   .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
-builder.Services.AddAuthorization();
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("admin", policy => policy.RequireRole("admin"));
+    options.AddPolicy("operator", policy => policy.RequireRole("operator"));
+    options.AddPolicy("reader", policy => policy.RequireRole("reader"));
+});
+
+builder.Services.AddScoped<UserManager<IdentityUser>>();
+builder.Services.AddScoped<RoleManager<IdentityRole>>();
+
 
 // App
 var app = builder.Build();
@@ -84,17 +95,7 @@ app.MapGet("/ping", () =>
 .WithName("ping")
 .WithOpenApi();
 ////////////////////////////////
-// app.MapGet("/addusertorole", (string userEmail) =>
-// {
-//     UserManager<IdentityUser> userManager = app.Services.GetRequiredService<UserManager<IdentityUser>>();
-//     var user = userManager.FindByEmailAsync(userEmail).Result;
-//     var result = userManager.AddToRoleAsync(user, "Admin").Result;
-//     return result;
-// })
-// .WithName("AddUserToRole")
-// .WithOpenApi()
-// .RequireAuthorization();
-////////////////////////////////
 app.MapUserEndpoints();
+app.MapRoleManagerEndpoints();
 ////////////////////////////////
 app.Run();

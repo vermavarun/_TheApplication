@@ -30,7 +30,7 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser>
                         }
             };
             builder.Entity<IdentityUser>().HasData(users);
-            users[0].PasswordHash = passwordHasher.HashPassword(users[0], "pass@123");
+            users[0].PasswordHash = passwordHasher.HashPassword(users[0], "Pass@123");
 
         }
 

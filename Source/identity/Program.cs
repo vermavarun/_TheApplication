@@ -78,24 +78,8 @@ app.UseAuthorization();
 app.UseHttpsRedirection();
 app.MapIdentityApi<IdentityUser>();
 
-
-////////////////////////////////
-app.MapGet("/secretinfo", () =>
-{
-    return "This is a secret information. You should not be able to see this unless you are authenticated.";
-})
-.WithName("GetSecretInfo")
-.WithOpenApi()
-.RequireAuthorization();
-////////////////////////////////
-app.MapGet("/ping", () =>
-{
-    return "pong";
-})
-.WithName("ping")
-.WithOpenApi();
-////////////////////////////////
+//APIs
 app.MapUserEndpoints();
 app.MapRoleManagerEndpoints();
-////////////////////////////////
+
 app.Run();

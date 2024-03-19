@@ -4,7 +4,7 @@ public static class RoleManagerEndpointsExt
 {
     public static void MapRoleManagerEndpoints(this WebApplication app)
     {
-        app.MapGet("/addRole", (string role, string userEmail) => {
+        app.MapGet("/addRoleToUser", (string role, string userEmail) => {
 
             using(var scope = app.Services.CreateScope())
             {
@@ -22,8 +22,8 @@ public static class RoleManagerEndpointsExt
                 }
             }
         })
-        .WithName("AddUserToRole")
+        .WithName("AddRoleToUser")
         .WithOpenApi()
-        .RequireAuthorization();
+        .RequireAuthorization("admin");
     }
 }

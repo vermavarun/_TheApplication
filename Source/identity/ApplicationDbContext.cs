@@ -18,20 +18,9 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser>
 
         private void SeedUsers(ModelBuilder builder)
         {
-            // IdentityUser user = new IdentityUser()
-            // {
-            //     Id = "b74ddd14-6340-4840-95c2-db12554843e5",
-            //     Email = "admin@shaksz.com",
-            // };
-
-            // PasswordHasher<IdentityUser> passwordHasher = new PasswordHasher<IdentityUser>();
-            // passwordHasher.HashPassword(user, "neeLAM19!!");
-
-            // builder.Entity<IdentityUser>().HasData(user);
             var passwordHasher = new PasswordHasher<IdentityUser>();
              List<IdentityUser> users = new List<IdentityUser>()
             {
-                // imporant: don't forget NormalizedUserName, NormalizedEmail
                         new IdentityUser {
                             Id = "b74ddd14-6340-4840-95c2-db12554843e5",
                             UserName = "admin@shaksz.com",

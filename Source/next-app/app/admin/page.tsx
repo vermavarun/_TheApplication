@@ -20,8 +20,8 @@ useEffect(() => {
 
   return (
     <main className={styles.main}>
-      <div><a href="/admin">Admin Page</a></div>
-    {apivalue.name}
+      <a href="/">Home Page</a>
+      This is admin Page
 
     </main>
   );

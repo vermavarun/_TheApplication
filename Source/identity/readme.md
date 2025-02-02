@@ -16,4 +16,5 @@ http://localhost:5074/swagger/index.html
 ef
 
 dotnet ef migrations add initial
+
 dotnet ef database update

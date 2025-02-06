@@ -32,5 +32,17 @@ public static class UserEndpointsExt
         .WithOpenApi()
         .RequireAuthorization("admin");
         ///////////////////////////////////////////////////////////////////////////////////////////////////
+         ///////////////////////////////////////////////////////////////////////////////////////////////////
+        app.MapGet("/userlist",  () => {
+
+             using(var scope = app.Services.CreateScope())
+            {
+                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+                var users = userManager.Users.ToList();
+                return Results.Ok(users);
+            }
+        })
+        .WithName("userList")
+        .WithOpenApi();
     }
 }

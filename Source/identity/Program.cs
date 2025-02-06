@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
+var  MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
 // Builder
 var builder = WebApplication.CreateBuilder(args);
 
@@ -58,6 +60,16 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("reader", policy => policy.RequireRole("reader"));
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+                      policy  =>
+                      {
+                          policy.WithOrigins("http://example.com",
+                                            "http://localhost:3000");
+                      });
+});
+
 builder.Services.AddScoped<UserManager<IdentityUser>>();
 builder.Services.AddScoped<RoleManager<IdentityRole>>();
 
@@ -73,7 +85,10 @@ if (app.Environment.IsDevelopment())
 
 // order is important here
 app.UseRouting();
+app.UseCors(MyAllowSpecificOrigins);
+
 app.UseAuthentication();
+
 app.UseAuthorization();
 app.UseHttpsRedirection();
 app.MapIdentityApi<IdentityUser>();

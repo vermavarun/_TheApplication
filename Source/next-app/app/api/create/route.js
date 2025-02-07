@@ -25,10 +25,10 @@ export async function POST(userPayloadBody) {
     }
     else {
 
-      //const resp = await fetchResponse.json();
-      //console.error("User creation failed" , resp);
+      const resp = await fetchResponse.json();
+      console.error("User creation failed", resp);
       return NextResponse.json(
-        { message: "User creation failed",details: await fetchResponse.json() }
+        { message: "User creation failed", details: resp }
       );
     }
   } catch (error) {

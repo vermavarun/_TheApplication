@@ -9,6 +9,7 @@ function TopNav() {
   function logout() {
     localStorage.setItem("loggedIn", "false");
     setLogin(false);
+    window.location.href = "/";
   }
   useEffect(() => {
     const loggedIn = localStorage.getItem("loggedIn");

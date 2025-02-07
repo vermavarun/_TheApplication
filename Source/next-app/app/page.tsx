@@ -18,7 +18,8 @@ export default function Home() {
   return (
     <main className={styles.main}>
       <div>
-        <a href="/admin">Admin Page</a>
+        <a href="/admin">Admin Page</a> <br/>
+        <a href="/register">Register Page</a>
       </div>
       {apivalue.name}
     </main>

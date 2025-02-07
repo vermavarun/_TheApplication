@@ -7,7 +7,9 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   const apiURL = process.env.API_URL + "/userlist";
-  const res = await fetch(apiURL);
+  const res = await fetch(apiURL,{
+    cache: "no-store",
+  });
   const users = await res.json();
   return NextResponse.json(users);
 }

@@ -2,13 +2,10 @@
 import React from "react";
 import styles from "./page.module.css";
 import { useEffect, useState } from "react";
+import { User } from "../interfaces/user";
 
 export default function Home() {
-  interface User {
-    name: string;
-    id: string;
-    email: string;
-  }
+
 
   const [users, setUsers] = useState<Record<string, User>>({});
   useEffect(() => {

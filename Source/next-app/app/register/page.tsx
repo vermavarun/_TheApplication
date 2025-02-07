@@ -30,28 +30,13 @@ export default function Home() {
       setRegistered("Error: " + error);
     }
   }
-  // function register() {
-  //   console.log("Registering");
-  //   fetch("/api/create", {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //     body: JSON.stringify({
-  //       email: "varun@varun.com",
-  //       password: "Pass@123",
-  //     }),
-  //   })
-  //     .then((response) => response.json())
-  //     .then((data) => {
-  //       setRegistered(data);
-  //     })
-  //     .catch((error) => console.log("Error:", error));
-  // }
+
 
   return (
     <main className={styles.main}>
       <a href="/">Home Page</a>
+      <a href="/admin">Admin Page</a>
+      <h1>Register</h1>
       <form onSubmit={onSubmit}>
         <div>Email</div>
         <input type="text" name="email" />

@@ -1,4 +1,5 @@
 "use client";
+import TopNav from "../components/topnav";
 import styles from "./page.module.css";
 import { FormEvent, useEffect, useState } from "react";
 
@@ -34,8 +35,7 @@ export default function Home() {
 
   return (
     <main className={styles.main}>
-      <a href="/">Home Page</a>
-      <a href="/admin">Admin Page</a>
+      <TopNav />
       <h1>Register</h1>
       <form onSubmit={onSubmit}>
         <div>Email</div>

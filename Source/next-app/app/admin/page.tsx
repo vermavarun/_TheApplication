@@ -3,6 +3,7 @@ import React from "react";
 import styles from "./page.module.css";
 import { useEffect, useState } from "react";
 import { User } from "../interfaces/user";
+import TopNav from "../components/topnav";
 
 export default function Home() {
 
@@ -20,7 +21,7 @@ export default function Home() {
 
   return (
     <main className={styles.main}>
-      <a href="/">Home Page</a>
+      <TopNav />
       This is admin Page
       <h2>Users</h2>
       <ul>

@@ -18,3 +18,9 @@ ef
 dotnet ef migrations add initial
 
 dotnet ef database update
+
+
+TODO:
+- Extend the IdentityUser class to add more properties
+- Add a new controller to manage the user profile
+- Need to work on OAuth2.0, OpenID Connect, JWT, SAML, and WS-Federation

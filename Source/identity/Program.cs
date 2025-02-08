@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var  MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
@@ -53,11 +55,25 @@ builder.Services.AddIdentityApiEndpoints<IdentityUser>()
    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
+builder.Services.AddAuthentication()
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
+        };
+    });
+
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("admin", policy => policy.RequireRole("admin"));
     options.AddPolicy("operator", policy => policy.RequireRole("operator"));
     options.AddPolicy("reader", policy => policy.RequireRole("reader"));
+
 });
 
 builder.Services.AddCors(options =>
@@ -65,13 +81,13 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: MyAllowSpecificOrigins,
                       policy  =>
                       {
-                          policy.WithOrigins("http://example.com",
-                                            "http://localhost:3000");
+                          policy.WithOrigins("http://localhost:3001","http://localhost:3000");
                       });
 });
 
 builder.Services.AddScoped<UserManager<IdentityUser>>();
 builder.Services.AddScoped<RoleManager<IdentityRole>>();
+
 
 
 // App
@@ -94,7 +110,7 @@ app.UseHttpsRedirection();
 app.MapIdentityApi<IdentityUser>();
 
 //APIs
-app.MapUserEndpoints();
+app.MapUserEndpoints(builder.Configuration);
 app.MapRoleManagerEndpoints();
 
 app.Run();

@@ -89,7 +89,7 @@ builder.Services.AddScoped<UserManager<IdentityUser>>();
 builder.Services.AddScoped<RoleManager<IdentityRole>>();
 
 
-
+builder.Services.AddControllers();
 // App
 var app = builder.Build();
 // Configure the HTTP request pipeline.
@@ -99,6 +99,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+
 // order is important here
 app.UseRouting();
 app.UseCors(MyAllowSpecificOrigins);
@@ -106,6 +107,7 @@ app.UseCors(MyAllowSpecificOrigins);
 app.UseAuthentication();
 
 app.UseAuthorization();
+app.MapControllers();
 app.UseHttpsRedirection();
 app.MapIdentityApi<IdentityUser>();
 

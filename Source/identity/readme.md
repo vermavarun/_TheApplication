@@ -17,6 +17,8 @@ ef
 
 dotnet ef migrations add initial
 
+dotnet ef migrations remove
+
 dotnet ef database update
 
 

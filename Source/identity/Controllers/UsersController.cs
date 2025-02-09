@@ -25,21 +25,21 @@ namespace Users.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> PostUser([FromBody] User user)
+        public async Task<IActionResult> PostUser([FromBody] UserModel user)
         {
             var result = await _userManager.CreateAsync(user);
             return Ok(result);
         }
 
         [HttpDelete]
-        public async Task<IActionResult> DeleteUser([FromBody] User user)
+        public async Task<IActionResult> DeleteUser([FromBody] UserModel user)
         {
             var result = await _userManager.DeleteAsync(user);
             return Ok(result);
         }
 
         [HttpPut]
-        public async Task<IActionResult> PutUser([FromBody] User user)
+        public async Task<IActionResult> PutUser([FromBody] UserModel user)
         {
             var result = await _userManager.UpdateAsync(user);
             return Ok(result);

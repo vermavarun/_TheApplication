@@ -59,13 +59,21 @@ namespace UserRole.Controllers
         [HttpPost]
         public async Task<IActionResult> PostUserToRole(string userEmail, string roleName)
         {
-            var user = await _userManager.FindByEmailAsync(userEmail);
-            if (user == null)
-            {
-                return NotFound();
-            }
-            var result = await _userManager.AddToRoleAsync(user, roleName);
-            return Ok(result);
+
+                var user =  _userManager.FindByEmailAsync(userEmail).Result;
+                if (user == null)
+                {
+                    return NotFound();
+                }
+                var result = _userManager.AddToRoleAsync(user, roleName).Result;
+                if(result.Succeeded)
+                {
+                    return Ok();
+                }
+                else
+                {
+                    return BadRequest(result.Errors);
+                }
         }
 
         [HttpDelete]

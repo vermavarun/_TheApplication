@@ -29,6 +29,7 @@ namespace Login.Controllers
             {
                 return Unauthorized();
             }
+            var userRoles = await _userManager.GetRolesAsync(user);
             var result = await _userManager.CheckPasswordAsync(user, login.Password);
             if (result)
             {
@@ -39,18 +40,21 @@ namespace Login.Controllers
 
                         var tokenDescriptor = new SecurityTokenDescriptor
                         {
-                            Subject = new ClaimsIdentity(new Claim[]
-                            {
+                            Subject = new ClaimsIdentity(
+                            [
                                 new Claim(ClaimTypes.Name, user.Id),
-                                new Claim(ClaimTypes.Email, user.NormalizedEmail!),
-                                new Claim(ClaimTypes.Role, "admin")
-                            }),
+                                new Claim(ClaimTypes.Email, user.NormalizedEmail!)
+                            ]),
                             Expires = DateTime.UtcNow.AddHours(100),
                             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
                         };
+                        // Add roles to the token
+                        foreach (var role in userRoles)
+                        {
+                            tokenDescriptor.Subject.AddClaim(new Claim(ClaimTypes.Role, role));
+                        }
                         var token = tokenHandler.CreateToken(tokenDescriptor);
                         return Ok(tokenHandler.WriteToken(token));
-
                     }
                     else
                     {

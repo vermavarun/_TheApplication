@@ -24,6 +24,7 @@ TODO:
 - Extend the IdentityUser class to add more properties
 - Add a new controller to manage the user profile
 - Need to work on OAuth2.0, OpenID Connect, JWT, SAML, and WS-Federation
+- Fix all warnings
 
 Help Links:
 - https://chatgpt.com/share/67a785b2-c4d0-8009-bd9a-5ea2a712cbdb

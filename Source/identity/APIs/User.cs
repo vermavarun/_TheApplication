@@ -71,7 +71,7 @@ public static class UserEndpointsExt
                                 new Claim(ClaimTypes.Email, user.Email!),
                                 new Claim(ClaimTypes.Role, "admin")
                             }),
-                            Expires = DateTime.UtcNow.AddHours(1),
+                            Expires = DateTime.UtcNow.AddHours(100),
                             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
                         };
                         var token = tokenHandler.CreateToken(tokenDescriptor);

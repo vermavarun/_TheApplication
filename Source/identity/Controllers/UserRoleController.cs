@@ -16,34 +16,6 @@ namespace UserRole.Controllers
             _roleManager = roleManager;
         }
 
-        // [HttpGet]
-        // public async Task<IActionResult> GetUserRoles()
-        // {
-        //     var userRoles = await _userManager.Users.SelectMany(u => u.Role).ToListAsync();
-        //     return Ok(userRoles);
-        // }
-
-        // [HttpPost]
-        // public async Task<IActionResult> PostUserRole([FromBody] IdentityUserRole<string> userRole)
-        // {
-        //     var result = await _userManager.AddToRoleAsync(await _userManager.FindByIdAsync(userRole.UserId), await _roleManager.FindByIdAsync(userRole.RoleId));
-        //     return Ok(result);
-        // }
-
-        // [HttpDelete]
-        // public async Task<IActionResult> DeleteUserRole([FromBody] IdentityUserRole<string> userRole)
-        // {
-        //     var result = await _userManager.RemoveFromRoleAsync(await _userManager.FindByIdAsync(userRole.UserId), await _roleManager.FindByIdAsync(userRole.RoleId));
-        //     return Ok(result);
-        // }
-
-        // [HttpPut]
-        // public async Task<IActionResult> PutUserRole([FromBody] IdentityUserRole<string> userRole)
-        // {
-        //     var result = await _userManager.AddToRoleAsync(await _userManager.FindByIdAsync(userRole.UserId), await _roleManager.FindByIdAsync(userRole.RoleId));
-        //     return Ok(result);
-        // }
-
         [HttpGet]
         public async Task<IActionResult> GetUserRoles(string userEmail)
         {

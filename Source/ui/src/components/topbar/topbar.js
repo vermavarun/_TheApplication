@@ -17,6 +17,7 @@ function TopBar(props) {
 
   const { instance } = useMsal();
   function handleLogout() {
+    return;
     instance.logoutRedirect();
   }
 

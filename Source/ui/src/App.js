@@ -13,34 +13,39 @@ import { loginRequest } from "../src/authConfig";
 
 function App({ instance }) {
   return (
-    <MsalProvider instance={instance}>
+    // <MsalProvider instance={instance}>
       <MainContent />
-    </MsalProvider>
+    // </MsalProvider>
   );
 }
 
 export default App;
 
 const MainContent = () => {
-  const { instance } = useMsal();
+  // const { instance } = useMsal();
 
   let activeAccount;
 
-  if (instance) {
-    activeAccount = instance.getActiveAccount();
-  }
+  // if (instance) {
+  //   activeAccount = instance.getActiveAccount();
+  // }
 
-  useEffect(() => {
-    if (!activeAccount)
-      instance.loginRedirect(loginRequest).catch((error) => console.log(error));
-  });
+  // useEffect(() => {
+  //   if (!activeAccount)
+  //     instance.loginRedirect(loginRequest).catch((error) => console.log(error));
+  // });
   return (
-    <AuthenticatedTemplate>
-      <TopBar activeAccount={activeAccount} />
+    // <AuthenticatedTemplate>
+    <>
+    <TopBar activeAccount={activeAccount} />
+    
       <div className="App">
         <Calculator />
       </div>
       <Footer />
-    </AuthenticatedTemplate>
+    </>
+    // </AuthenticatedTemplate>
+
+
   );
 };

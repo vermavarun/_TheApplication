@@ -119,8 +119,5 @@ app.MapControllers(); // Add this line to use legacy way controllers in your app
 app.UseHttpsRedirection(); // Add this line to use HTTPS redirection in your app
 app.MapIdentityApi<IdentityUser>(); // Add this line to use Identity API endpoints in your app
 
-//APIs
-app.MapUserEndpoints(builder.Configuration);
-app.MapRoleManagerEndpoints();
 
 app.Run();

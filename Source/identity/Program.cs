@@ -53,7 +53,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 });
 
 // add this to use cookie based authentication
-builder.Services.AddIdentityApiEndpoints<IdentityUser>()
+builder.Services.AddIdentityApiEndpoints<UserModel>()
    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
@@ -93,7 +93,7 @@ builder.Services.AddCors(options =>
                       });
 });
 
-builder.Services.AddScoped<UserManager<IdentityUser>>();
+builder.Services.AddScoped<UserManager<UserModel>>();
 builder.Services.AddScoped<RoleManager<IdentityRole>>();
 
 
@@ -117,7 +117,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers(); // Add this line to use legacy way controllers in your app
 app.UseHttpsRedirection(); // Add this line to use HTTPS redirection in your app
-app.MapIdentityApi<IdentityUser>(); // Add this line to use Identity API endpoints in your app
+app.MapIdentityApi<UserModel>(); // Add this line to use Identity API endpoints in your app
 
 
 app.Run();

@@ -43,6 +43,7 @@ export default function Home() {
       <h1>Home</h1>
 
       {userType === 'github' && <><h2>Welcome {user.login}</h2> <img src={user.avatar_url} alt="avatar" /></>}
+      {userType === 'google' && <><h2>Welcome {user.name}</h2> <img src={user.picture} alt="avatar" /></>}
       {userType === '' && <h2>Not logged in</h2> && <button onClick={LoginWithGitHub}>Login with GitHub</button>}
 
     </main>

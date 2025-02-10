@@ -7,3 +7,4 @@
 
 # Helpful links:
 - GitHub Login https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps
+- Google Login https://medium.com/@tony.infisical/guide-to-using-oauth-2-0-to-access-google-apis-dead94d6866d

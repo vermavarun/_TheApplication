@@ -35,6 +35,19 @@ export default function Home() {
   }
 
 
+  function LoginWithGoogle() {
+    // the client id from GCP
+    const client_id = "470832023584-s99974jriculdjrsbkfj5sn63lvhrd0k.apps.googleusercontent.com";
+
+    // create a CSRF token and store it locally
+    const state = Array.from(crypto.getRandomValues(new Uint8Array(16)), byte => byte.toString(16).padStart(2, '0')).join('');
+    localStorage.setItem("latestCSRFToken", state);
+
+    // redirect the user to Google
+    const link = `https://accounts.google.com/o/oauth2/auth?scope=https://www.googleapis.com/auth/cloud-platform&response_type=code&access_type=offline&state=${state}&redirect_uri=${window.location.origin}/googlelogin&client_id=${client_id}`;
+    window.location.assign(link);
+  }
+
   return (
     <main >
       <TopNav />
@@ -46,7 +59,7 @@ export default function Home() {
         <input type="password" name="password" /> <br />
         <button type="submit">Login</button>
       </form>
-      <div>{JSON.stringify(loggedIn)}</div>
+     <button onClick={LoginWithGoogle}>Login with Google</button>
     </main>
   );
 }

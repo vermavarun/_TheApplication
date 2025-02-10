@@ -44,7 +44,7 @@ export default function Home() {
     localStorage.setItem("latestCSRFToken", state);
 
     // redirect the user to Google
-    const link = `https://accounts.google.com/o/oauth2/auth?scope=https://www.googleapis.com/auth/cloud-platform&response_type=code&access_type=offline&state=${state}&redirect_uri=${window.location.origin}/googlelogin&client_id=${client_id}`;
+    const link = `https://accounts.google.com/o/oauth2/auth?scope=https://www.googleapis.com/auth/userinfo.email&response_type=code&state=${state}&redirect_uri=${window.location.origin}/googlelogin&client_id=${client_id}`;
     window.location.assign(link);
   }
 

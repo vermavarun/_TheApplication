@@ -1,26 +1,39 @@
 "use client";
 import styles from "./page.module.css";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import TopNav from "./components/topnav";
 
 export default function Home() {
-  const [apivalue, setValue] = useState({});
+  const [userType, setUserType] = useState('');
+  const [user, setUser] = useState({});
 
-  // useEffect(() => {
-  //   console.log("Hello world");
-  //   fetch("/api/users")
-  //     .then((response) => response.json())
-  //     .then((data) => {
-  //       setValue(data);
-  //     })
-  //     .catch((error) => console.log("Error:", error));
-  // }, []);
+  useEffect(() => {
+    const userTypeLocal = localStorage.getItem("userType");
+    setUserType(userTypeLocal ?? '');
+    if (userTypeLocal === "github") {
+      const github_token = localStorage.getItem("github_token");
+      fetch("https://api.github.com/user", {
+        headers: {
+          Authorization: `Bearer ${github_token}`
+        }
+      }).then((res) => res.json()).then((data) => {
+        setUser(data);
+      });
+    }
+
+  }, []);
+  function LoginWithGitHub() {
+    window.location.href = "https://github.com/login/oauth/authorize?client_id=Ov23liY25mp04UVg8UCL&redirect_uri=http://localhost:3000/github";
+  }
 
   return (
     <main className={styles.main}>
       <TopNav />
       <h1>Home</h1>
-      {/* {apivalue.name} */}
+
+      {userType === 'github' && <><h2>Welcome {user.login}</h2> <img src={user.avatar_url} alt="avatar" /></>}
+      {userType === '' && <h2>Not logged in</h2> && <button onClick={LoginWithGitHub}>Login with GitHub</button>}
+
     </main>
   );
 }

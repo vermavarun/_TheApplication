@@ -28,10 +28,11 @@ export default function Home() {
 
   return (
     <main className={styles.main}>
-      <TopNav /> <img src={user.avatar_url} alt="avatar" />
+      <TopNav />
       <h1>Home</h1>
 
-      <button onClick={LoginWithGitHub}>Login with GitHub</button>
+      {userType === 'github' && <><h2>Welcome {user.login}</h2> <img src={user.avatar_url} alt="avatar" /></>}
+      {userType === '' && <h2>Not logged in</h2> && <button onClick={LoginWithGitHub}>Login with GitHub</button>}
 
     </main>
   );

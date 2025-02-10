@@ -20,6 +20,17 @@ export default function Home() {
         setUser(data);
       });
     }
+    else if (userTypeLocal === "google") {
+      const google_token = localStorage.getItem("google_token");
+      fetch("https://www.googleapis.com/oauth2/v1/userinfo?alt=json", {
+        headers: {
+          Authorization: `Bearer ${google_token}`
+        }
+      }).then((res) => res.json()).then((data) => {
+        console.log(data);
+        setUser(data);
+      });
+    }
 
   }, []);
   function LoginWithGitHub() {

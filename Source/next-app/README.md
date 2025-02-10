@@ -1,7 +1,7 @@
 
 # Local run:
 - npm run dev
-- next dev --experimental-https // not working
+- next dev --experimental-https // not working update next to latest
 
 # TODO:
 - Interceptors https://requestly.com/blog/how-to-implement-axios-request-interceptors-in-next-js/

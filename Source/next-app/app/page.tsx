@@ -17,6 +17,7 @@ export default function Home() {
           Authorization: `Bearer ${github_token}`
         }
       }).then((res) => res.json()).then((data) => {
+        console.log(data);
         setUser(data);
       });
     }

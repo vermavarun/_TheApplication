@@ -20,7 +20,7 @@ export default function Home() {
   }, []);
 
   return (
-    <main className={styles.main}>
+    <main >
       <TopNav />
       This is admin Page
       <h2>Users</h2>

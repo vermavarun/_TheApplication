@@ -34,7 +34,7 @@ export default function Home() {
 
 
   return (
-    <main className={styles.main}>
+    <main >
       <TopNav />
       <h1>Register</h1>
       <form onSubmit={onSubmit}>

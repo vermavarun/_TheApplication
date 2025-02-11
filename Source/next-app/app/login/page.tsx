@@ -57,6 +57,9 @@ export default function Home() {
     window.location.href =
       "https://github.com/login/oauth/authorize?client_id=Ov23liY25mp04UVg8UCL&redirect_uri=http://localhost:3000/github";
   }
+
+ 
+
   return (
     <main>
       <TopNav />

@@ -16,6 +16,7 @@
 - Add a new controller to manage the user profile
 - Need to work on OAuth2.0, OpenID Connect, JWT, SAML, and WS-Federation
 - Fix all warnings
+- OAuth 2.0 IDP
 
 # Help Links:
 - https://chatgpt.com/share/67a785b2-c4d0-8009-bd9a-5ea2a712cbdb
@@ -25,3 +26,4 @@
 - https://andrewlock.net/exploring-the-dotnet-8-preview-introducing-the-identity-api-endpoints/
 - https://www.binaryintellect.net/articles/f3dcbb45-fa8b-4e12-b284-f0cd2e5b2dcf.aspx
 - https://www.binaryintellect.net/articles/f3dcbb45-fa8b-4e12-b284-f0cd2e5b2dcf.aspx
+- IDP OAuth - https://chatgpt.com/share/67ab3a42-f294-8009-a3dc-e1807dc45446

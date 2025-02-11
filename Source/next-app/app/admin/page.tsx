@@ -14,7 +14,9 @@ export default function Home() {
         .then((data) => {
           setUsers(data);
         })
-        .catch((error) => console.error("Error:", error));
+        .catch((error) => {
+          console.error("Error:", error)
+        });
     } catch (e) {
       console.log(e);
     }
@@ -53,6 +55,7 @@ export default function Home() {
             </li>
           ))}
         </ul>
+
       </div>
     </main>
   );

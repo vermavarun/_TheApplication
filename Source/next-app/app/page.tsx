@@ -8,7 +8,9 @@ export default function Home() {
   return (
     <main >
       <TopNav />
+      <div className="main-content">
       <h1>Home</h1>
+      </div>
     </main>
   );
 }

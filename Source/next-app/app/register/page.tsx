@@ -20,31 +20,33 @@ export default function Home() {
       body: JSON.stringify(jsonObject),
     });
     try {
-        const data = await response.json();
-        if (data.status === 200) {
-          setRegistered("Registered Successfully");
-        }
-        else {
-          setRegistered("Error: " + data.message + " " + JSON.stringify(data.details));
-        }
+      const data = await response.json();
+      if (data.status === 200) {
+        setRegistered("Registered Successfully");
+      } else {
+        setRegistered(
+          "Error: " + data.message + " " + JSON.stringify(data.details)
+        );
+      }
     } catch (error) {
       setRegistered("Error: " + error);
     }
   }
 
-
   return (
-    <main >
+    <main>
       <TopNav />
-      <h1>Register</h1>
-      <form onSubmit={onSubmit}>
-        <div>Email</div>
-        <input type="text" name="email" />
-        <div>Password</div>
-        <input type="password" name="password" /> <br />
-        <button type="submit">Register</button>
-      </form>
-      <div>{JSON.stringify(registered)}</div>
+      <div className="main-content">
+        <h1>Register</h1>
+        <form onSubmit={onSubmit}>
+          <div>Email</div>
+          <input type="text" name="email" />
+          <div>Password</div>
+          <input type="password" name="password" /> <br />
+          <button type="submit">Register</button>
+        </form>
+        <div>{JSON.stringify(registered)}</div>
+      </div>
     </main>
   );
 }

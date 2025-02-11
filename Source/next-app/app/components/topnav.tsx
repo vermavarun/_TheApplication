@@ -22,6 +22,9 @@ function TopNav() {
     if (userType) {
       setLogin(true);
     }
+    else if (loggedIn === "true") {
+      setLogin(true);
+    }
   }, []);
 
   const [userType, setUserType] = useState('');

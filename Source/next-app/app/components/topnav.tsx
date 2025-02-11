@@ -8,12 +8,18 @@ function TopNav() {
 
   function logout() {
     localStorage.setItem("loggedIn", "false");
+    localStorage.removeItem("userType");
+    localStorage.removeItem("github_token");
+    localStorage.removeItem("google_token");
+    localStorage.removeItem("accessToken");
     setLogin(false);
     window.location.href = "/";
   }
   useEffect(() => {
     const loggedIn = localStorage.getItem("loggedIn");
-    if (loggedIn === "true") {
+    const userType = localStorage.getItem("userType");
+
+    if (userType) {
       setLogin(true);
     }
   }, []);
@@ -25,7 +31,7 @@ function TopNav() {
         <>
           <a href="/admin">Admin</a>
 
-          <a onClick={logout}>Logout</a>
+          <a style={{cursor:"pointer"}} onClick={logout}>Logout</a>
         </>
       )}
       {!loggedIn && (

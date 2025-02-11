@@ -8,15 +8,53 @@ function TopNav() {
 
   function logout() {
     localStorage.setItem("loggedIn", "false");
+    localStorage.removeItem("userType");
+    localStorage.removeItem("github_token");
+    localStorage.removeItem("google_token");
+    localStorage.removeItem("accessToken");
     setLogin(false);
     window.location.href = "/";
   }
   useEffect(() => {
     const loggedIn = localStorage.getItem("loggedIn");
-    if (loggedIn === "true") {
+    const userType = localStorage.getItem("userType");
+
+    if (userType) {
       setLogin(true);
     }
   }, []);
+
+  const [userType, setUserType] = useState('');
+  const [user, setUser] = useState({});
+
+  useEffect(() => {
+    const userTypeLocal = localStorage.getItem("userType");
+    setUserType(userTypeLocal ?? '');
+    if (userTypeLocal === "github") {
+      const github_token = localStorage.getItem("github_token");
+      fetch("https://api.github.com/user", {
+        headers: {
+          Authorization: `Bearer ${github_token}`
+        }
+      }).then((res) => res.json()).then((data) => {
+        console.log(data);
+        setUser(data);
+      });
+    }
+    else if (userTypeLocal === "google") {
+      const google_token = localStorage.getItem("google_token");
+      fetch("https://www.googleapis.com/oauth2/v1/userinfo?alt=json", {
+        headers: {
+          Authorization: `Bearer ${google_token}`
+        }
+      }).then((res) => res.json()).then((data) => {
+        console.log(data);
+        setUser(data);
+      });
+    }
+
+  }, []);
+
   return (
     <div className="topnav">
       <a href="/">Home</a>
@@ -25,7 +63,7 @@ function TopNav() {
         <>
           <a href="/admin">Admin</a>
 
-          <a onClick={logout}>Logout</a>
+          <a style={{cursor:"pointer"}} onClick={logout}>Logout</a>
         </>
       )}
       {!loggedIn && (
@@ -34,6 +72,8 @@ function TopNav() {
           <a href="/login">Login</a>
         </>
       )}
+      {userType === 'github' && <><span>Welcome {user.login}</span> <img  src={user.avatar_url} alt="avatar" /></>}
+      {userType === 'google' && <><span>Welcome {user.name}</span> <img  src={user.picture} alt="avatar" /></>}
     </div>
   );
 }

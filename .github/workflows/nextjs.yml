@@ -51,13 +51,11 @@ jobs:
           fi
       - name: Setup Node
         uses: actions/setup-node@v4
-        working-directory: ./Source/next-app
         with:
           node-version: "20"
           cache: ${{ steps.detect-package-manager.outputs.manager }}
       - name: Setup Pages
         uses: actions/configure-pages@v5
-        working-directory: ./Source/next-app
         with:
           # Automatically inject basePath in your Next.js configuration file and disable
           # server side image optimization (https://nextjs.org/docs/api-reference/next/image#unoptimized).
@@ -66,7 +64,6 @@ jobs:
           static_site_generator: next
       - name: Restore cache
         uses: actions/cache@v4
-        working-directory: ./Source/next-app
         with:
           path: |
             .next/cache

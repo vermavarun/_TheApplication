@@ -2,9 +2,13 @@
 
 import "../components/components.css";
 import { useState, useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "../../store/store";
+import { setUserSlice } from "../../store/slices/userSlices";
 
 function TopNav() {
   const [loggedIn, setLogin] = useState(false);
+
+  const dispatch = useAppDispatch();
 
   function logout() {
     localStorage.setItem("loggedIn", "false");
@@ -13,6 +17,7 @@ function TopNav() {
     localStorage.removeItem("google_token");
     localStorage.removeItem("accessToken");
     setLogin(false);
+    dispatch(setUserSlice({ login: '', avatar_url: '', name: '', picture: '' }));
     window.location.href = "/";
   }
   useEffect(() => {
@@ -28,7 +33,14 @@ function TopNav() {
   }, []);
 
   const [userType, setUserType] = useState('');
-  const [user, setUser] = useState({});
+  interface User {
+    login?: string;
+    avatar_url?: string;
+    name?: string;
+    picture?: string;
+  }
+
+  const [user, setUser] = useState<User>({});
 
   useEffect(() => {
     const userTypeLocal = localStorage.getItem("userType");
@@ -41,6 +53,7 @@ function TopNav() {
         }
       }).then((res) => res.json()).then((data) => {
         console.log(data);
+        dispatch(setUserSlice({ login: data.email, avatar_url: data.avatar_url, name: data.name, picture: data.picture }));
         setUser(data);
       });
     }
@@ -52,6 +65,7 @@ function TopNav() {
         }
       }).then((res) => res.json()).then((data) => {
         console.log(data);
+        dispatch(setUserSlice(data));
         setUser(data);
       });
     }
@@ -75,8 +89,8 @@ function TopNav() {
           <a href="/login">Login</a>
         </>
       )}
-      {userType === 'github' && <><span>Welcome {user.login}</span> <img  src={user.avatar_url} alt="avatar" /></>}
-      {userType === 'google' && <><span>Welcome {user.name}</span> <img  src={user.picture} alt="avatar" /></>}
+      {userType === 'github' && <><span>Welcome {user.login}</span> <img  src={user.avatar_url} alt="avatar" referrerPolicy="no-referrer" /></>}
+      {userType === 'google' && <><span>Welcome {user.name}</span> <img  src={user.picture} alt="avatar" referrerPolicy="no-referrer" /></>}
     </div>
   );
 }

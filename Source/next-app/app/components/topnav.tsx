@@ -18,7 +18,8 @@ function TopNav() {
     localStorage.removeItem("github_token");
     localStorage.removeItem("google_token");
     localStorage.removeItem("accessToken");
-    //dispatch(setUserSlice({}));
+    localStorage.removeItem("latestCSRFToken");
+    dispatch(setUserSlice({}));
     router.push("/login");
   }
 
@@ -37,7 +38,7 @@ function TopNav() {
         </span>
 
       <span>Welcome {userValue.name}</span>
-      <img src={userValue.avatar_url !== '' ? userValue.avatar_url : '/static/images/avatar_logoff.avif'} alt="avatar" referrerPolicy="no-referrer" />
+      <img src={userValue.avatar_url ? userValue.avatar_url : '/static/images/avatar_logoff.avif'} alt="avatar" referrerPolicy="no-referrer" />
 
 
     </div>

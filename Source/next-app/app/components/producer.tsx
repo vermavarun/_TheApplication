@@ -10,7 +10,7 @@ function Producer() {
 
     return <div>
     Producer
-    <input onChange={disChange}></input>
+    <input onChange={disChange} value="initial"></input>
     </div>;
 }
 

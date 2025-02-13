@@ -29,7 +29,7 @@ function TopNav() {
       <Link href="/">Home</Link>
         <span>
           <Link href="/admin">Admin</Link>
-          <a style={{cursor:"pointer"}} onClick={logout}>Logout</a>
+
         </span>
 
         <span>
@@ -43,7 +43,7 @@ function TopNav() {
         }
 
 
-        {userValue.name && <span>{userValue.name}</span>}
+        {userValue.name && <><span>{userValue.name}</span> <a style={{cursor:"pointer"}} onClick={logout}>Logout</a></>}
 
         <img src={userValue.avatar_url ? userValue.avatar_url : '/static/images/avatar_logoff.avif'} alt="avatar" referrerPolicy="no-referrer" />
 

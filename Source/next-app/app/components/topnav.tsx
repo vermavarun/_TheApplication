@@ -37,7 +37,7 @@ function TopNav() {
           <Link href="/login">Login</Link>
         </span>
 
-      <span>Welcome {userValue.name}</span>
+      {userValue.name && <span>Welcome {userValue.name}</span>}
       <img src={userValue.avatar_url ? userValue.avatar_url : '/static/images/avatar_logoff.avif'} alt="avatar" referrerPolicy="no-referrer" />
 
 

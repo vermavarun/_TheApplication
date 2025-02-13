@@ -12,12 +12,8 @@ export default function Page() {
     const router = useRouter()
 
     function setStateForGoogleUser(data: any) {
-        const user = {
-            login: data.details.email,
-            avatar_url: data.details.picture,
-            name: data.details.name,
-            picture: data.details.picture
-        }
+        const user = {...data.details};
+
         const google_token = localStorage.getItem("google_token");
         fetch("https://www.googleapis.com/oauth2/v1/userinfo?alt=json", {
           headers: {
@@ -37,12 +33,8 @@ export default function Page() {
     }
 
     function setStateForGithubUser(data: any) {
-        const user = {
-            login: data.details.email,
-            avatar_url: data.details.picture,
-            name: data.details.name,
-            picture: data.details.picture
-        }
+        const user = {...data.details};
+        
         const github_token = localStorage.getItem("github_token");
         fetch("https://api.github.com/user", {
           headers: {

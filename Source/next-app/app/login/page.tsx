@@ -1,6 +1,6 @@
 "use client";
 import TopNav from "../components/topnav";
-import styles from "./page.module.css";
+import './page.css';
 import { FormEvent, useEffect, useState } from "react";
 
 export default function Home() {
@@ -80,9 +80,11 @@ export default function Home() {
           <br />
           <br />
         </form>
-        <button onClick={LoginWithGoogle}>Login with Google</button> <br />
+
+        <button onClick={LoginWithGoogle} className="googlesigninbtn"></button> <br />
+
         <br />
-        <button onClick={LoginWithGitHub}>Login with GitHub</button>
+        <button onClick={LoginWithGitHub} className="githubsigninbtn"></button>
       </div>
     </main>
   );

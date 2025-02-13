@@ -15,7 +15,7 @@ export default function Home() {
       <h1>Home</h1>
       <Producer />
       <hr/>
-      <Consumer />
+      <Consumer  />
       </div>
     </main>
   );

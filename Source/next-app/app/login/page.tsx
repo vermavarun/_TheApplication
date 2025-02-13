@@ -4,7 +4,6 @@ import styles from "./page.module.css";
 import { FormEvent, useEffect, useState } from "react";
 
 export default function Home() {
-  const [loggedIn, setLogin] = useState({});
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -58,7 +57,7 @@ export default function Home() {
       "https://github.com/login/oauth/authorize?client_id=Ov23liY25mp04UVg8UCL&redirect_uri=http://localhost:3000/github";
   }
 
- 
+
 
   return (
     <main>

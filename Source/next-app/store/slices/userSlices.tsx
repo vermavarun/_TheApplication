@@ -15,7 +15,11 @@ const userSlice = createSlice({
   initialState: initialStateUser,
   reducers: {
     setUserSlice: (state, action: PayloadAction<User>) => {
-      state = action.payload;
+      state.avatar_url = action.payload.avatar_url;
+      state.login = action.payload.login;
+      state.name = action.payload.name;
+      state.picture = action.payload.picture;
+      // Object.assign(state, action.payload);
     },
   },
 });

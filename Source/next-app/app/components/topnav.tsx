@@ -33,13 +33,21 @@ function TopNav() {
         </span>
 
         <span>
+        {
+          !userValue.name &&
+          <>
           <Link href="/register">Register</Link>
           <Link href="/login">Login</Link>
-        </span>
 
-      {userValue.name && <span>Welcome {userValue.name}</span>}
-      <img src={userValue.avatar_url ? userValue.avatar_url : '/static/images/avatar_logoff.avif'} alt="avatar" referrerPolicy="no-referrer" />
+          </>
+        }
 
+
+        {userValue.name && <span>{userValue.name}</span>}
+
+        <img src={userValue.avatar_url ? userValue.avatar_url : '/static/images/avatar_logoff.avif'} alt="avatar" referrerPolicy="no-referrer" />
+
+      </span>
 
     </div>
   );

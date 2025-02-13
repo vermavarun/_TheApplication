@@ -2,88 +2,53 @@
 
 import "../components/components.css";
 import { useState, useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "../../store/store";
+import { setUserSlice } from "../../store/slices/userSlices";
+import {User} from "../models/user";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 function TopNav() {
-  const [loggedIn, setLogin] = useState(false);
+  const userValue = useAppSelector((state) => state.user);
+  const dispatch = useAppDispatch();
+  const router = useRouter()
 
   function logout() {
-    localStorage.setItem("loggedIn", "false");
     localStorage.removeItem("userType");
     localStorage.removeItem("github_token");
     localStorage.removeItem("google_token");
     localStorage.removeItem("accessToken");
-    setLogin(false);
-    window.location.href = "/";
+    localStorage.removeItem("latestCSRFToken");
+    dispatch(setUserSlice({}));
+    router.push("/login");
   }
-  useEffect(() => {
-    const loggedIn = localStorage.getItem("loggedIn");
-    const userType = localStorage.getItem("userType");
-
-    if (userType) {
-      setLogin(true);
-    }
-    else if (loggedIn === "true") {
-      setLogin(true);
-    }
-  }, []);
-
-  const [userType, setUserType] = useState('');
-  interface User {
-    login?: string;
-    avatar_url?: string;
-    name?: string;
-    picture?: string;
-  }
-
-  const [user, setUser] = useState<User>({});
-
-  useEffect(() => {
-    const userTypeLocal = localStorage.getItem("userType");
-    setUserType(userTypeLocal ?? '');
-    if (userTypeLocal === "github") {
-      const github_token = localStorage.getItem("github_token");
-      fetch("https://api.github.com/user", {
-        headers: {
-          Authorization: `Bearer ${github_token}`
-        }
-      }).then((res) => res.json()).then((data) => {
-        console.log(data);
-        setUser(data);
-      });
-    }
-    else if (userTypeLocal === "google") {
-      const google_token = localStorage.getItem("google_token");
-      fetch("https://www.googleapis.com/oauth2/v1/userinfo?alt=json", {
-        headers: {
-          Authorization: `Bearer ${google_token}`
-        }
-      }).then((res) => res.json()).then((data) => {
-        console.log(data);
-        setUser(data);
-      });
-    }
-
-  }, []);
 
   return (
     <div className="topnav">
-      <a href="/">Home</a>
-      {loggedIn}
-      {loggedIn && (
-        <>
-          <a href="/admin">Admin</a>
 
+      <Link href="/">Home</Link>
+        <span>
+          <Link href="/admin">Admin</Link>
           <a style={{cursor:"pointer"}} onClick={logout}>Logout</a>
-        </>
-      )}
-      {!loggedIn && (
-        <>
-          <a href="/register">Register</a>
-          <a href="/login">Login</a>
-        </>
-      )}
-      {userType === 'github' && <><span>Welcome {user.login}</span> <img  src={user.avatar_url} alt="avatar" referrerPolicy="no-referrer" /></>}
-      {userType === 'google' && <><span>Welcome {user.name}</span> <img  src={user.picture} alt="avatar" referrerPolicy="no-referrer" /></>}
+        </span>
+
+        <span>
+        {
+          !userValue.name &&
+          <>
+          <Link href="/register">Register</Link>
+          <Link href="/login">Login</Link>
+
+          </>
+        }
+
+
+        {userValue.name && <span>{userValue.name}</span>}
+
+        <img src={userValue.avatar_url ? userValue.avatar_url : '/static/images/avatar_logoff.avif'} alt="avatar" referrerPolicy="no-referrer" />
+
+      </span>
+
     </div>
   );
 }

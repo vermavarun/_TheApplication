@@ -1,3 +1,27 @@
+.googlesigninbtn{
+  background-image: url('/static/images/google_signin.svg');
+  background-color: transparent;
+  background-size: cover;
+  background-repeat: no-repeat;
+  width: 15%;
+  height: 70px;
+  cursor: pointer;
+  border: none;
+  outline: none;
+}
+
+.githubsigninbtn {
+  background-image: url('/static/images/github-signin.png');
+  background-color: white;
+  background-size: cover;
+  background-repeat: no-repeat;
+  width: 15%;
+  height: 110px;
+  cursor: pointer;
+  border: none;
+  outline: none;
+}
+
 .main {
   display: flex;
   flex-direction: column;
@@ -202,6 +226,8 @@
     z-index: 1;
   }
 }
+
+
 
 /* Tablet and Smaller Desktop */
 @media (min-width: 701px) and (max-width: 1120px) {

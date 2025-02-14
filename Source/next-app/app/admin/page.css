@@ -1,0 +1,14 @@
+.users {
+  margin: 2%;
+  text-align: left;
+  .user {
+    margin: 1%;
+    border-bottom: 1px solid #e75f5f;
+    .user-id {
+      font-weight: bold;
+    }
+    .user-email {
+      font-style: italic;
+    }
+  }
+}

@@ -1,9 +1,9 @@
 "use client";
 import React from "react";
-import styles from "./page.module.css";
 import { useEffect, useState } from "react";
 import { User } from "../interfaces/user";
 import TopNav from "../components/topnav";
+import "./page.css";
 
 export default function Home() {
   const [users, setUsers] = useState<Record<string, User>>({});
@@ -34,33 +34,20 @@ export default function Home() {
       <div className="main-content">
         This is admin Page
         <h1>Users</h1>
-        <ul>
+        <div className="users">
           {Object.keys(users).map((key) => (
-            <li key={key} style={{ listStyleType: "none" }}>
-              <div
-                style={{
-                  display: "block",
-                  border: "1px solid red",
-                  padding: "10px",
-                  margin: "10px",
-                  width: "35em",
-                }}
-              >
-                <div
-                  style={{ display: "block", borderBottom: "1px dashed red" }}
-                >
-                  <span>ID:</span>
-                  <span style={{ float: "right" }}>{users[key].id}</span>
-                </div>
-
-                <div style={{ display: "block" }}>
-                  <span>Email:</span>
-                  <span style={{ float: "right" }}>{users[key].email}</span>
-                </div>
+            <div key={key} className="user">
+              <div className="user-id">
+                <span>🌟 ID: </span>
+                <span>{users[key].id}</span>
               </div>
-            </li>
+              <div className="user-email">
+                <span>🌐 Email: </span>
+                <span>{users[key].email}</span>
+              </div>
+            </div>
           ))}
-        </ul>
+        </div>
 
       </div>
     </main>

@@ -1,6 +1,6 @@
 "use client";
 import TopNav from "../components/topnav";
-import './page.css';
+import "./page.css";
 import { FormEvent, useEffect, useState } from "react";
 
 export default function Home() {
@@ -35,10 +35,14 @@ export default function Home() {
 
   function LoginWithGoogle() {
     // the client id from GCP
-    const google_client_id = "470832023584-s99974jriculdjrsbkfj5sn63lvhrd0k.apps.googleusercontent.com";
+    const google_client_id =
+      "470832023584-s99974jriculdjrsbkfj5sn63lvhrd0k.apps.googleusercontent.com";
     const google_callback = `${window.location.origin}/callback?thirdParty=google`;
     const response_type = "code";
-    const scopes =["https://www.googleapis.com/auth/userinfo.profile", "https://www.googleapis.com/auth/userinfo.email"];
+    const scopes = [
+      "https://www.googleapis.com/auth/userinfo.profile",
+      "https://www.googleapis.com/auth/userinfo.email",
+    ];
     const scope_expanded = encodeURIComponent(scopes.join(" "));
 
     // create a CSRF token and store it locally
@@ -67,28 +71,40 @@ export default function Home() {
       <TopNav />
       <div className="main-content">
         <form onSubmit={onSubmit} className="login-form">
-        <h1>Login</h1>
+          <h1>Login</h1>
           <div className="login-email">
             <div className="lbl">Email:</div>
-            <div className="txtBoxlbl"><input type="text" name="email" /></div>
+            <div className="txtBoxlbl">
+              <input type="text" name="email" />
             </div>
+          </div>
 
           <div className="login-password">
             <div className="lbl">Password:</div>
-            <div className="txtBoxlbl"><input type="password" name="password" /></div>
+            <div className="txtBoxlbl">
+              <input type="password" name="password" />
+            </div>
           </div>
           <div>
-          <button type="submit" className="login-submit">Login</button>
+            <button type="submit" className="login-submit">
+              Login
+            </button>
           </div>
 
           <div className="login-msg">{statusMessage}</div>
         </form>
-          <div>
-          <button onClick={LoginWithGoogle} className="thirdPatySignLogin"></button>
-          </div>
-          <div>
-          <button onClick={LoginWithGitHub} className="thirdPatySignLogin githubbtn"></button>
-          </div>
+        <div>
+          <button
+            onClick={LoginWithGoogle}
+            className="thirdPatySignLogin"
+          ></button>
+        </div>
+        <div>
+          <button
+            onClick={LoginWithGitHub}
+            className="thirdPatySignLogin githubbtn"
+          ></button>
+        </div>
       </div>
     </main>
   );

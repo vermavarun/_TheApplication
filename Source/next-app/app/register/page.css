@@ -34,10 +34,12 @@
         height: 30px;
     }
     .register-submit:hover {
-        background-color: #e98585;
+      background-color: #f2f2f2;
+      color: #e75f5f;
     }
     .register-submit:active {
-        background-color: #efa6a6;
+        background-color: #e75f5f;
+        color: white;
     }
 }
 
@@ -56,5 +58,6 @@
     min-width: 16.5em;
     background-color: black;
     color:#e75f5f;
+    border: 1px dotted #e75f5f;
   }
 }

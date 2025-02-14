@@ -1,18 +1,27 @@
 .users {
   margin: 2%;
   text-align: left;
+  .header {
+    padding: 1%;
+    border-bottom: 1px solid #e75f5f;
+    font-weight: bold;
+    .column-header {
+      display: inline-block;
+      width: 20%;
+    }
+  }
+
   .user {
     padding: 1%;
     border-bottom: 1px solid #e75f5f;
     .user-id {
       font-weight: bold;
     }
-    .user-email {
-      font-style: italic;
-    }
+    
   }
   .user:hover {
     background-color: #e75f5f;
     color: white
   }
+
 }

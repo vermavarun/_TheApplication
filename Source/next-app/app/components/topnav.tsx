@@ -1,7 +1,6 @@
 "use client";
 
 import "../components/components.css";
-import { useState, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../store/store";
 import { setUserSlice } from "../../store/slices/userSlices";
 import {User} from "../models/user";
@@ -9,7 +8,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 function TopNav() {
-  const userValue = useAppSelector((state) => state.user);
+  const userValue:User = useAppSelector((state) => state.user);
   const dispatch = useAppDispatch();
   const router = useRouter()
 
@@ -27,12 +26,9 @@ function TopNav() {
     <div className="topnav">
 
       <Link href="/">Home</Link>
-        <span>
           <Link href="/admin">Admin</Link>
 
-        </span>
 
-        <span>
         {
           !userValue.name &&
           <>
@@ -47,7 +43,6 @@ function TopNav() {
 
         <img src={userValue.avatar_url ? userValue.avatar_url : '/static/images/avatar_logoff.avif'} alt="avatar" referrerPolicy="no-referrer" />
 
-      </span>
 
     </div>
   );

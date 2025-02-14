@@ -54,7 +54,7 @@
 {
 display: inline-block;
 input {
-  min-width: 16.5em;
+  width: 100%;
   background-color: black;
   color:#e75f5f;
 }

@@ -5,7 +5,8 @@
 
 # TODO:
 - Interceptors https://requestly.com/blog/how-to-implement-axios-request-interceptors-in-next-js/
-- State management using Redux
+- State management using Redux [Done]
+- Toasts across the app pages
 
 # Helpful links:
 - GitHub Login

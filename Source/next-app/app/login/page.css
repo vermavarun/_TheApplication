@@ -1,3 +1,57 @@
+.login-form {
+  color: #e75f5f;
+  margin-top: 5%;
+  margin-bottom: 5%;
+  border: 1px solid #e75f5f;
+  border-radius: 12%;
+  width: 20%;
+  margin: auto;
+  margin-top: 5%;
+  padding: 1%;
+  margin-bottom: 2%;
+  .login-email {
+    text-align: left;
+    div {
+      font-size: 0.8em;
+  }
+  }
+  h1 {
+    margin-bottom: 20px;
+  }
+  .login-password {
+    text-align: left;
+      div {
+          font-size: 0.8em;
+      }
+  }
+  .login-submit {
+      background-color: #e75f5f;
+      color: white;
+      border: none;
+      border-radius: 12%;
+      margin-top: 3%;
+      margin-bottom: 1%;
+      width: 60%;
+      height: 30px;
+  }
+}
+
+.lbl {
+  font-size: 0.8em;
+  color: #e75f5f;
+  display: inline-block;
+  min-width: 10em;
+
+}
+
+.txtBoxlbl
+{
+display: inline-block;
+input {
+  min-width: 16.5em;
+}
+}
+
 .googlesigninbtn{
   background-image: url('/static/images/google_signin.svg');
   background-color: transparent;

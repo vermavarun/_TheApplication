@@ -5,6 +5,7 @@ import { FormEvent, useEffect, useState } from "react";
 
 export default function Home() {
   const [login, setLogin] = useState<any>({});
+  const [statusMessage, setStatusMessage] = useState<string>("");
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -23,16 +24,14 @@ export default function Home() {
     try {
       const data = await response.json();
       if (data.status === 200) {
-        setLogin(
-          "Login Successfully + " + JSON.stringify(data.details.accessToken)
-        );
+        setStatusMessage("Login successful");
         window.localStorage.setItem("accessToken", data.details.accessToken);
         window.localStorage.setItem("loggedIn", "true");
       } else {
-        setLogin("Error: " + data.message + " " + JSON.stringify(data.details));
+        setStatusMessage("Login failed");
       }
     } catch (error) {
-      setLogin("Error: " + error);
+      setStatusMessage("Login failed with some errors");
     }
   }
 
@@ -70,20 +69,30 @@ export default function Home() {
       <TopNav />
       <div className="main-content">
         <h1>Login</h1>
-        <form onSubmit={onSubmit}>
+        {/* <form onSubmit={onSubmit}>
           <div>Email</div>
           <input type="text" name="email" />
           <div>Password</div>
-          <input type="password" name="password" /> <br />
-          <br />
+          <input type="password" name="password" />
           <button type="submit">Login</button>
-          <br />
-          <br />
+        </form> */}
+
+        <form onSubmit={onSubmit} className="login-form">
+        <h1>Login</h1>
+          <div className="login-email">
+            <div className="lbl">Email:</div>
+            <div className="txtBoxlbl"><input type="text" name="email" /></div>
+            </div>
+
+          <div className="login-password">
+            <div className="lbl">Password:</div>
+            <div className="txtBoxlbl"><input type="password" name="password" /></div>
+          </div>
+          <button type="submit" className="login-submit">Login</button>
+          <div className="login-msg">{statusMessage}</div>
         </form>
 
         <button onClick={LoginWithGoogle} className="googlesigninbtn"></button> <br />
-
-        <br />
         <button onClick={LoginWithGitHub} className="githubsigninbtn"></button>
       </div>
     </main>

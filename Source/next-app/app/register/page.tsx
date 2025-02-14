@@ -1,10 +1,10 @@
 "use client";
 import TopNav from "../components/topnav";
-import styles from "./page.module.css";
+import "./page.css";
 import { FormEvent, useEffect, useState } from "react";
 
 export default function Home() {
-  const [registered, setRegistered] = useState({});
+  const [registered, setRegistered] = useState('');
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setRegistered({});
@@ -25,11 +25,11 @@ export default function Home() {
         setRegistered("Registered Successfully");
       } else {
         setRegistered(
-          "Error: " + data.message + " " + JSON.stringify(data.details)
+          data.details.errors
         );
       }
     } catch (error) {
-      setRegistered("Error: " + error);
+      setRegistered("Error in registering: " + error);
     }
   }
 
@@ -37,15 +37,22 @@ export default function Home() {
     <main>
       <TopNav />
       <div className="main-content">
+
+        <form onSubmit={onSubmit} className="register-form">
         <h1>Register</h1>
-        <form onSubmit={onSubmit}>
-          <div>Email</div>
-          <input type="text" name="email" />
-          <div>Password</div>
-          <input type="password" name="password" /> <br />
+          <div className="register-email">
+            <span>Email:</span>
+            <input type="text" name="email" />
+            </div>
+
+          <div className="register-password">
+            <span>Password:</span>
+            <input type="password" name="password" />
+          </div>
           <button type="submit">Register</button>
+          <div>{registered && JSON.stringify(registered)}</div>
         </form>
-        <div>{JSON.stringify(registered)}</div>
+
       </div>
     </main>
   );

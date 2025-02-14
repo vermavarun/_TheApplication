@@ -1,0 +1,13 @@
+.register-form {
+    margin-top: 5%;
+    margin-bottom: 5%;
+    border: 1px solid #e75f5f;
+    border-radius: 1%;
+    width: 20%;
+    .register-email {
+
+    }
+    .register-password {
+
+    }
+}

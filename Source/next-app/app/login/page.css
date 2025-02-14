@@ -35,10 +35,12 @@
       height: 30px;
   }
   .login-submit:hover {
-      background-color: #e98585;
+    background-color: #f2f2f2;
+    color: #e75f5f;
   }
   .login-submit:active {
-      background-color: #efa6a6;
+      background-color: #e75f5f;
+      color: white;
   }
 }
 

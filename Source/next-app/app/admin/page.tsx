@@ -7,7 +7,8 @@ import TopNav from "../components/topnav";
 
 export default function Home() {
   const [users, setUsers] = useState<Record<string, User>>({});
-  useEffect(() => {
+
+  function getAllUsers() {
     try {
       fetch("/api/users")
         .then((response) => response.json())
@@ -20,6 +21,10 @@ export default function Home() {
     } catch (e) {
       console.log(e);
     }
+  }
+
+  useEffect(() => {
+    getAllUsers();
   }, []);
 
   return (

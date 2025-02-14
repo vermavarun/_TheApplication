@@ -89,11 +89,6 @@ export default function Home() {
           <div>
           <button onClick={LoginWithGitHub} className="thirdPatySignLogin githubbtn"></button>
           </div>
-
-
-
-
-
       </div>
     </main>
   );

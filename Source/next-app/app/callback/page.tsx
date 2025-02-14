@@ -6,11 +6,12 @@ import { url } from "inspector";
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
+import toast, { Toaster } from 'react-hot-toast';
+import { setToastSlice } from "@/store/slices/toastSlices";
 
 export default function Page() {
     const dispatch = useAppDispatch();
     const router = useRouter()
-
     function setStateForGoogleUser(data: any) {
         const user = {...data.details};
 
@@ -27,14 +28,19 @@ export default function Page() {
           user.picture = data.picture
 
           dispatch(setUserSlice(user));
+          dispatch(setToastSlice({message: "Login successful", type: 0}));
           console.log("user dispatched", user);
-          router.push("/");
+          toast.success("Login successful " + user.login);
+
+          setTimeout(() => {
+            router.push("/");
+          }, 2000);
         });
     }
 
     function setStateForGithubUser(data: any) {
         const user = {...data.details};
-        
+
         const github_token = localStorage.getItem("github_token");
         fetch("https://api.github.com/user", {
           headers: {
@@ -48,8 +54,12 @@ export default function Page() {
           user.picture = data.avatar_url
 
           dispatch(setUserSlice(user));
+          dispatch(setToastSlice({message: "Login successful", type: 0}));
           console.log("user dispatched", user);
-          router.push("/");
+          toast.success("Login successful " + user.login);
+          setTimeout(() => {
+            router.push("/");
+          }, 2000);
         });
     }
 
@@ -59,7 +69,7 @@ export default function Page() {
         console.log(data);
         localStorage.setItem("google_token", JSON.stringify(data.details.access_token).replace(/"/g, ''));
         localStorage.setItem("userType", "google");
-        router.push("/");
+        //router.push("/");
         setStateForGoogleUser(data);
     }
 
@@ -69,7 +79,7 @@ export default function Page() {
         console.log(data);
         localStorage.setItem("github_token", JSON.stringify(data.details.access_token).replace(/"/g, ''));
         localStorage.setItem("userType", "github");
-        router.push("/");
+        //router.push("/");
         setStateForGithubUser(data);
     }
 
@@ -101,6 +111,7 @@ export default function Page() {
   return (
     <div>
       <h1>Redirecting...</h1>
+      <div><Toaster position="top-right" reverseOrder={false} /></div>
     </div>
   );
 }

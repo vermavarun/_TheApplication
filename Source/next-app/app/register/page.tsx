@@ -41,15 +41,15 @@ export default function Home() {
         <form onSubmit={onSubmit} className="register-form">
         <h1>Register</h1>
           <div className="register-email">
-            <span>Email:</span>
-            <input type="text" name="email" />
+            <div className="lbl">Email:</div>
+            <div className="txtBoxlbl"><input type="text" name="email" /></div>
             </div>
 
           <div className="register-password">
-            <span>Password:</span>
-            <input type="password" name="password" />
+            <div className="lbl">Password:</div>
+            <div className="txtBoxlbl"><input type="password" name="password" /></div>
           </div>
-          <button type="submit">Register</button>
+          <button type="submit" className="register-submit">Register</button>
           <div>{registered && JSON.stringify(registered)}</div>
         </form>
 

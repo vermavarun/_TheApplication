@@ -16,7 +16,8 @@ export default function Home() {
           setUsers(data);
         })
         .catch((error) => {
-          console.error("Error:", error)
+          setUsers({});
+          console.log("Error:", error)
         });
     } catch (e) {
       console.log(e);

@@ -6,9 +6,9 @@ import { url } from "inspector";
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import toast, { Toaster } from 'react-hot-toast';
+//import toast, { Toaster } from 'react-hot-toast';
 import { setToastSlice } from "@/store/slices/toastSlices";
-
+import { toast  } from 'react-toastify';
 export default function Page() {
     const dispatch = useAppDispatch();
     const router = useRouter()
@@ -32,9 +32,10 @@ export default function Page() {
           console.log("user dispatched", user);
           toast.success("Login successful " + user.login);
 
-          setTimeout(() => {
-            router.push("/");
-          }, 2000);
+          // setTimeout(() => {
+          //   router.push("/");
+          // }, 2000);
+          router.push("/");
         });
     }
 
@@ -57,9 +58,10 @@ export default function Page() {
           dispatch(setToastSlice({message: "Login successful", type: 0}));
           console.log("user dispatched", user);
           toast.success("Login successful " + user.login);
-          setTimeout(() => {
-            router.push("/");
-          }, 2000);
+          // setTimeout(() => {
+          //   router.push("/");
+          // }, 2000);
+          router.push("/");
         });
     }
 
@@ -111,7 +113,6 @@ export default function Page() {
   return (
     <div>
       <h1>Redirecting...</h1>
-      <div><Toaster position="top-right" reverseOrder={false} /></div>
     </div>
   );
 }

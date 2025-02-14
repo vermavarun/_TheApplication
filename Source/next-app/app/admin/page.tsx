@@ -32,7 +32,7 @@ export default function Home() {
       <TopNav />
       <div className="main-content">
         This is admin Page
-        <h2>Users</h2>
+        <h1>Users</h1>
         <ul>
           {Object.keys(users).map((key) => (
             <li key={key} style={{ listStyleType: "none" }}>

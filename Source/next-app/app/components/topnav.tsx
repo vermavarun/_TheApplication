@@ -30,7 +30,7 @@ function TopNav() {
 
 
         {
-          !userValue.name &&
+          !userValue?.name &&
           <>
           <Link href="/register">Register</Link>
           <Link href="/login">Login</Link>
@@ -39,9 +39,9 @@ function TopNav() {
         }
 
 
-        {userValue.name && <><span>{userValue.name}</span> <a style={{cursor:"pointer"}} onClick={logout}>Logout</a></>}
+        {userValue?.name && <><span>{userValue?.name}</span> <a style={{cursor:"pointer"}} onClick={logout}>Logout</a></>}
 
-        <img src={userValue.avatar_url ? userValue.avatar_url : '/static/images/avatar_logoff.avif'} alt="avatar" referrerPolicy="no-referrer" />
+        <img src={userValue?.avatar_url ? userValue?.avatar_url : '/static/images/avatar_logoff.avif'} alt="avatar" referrerPolicy="no-referrer" />
 
 
     </div>

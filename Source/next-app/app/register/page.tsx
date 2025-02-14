@@ -4,10 +4,9 @@ import "./page.css";
 import { FormEvent, useEffect, useState } from "react";
 
 export default function Home() {
-  const [registered, setRegistered] = useState('');
+  const [statusMessage, setStatusMessage] = useState<string>("");
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setRegistered({});
     const formData = new FormData(event.currentTarget);
     // Convert FormData to JSON object
     const jsonObject: Record<string, any> = {};
@@ -22,14 +21,12 @@ export default function Home() {
     try {
       const data = await response.json();
       if (data.status === 200) {
-        setRegistered("Registered Successfully");
+        setStatusMessage("Registration Successfully");
       } else {
-        setRegistered(
-          data.details.errors
-        );
+        setStatusMessage("Registration Not Successfully");
       }
     } catch (error) {
-      setRegistered("Error in registering: " + error);
+      setStatusMessage("Registration Not Successfully with some errors");
     }
   }
 
@@ -50,7 +47,7 @@ export default function Home() {
             <div className="txtBoxlbl"><input type="password" name="password" /></div>
           </div>
           <button type="submit" className="register-submit">Register</button>
-          <div>{registered && JSON.stringify(registered)}</div>
+          <div>{statusMessage}</div>
         </form>
 
       </div>

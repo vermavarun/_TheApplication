@@ -4,12 +4,10 @@ import './page.css';
 import { FormEvent, useEffect, useState } from "react";
 
 export default function Home() {
-  const [login, setLogin] = useState<any>({});
   const [statusMessage, setStatusMessage] = useState<string>("");
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setLogin({});
     const formData = new FormData(event.currentTarget);
     // Convert FormData to JSON object
     const jsonObject: Record<string, any> = {};
@@ -68,15 +66,6 @@ export default function Home() {
     <main>
       <TopNav />
       <div className="main-content">
-        <h1>Login</h1>
-        {/* <form onSubmit={onSubmit}>
-          <div>Email</div>
-          <input type="text" name="email" />
-          <div>Password</div>
-          <input type="password" name="password" />
-          <button type="submit">Login</button>
-        </form> */}
-
         <form onSubmit={onSubmit} className="login-form">
         <h1>Login</h1>
           <div className="login-email">
@@ -88,12 +77,23 @@ export default function Home() {
             <div className="lbl">Password:</div>
             <div className="txtBoxlbl"><input type="password" name="password" /></div>
           </div>
+          <div>
           <button type="submit" className="login-submit">Login</button>
+          </div>
+
           <div className="login-msg">{statusMessage}</div>
         </form>
+          <div>
+          <button onClick={LoginWithGoogle} className="thirdPatySignLogin"></button>
+          </div>
+          <div>
+          <button onClick={LoginWithGitHub} className="thirdPatySignLogin githubbtn"></button>
+          </div>
 
-        <button onClick={LoginWithGoogle} className="googlesigninbtn"></button> <br />
-        <button onClick={LoginWithGitHub} className="githubsigninbtn"></button>
+
+
+
+
       </div>
     </main>
   );

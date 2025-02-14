@@ -33,6 +33,12 @@
         width: 60%;
         height: 30px;
     }
+    .register-submit:hover {
+        background-color: #e98585;
+    }
+    .register-submit:active {
+        background-color: #efa6a6;
+    }
 }
 
 .lbl {
@@ -48,5 +54,7 @@
   display: inline-block;
   input {
     min-width: 16.5em;
+    background-color: black;
+    color:#e75f5f;
   }
 }

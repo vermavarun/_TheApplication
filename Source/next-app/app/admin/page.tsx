@@ -13,7 +13,7 @@ export default function Home() {
   const [updatedFirstNameValue, setUpdatedFirstNameValue] = useState('');
   const [searchValue, setSearchValue] = useState('');
 
-  function updateUser(id: string, firstName: string) {
+  function updateUser(id: string, firstName: string) : boolean {
     try {
       fetch(`/api/users/`, {
         method: "PUT",
@@ -24,13 +24,18 @@ export default function Home() {
       }).then((response) => {
         toast.success('User updated');
         console.log(response);
-      }
-      );
-    }
-    catch (e) {
+        return true;
+      }).catch((e) => {
+        toast.error('Error updating user');
+        console.log(e);
+        return false;
+      });
+      return true;
+    } catch (e) {
       toast.error('Error updating user');
       console.log(e);
-  }
+      return false;
+    }
   }
 
   function filterResults(searchValue: string) {
@@ -51,16 +56,16 @@ export default function Home() {
 
   const handleSave = (id:string,firstName:string) => {
     setId('');
-    updateUser(id,firstName);
-    let usersCopy = users;
-    Object.values(usersCopy).map((user) => {
+    const result = updateUser(id,firstName);
+    if(result) {
+      let usersCopy = users;
+      Object.values(usersCopy).map((user) => {
       if(user.id === id) {
         user.firstName = firstName;
       }
+      });
+      setUsers(usersCopy);
     }
-    );
-
-    setUsers(usersCopy);
   }
 
   function getAllUsers() {

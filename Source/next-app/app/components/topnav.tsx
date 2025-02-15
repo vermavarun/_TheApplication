@@ -28,24 +28,26 @@ function TopNav() {
   return (
     <div className="topnav">
 
-      <Link href="/">Home</Link>
-          <Link href="/admin">Admin</Link>
+      <div className="topnav-pages">
+        <Link href="/">Home</Link>
+        <Link href="/admin">Admin</Link>
+          {
+            !userValue?.name &&
+            <React.Fragment key={"topnav-register"}>
+              <Link href="/register">Register</Link>
+              <Link href="/login">Login</Link>
+            </React.Fragment>
+          }
+        </div>
 
 
-        {
-          !userValue?.name &&
-          <React.Fragment key={"topnav-register"}>
-            <Link href="/register">Register</Link>
-            <Link href="/login">Login</Link>
+          <div className="topnav-user">
+            <div>
+              <img src={userValue?.avatar_url ? userValue?.avatar_url : '/static/images/avatar_logoff.avif'} alt="avatar" referrerPolicy="no-referrer" />
+            </div>
 
-          </React.Fragment>
-        }
-
-
-        {userValue?.name && <><span>{userValue?.name}</span> <a style={{cursor:"pointer"}} onClick={logout}>Logout</a></>}
-
-        <img src={userValue?.avatar_url ? userValue?.avatar_url : '/static/images/avatar_logoff.avif'} alt="avatar" referrerPolicy="no-referrer" />
-
+            {userValue?.name && <><div>{userValue?.name}</div> <div style={{cursor:"pointer"}} onClick={logout}>Logout</div></>}
+          </div>
 
     </div>
   );

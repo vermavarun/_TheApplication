@@ -51,4 +51,12 @@
     display: none;
   }
 
+  .editable-firstName {
+    display: inline-block;
+    width: 100%;
+    color:#e75f5f;
+    font-weight: bold;
+    font-size: x-large;
+  }
+
 }

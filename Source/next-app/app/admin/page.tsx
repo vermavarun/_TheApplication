@@ -11,10 +11,6 @@ export default function Home() {
   const [editingId, setId] = useState('');
   const [updatedFirstNameValue, setUpdatedFirstNameValue] = useState('');
 
-  const handleEdit = (id:string) => {
-    setId(id);
-  }
-
   function updateUser(id: string, firstName: string) {
     try {
       fetch(`/api/users/`, {
@@ -84,7 +80,7 @@ export default function Home() {
               <div className="column-header">🌟 {users[key].id}</div>
               <div className="column-header">🌐 {users[key].email}</div>
               <div className="column-header">{users[key].firstName}</div>
-              <div className="column-header edit-btn" onClick={()=>handleEdit(users[key].id)}>✏️ </div>
+              <div className="column-header edit-btn" onClick={()=>setId(users[key].id)}>✏️ </div>
             </div>
 
             {
@@ -92,7 +88,7 @@ export default function Home() {
               <div className="header user" row-id={users[key].id + "-edit"}>
                 <div className="column-header">🌟 {users[key].id}</div>
                 <div className="column-header">🌐 {users[key].email}</div>
-                <div className="column-header"><input type="text" className="" defaultValue={users[key].firstName} onChange={(e)=>{setUpdatedFirstNameValue(e.target.value)}}/></div>
+                <div className="column-header"><input type="text" className="editable-firstName" defaultValue={users[key].firstName} onChange={(e)=>{setUpdatedFirstNameValue(e.target.value)}}/></div>
                 <div className="column-header save-btn" onClick={()=>handleSave(users[key].id,updatedFirstNameValue)}>💾 </div>
               </div>
             }

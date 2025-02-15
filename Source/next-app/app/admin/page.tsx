@@ -100,7 +100,7 @@ export default function Home() {
             <div className="column-header">🌟 ID</div>
             <div className="column-header">🌐 Email</div>
             <div className="column-header">First Name</div>
-            <div className="column-header">Search <input type="text" spellCheck="false" className="search-txt" onChange={(e)=>{filterResults(e.target.value)}}  placeholder="Search.." /></div>
+            <div className="column-header">Search <input type="search" spellCheck="false" className="search-txt" onChange={(e)=>{filterResults(e.target.value)}}  placeholder="Search.." /></div>
           </div>
 
 

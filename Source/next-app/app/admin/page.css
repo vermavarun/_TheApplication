@@ -41,5 +41,14 @@
     text-align: right;
     cursor: pointer;
   }
+  .save-btn {
+    text-align: left;
+    padding-left: 2%;
+    cursor: pointer;
+  }
+
+  .hidden {
+    display: none;
+  }
 
 }

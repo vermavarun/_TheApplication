@@ -7,6 +7,15 @@ import "./page.css";
 
 export default function Home() {
   const [users, setUsers] = useState<Record<string, User>>({});
+  const [editingId, setId] = useState('');
+
+  const handleEdit = (id:string) => {
+    setId(id);
+  }
+
+  const handleSave = (id:string) => {
+    setId('');
+  }
 
   function getAllUsers() {
     try {
@@ -38,11 +47,21 @@ export default function Home() {
           <div className="header first-header"><div className="column-header">🌟 ID</div><div className="column-header">🌐 Email</div><div className="column-header">First Name</div></div>
 
           {Object.keys(users).map((key) => (
-            <div key={key} className="header user">
+            <div key={key} className="header user" row-id={users[key].id}>
               <div className="column-header">🌟 {users[key].id}</div>
               <div className="column-header">🌐 {users[key].email}</div>
-              <div className="column-header">{users[key].firstName}  </div>
-              <div className="column-header edit-btn">✏️ </div>
+              <div className="column-header">{users[key].firstName}</div>
+              <div className="column-header edit-btn" onClick={()=>handleEdit(users[key].id)}>✏️ </div>
+
+              {
+              editingId === users[key].id &&
+              <div className="header user">
+                <div className="column-header">🌟 {users[key].id}</div>
+                <div className="column-header">🌐 {users[key].email}</div>
+                <div className="column-header"><input type="text" className="" onChange={()=>{console.log(users[key].firstName)}} /></div>
+                <div className="column-header save-btn" onClick={()=>handleSave(users[key].id)}>💾 </div>
+              </div>
+              }
             </div>
           ))}
 

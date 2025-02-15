@@ -5,7 +5,7 @@
     text-align: center;
     background-color: #e75f5f;
     position: fixed;
-    z-index: 99999;
+    z-index: 1;
     a {
         padding: 2%;
         vertical-align: middle;

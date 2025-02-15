@@ -7,6 +7,7 @@ import {User} from "../models/user";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import React from "react";
 
 function TopNav() {
   const userValue:User = useAppSelector((state) => state.user);
@@ -33,11 +34,11 @@ function TopNav() {
 
         {
           !userValue?.name &&
-          <>
-          <Link href="/register">Register</Link>
-          <Link href="/login">Login</Link>
+          <React.Fragment key={"topnav-register"}>
+            <Link href="/register">Register</Link>
+            <Link href="/login">Login</Link>
 
-          </>
+          </React.Fragment>
         }
 
 

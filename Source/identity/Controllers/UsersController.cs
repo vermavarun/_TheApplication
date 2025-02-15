@@ -39,9 +39,19 @@ namespace Users.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> PutUser([FromBody] UserModel user)
+        public async Task<IActionResult> PutUser([FromBody] UserUpdateModel user)
         {
-            var result = await _userManager.UpdateAsync(user);
+            var userToUpdate = await _userManager.FindByIdAsync(user.Id);
+
+            if (userToUpdate == null)
+            {
+                return NotFound();
+            }
+
+            userToUpdate.FirstName = user.FirstName;
+
+            var result = await _userManager.UpdateAsync(userToUpdate);
+
             return Ok(result);
         }
 

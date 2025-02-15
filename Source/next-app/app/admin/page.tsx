@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { User } from "../interfaces/user";
 import TopNav from "../components/topnav";
 import "./page.css";
+import toast, { Toaster } from 'react-hot-toast';
 
 export default function Home() {
   const [users, setUsers] = useState<Record<string, User>>({});
@@ -15,18 +16,20 @@ export default function Home() {
 
   function updateUser(id: string, firstName: string) {
     try {
-      fetch(`/api/users/${id}`, {
+      fetch(`/api/users/`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ firstName }),
+        body: JSON.stringify({ firstName: firstName, id: id }),
       }).then((response) => {
+        toast.success('User updated');
         console.log(response);
       }
       );
     }
     catch (e) {
+      toast.error('Error updating user');
       console.log(e);
   }
 }
@@ -72,11 +75,11 @@ export default function Home() {
         This is admin Page
         <h1>Users</h1>
         <div key="users" className="users">
-          <div className="header first-header"><div className="column-header">🌟 ID</div><div className="column-header">🌐 Email</div><div className="column-header">First Name</div></div>
+          <div key="headers" className="header first-header"><div className="column-header">🌟 ID</div><div className="column-header">🌐 Email</div><div className="column-header">First Name</div></div>
 
           {Object.keys(users).map((key) => (
-            <>
-            <div key={key} className={`header user ${users[key].id == editingId ? 'hidden': ''}`} row-id={users[key].id}>
+            <div key={key}>
+            <div className={`header user ${users[key].id == editingId ? 'hidden': ''}`} row-id={users[key].id}>
               <div className="column-header">🌟 {users[key].id}</div>
               <div className="column-header">🌐 {users[key].email}</div>
               <div className="column-header">{users[key].firstName}</div>
@@ -85,20 +88,22 @@ export default function Home() {
 
             {
               editingId === users[key].id &&
-              <div key={key +'edit'} className="header user" row-id={users[key].id + "edit"}>
+              <div className="header user" row-id={users[key].id + "-edit"}>
                 <div className="column-header">🌟 {users[key].id}</div>
                 <div className="column-header">🌐 {users[key].email}</div>
                 <div className="column-header"><input type="text" className=""  /></div>
                 <div className="column-header save-btn" onClick={()=>handleSave(users[key].id,"updated")}>💾 </div>
               </div>
             }
-          </>
+          </div>
 
           ))}
 
-        </div>
 
+        </div>
       </div>
+      <Toaster position="top-right" reverseOrder={false} />
     </main>
+
   );
 }

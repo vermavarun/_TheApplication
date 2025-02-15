@@ -35,7 +35,7 @@ export default function Home() {
         This is admin Page
         <h1>Users</h1>
         <div className="users">
-          <div className="header"><div className="column-header">🌟 ID</div><div className="column-header">🌐 Email</div><div className="column-header">First Name</div></div>
+          <div className="header first-header"><div className="column-header">🌟 ID</div><div className="column-header">🌐 Email</div><div className="column-header">First Name</div></div>
 
           {Object.keys(users).map((key) => (
             <div key={key} className="header user">

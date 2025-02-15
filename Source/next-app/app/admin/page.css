@@ -1,6 +1,12 @@
 .users {
   margin: 2%;
   text-align: left;
+
+  .first-header{
+    background-color: #e75f5f;
+    border-radius: 5px;
+  }
+
   .header {
     padding: 1%;
     border-bottom: 1px solid #e75f5f;
@@ -14,14 +20,18 @@
   .user {
     padding: 1%;
     border-bottom: 1px solid #e75f5f;
+    border-radius: 5px;
+
     .user-id {
       font-weight: bold;
     }
-    
+
   }
   .user:hover {
     background-color: #e75f5f;
-    color: white
+    color: white;
+    border-radius: 5px;
+    border-color: white;
   }
 
 }

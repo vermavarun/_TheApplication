@@ -95,19 +95,18 @@ export default function Home() {
             <div className="column-header">🌟 ID</div>
             <div className="column-header">🌐 Email</div>
             <div className="column-header">First Name</div>
-            <div className="column-header">Search <input type="text" className="search-txt" onChange={(e)=>{filterResults(e.target.value)}}  placeholder="Search.." /></div>
+            <div className="column-header">Search <input type="text" spellCheck="false" className="search-txt" onChange={(e)=>{filterResults(e.target.value)}}  placeholder="Search.." /></div>
           </div>
 
 
           {Object.keys(users).map((key) => (
             <div key={key}>
-            <div className={`header user ${users[key].id == editingId ? 'hidden': ''}`} row-id={users[key].id}>
-              <div className="column-header">🌟 {users[key].id}</div>
-              <div className="column-header">🌐 {users[key].email}</div>
-              <div className="column-header">{users[key].firstName}</div>
-              <div className="column-header edit-btn" onClick={()=>setId(users[key].id)}>✏️ </div>
-            </div>
-
+              <div className={`header user ${users[key].id == editingId ? 'hidden': ''}`} row-id={users[key].id}>
+                <div className="column-header">🌟 {users[key].id}</div>
+                <div className="column-header">🌐 {users[key].email}</div>
+                <div className="column-header">{users[key].firstName}</div>
+                <div className="column-header edit-btn" onClick={()=>setId(users[key].id)}>✏️ </div>
+              </div>
             {
               editingId === users[key].id &&
               <div className="header user" row-id={users[key].id + "-edit"}>

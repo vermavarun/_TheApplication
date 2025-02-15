@@ -9,8 +9,8 @@ import toast, { Toaster } from 'react-hot-toast';
 export default function Home() {
   const [users, setUsers] = useState<Record<string, User>>({});
   const [editingId, setId] = useState('');
-  const updatedFirstName = useRef<HTMLInputElement>(null);
-  
+  const [updatedFirstNameValue, setUpdatedFirstNameValue] = useState('');
+
   const handleEdit = (id:string) => {
     setId(id);
   }
@@ -92,14 +92,13 @@ export default function Home() {
               <div className="header user" row-id={users[key].id + "-edit"}>
                 <div className="column-header">🌟 {users[key].id}</div>
                 <div className="column-header">🌐 {users[key].email}</div>
-                <div className="column-header"><input type="text" className="" ref={updatedFirstName} /></div>
-                <div className="column-header save-btn" onClick={()=>handleSave(users[key].id,updatedFirstName.current?.value)}>💾 </div>
+                <div className="column-header"><input type="text" className="" defaultValue={users[key].firstName} onChange={(e)=>{setUpdatedFirstNameValue(e.target.value)}}/></div>
+                <div className="column-header save-btn" onClick={()=>handleSave(users[key].id,updatedFirstNameValue)}>💾 </div>
               </div>
             }
           </div>
 
           ))}
-
 
         </div>
       </div>

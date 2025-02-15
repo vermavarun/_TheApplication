@@ -7,9 +7,11 @@ import "./page.css";
 import toast, { Toaster } from 'react-hot-toast';
 
 export default function Home() {
+  const [usersInitial, setUsersInitial] = useState<Record<string, User>>({});
   const [users, setUsers] = useState<Record<string, User>>({});
   const [editingId, setId] = useState('');
   const [updatedFirstNameValue, setUpdatedFirstNameValue] = useState('');
+  const [searchValue, setSearchValue] = useState('');
 
   function updateUser(id: string, firstName: string) {
     try {
@@ -29,7 +31,23 @@ export default function Home() {
       toast.error('Error updating user');
       console.log(e);
   }
-}
+  }
+
+  function filterResults(searchValue: string) {
+    setSearchValue(searchValue);
+    const usersArray = Object.values(usersInitial); // Convert users object to an array
+    const filteredUsers = usersArray.filter((user) => {
+      return user.firstName.includes(searchValue);
+    });
+
+    // Convert the filtered array back to an object
+    const filteredUsersObject = filteredUsers.reduce((acc, user) => {
+      acc[user.id] = user; // Assuming each user has a unique 'id' property
+      return acc;
+    }, {} as Record<string, User>);
+
+    setUsers(filteredUsersObject);
+  }
 
   const handleSave = (id:string,firstName:string) => {
     setId('');
@@ -52,6 +70,7 @@ export default function Home() {
         .then((data) => {
           console.log(data);
           setUsers(data);
+          setUsersInitial(data);
         })
         .catch((error) => {
           setUsers({});
@@ -72,7 +91,13 @@ export default function Home() {
         This is admin Page
         <h1>Users</h1>
         <div key="users" className="users">
-          <div key="headers" className="header first-header"><div className="column-header">🌟 ID</div><div className="column-header">🌐 Email</div><div className="column-header">First Name</div></div>
+          <div key="headers" className="header first-header">
+            <div className="column-header">🌟 ID</div>
+            <div className="column-header">🌐 Email</div>
+            <div className="column-header">First Name</div>
+            <div className="column-header">Search <input type="text" className="search-txt" onChange={(e)=>{filterResults(e.target.value)}}  placeholder="Search.." /></div>
+          </div>
+
 
           {Object.keys(users).map((key) => (
             <div key={key}>

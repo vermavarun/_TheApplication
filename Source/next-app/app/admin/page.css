@@ -59,4 +59,13 @@
     font-size: x-large;
   }
 
+  .search-txt {
+    width: 80%;
+    padding: 1%;
+    margin: 1%;
+    border-radius: 5px;
+    border: 1px solid #e75f5f;
+    color: #e75f5f;
+  }
+
 }

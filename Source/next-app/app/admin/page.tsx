@@ -41,7 +41,8 @@ export default function Home() {
             <div key={key} className="header user">
               <div className="column-header">🌟 {users[key].id}</div>
               <div className="column-header">🌐 {users[key].email}</div>
-              <div className="column-header">{users[key].firstName}</div>
+              <div className="column-header">{users[key].firstName}  </div>
+              <div className="column-header edit-btn">✏️ </div>
             </div>
           ))}
 

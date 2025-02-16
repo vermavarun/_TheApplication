@@ -34,7 +34,14 @@ namespace Users.Controllers
         [HttpDelete]
         public async Task<IActionResult> DeleteUser([FromBody] UserModel user)
         {
-            var result = await _userManager.DeleteAsync(user);
+            var userToDelete = await _userManager.FindByIdAsync(user.Id);
+
+            if (userToDelete == null)
+            {
+                return NotFound();
+            }
+            var result = await _userManager.DeleteAsync(userToDelete);
+
             return Ok(result);
         }
 

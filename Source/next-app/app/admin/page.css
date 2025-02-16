@@ -18,6 +18,7 @@
     background-color: #e75f5f;
     border-radius: 5px;
     border-bottom: 1px solid white;
+    margin-bottom: 2%;;
   }
 
   .user {
@@ -41,6 +42,12 @@
     text-align: right;
     cursor: pointer;
   }
+
+  .delete-btn {
+    text-align: right;
+    cursor: pointer;
+  }
+
   .save-btn {
     text-align: left;
     padding-left: 2%;

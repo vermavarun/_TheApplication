@@ -47,3 +47,21 @@ export async function PUT(payLoad) {
     return NextResponse.error(error);
   }
 }
+
+export async function DELETE(payLoad) {
+  const userToPut = await payLoad.json();
+  try {
+    const apiURL = process.env.API_URL + "/api/users/";
+    const res = await fetch(apiURL, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(userToPut),
+    });
+    const user = await res.json();
+    return NextResponse.json(user);
+  } catch (error) {
+    return NextResponse.error(error);
+  }
+}

@@ -38,11 +38,38 @@ export default function Home() {
     }
   }
 
+  function deleteUser(id: string) {
+    if (confirm('Are you sure you want to delete this user?')) {
+      try {
+        fetch(`/api/users/`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ id: id }),
+        }).then((response) => {
+          toast.success('User deleted');
+          console.log(response);
+          getAllUsers();
+        }).catch((e) => {
+          toast.error('Error deleting user');
+          console.log(e);
+        });
+      } catch (e) {
+        toast.error('Error deleting user');
+        console.log(e);
+      }
+    }
+  }
+
   function filterResults(searchValue: string) {
     setSearchValue(searchValue);
     const usersArray = Object.values(usersInitial); // Convert users object to an array
     const filteredUsers = usersArray.filter((user) => {
-      return user.firstName.toLowerCase().includes(searchValue.toLowerCase());
+      return (
+              user.firstName.toLowerCase().includes(searchValue.toLowerCase()) ||
+              user.email.toLowerCase().includes(searchValue.toLowerCase())
+            );
     });
 
     // Convert the filtered array back to an object
@@ -96,6 +123,7 @@ export default function Home() {
         This is admin Page
         <h1>Users</h1>
         <div key="users" className="users">
+
           <div key="headers" className="header first-header">
             <div className="column-header">🌟 ID</div>
             <div className="column-header">🌐 Email</div>
@@ -111,6 +139,7 @@ export default function Home() {
                 <div className="column-header">🌐 {users[key].email}</div>
                 <div className="column-header">{users[key].firstName}</div>
                 <div className="column-header edit-btn" onClick={()=>setId(users[key].id)}>✏️ </div>
+                <div className="column-header delete-btn" onClick={()=>deleteUser(users[key].id)}>❌ </div>
               </div>
             {
               editingId === users[key].id &&

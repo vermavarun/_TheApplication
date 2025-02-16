@@ -6,6 +6,7 @@
 # TODO:
 - Interceptors https://requestly.com/blog/how-to-implement-axios-request-interceptors-in-next-js/
 - State management using Redux [Done]
+- Pagination in admin grid
 - Toasts across the app pages
 
 # Helpful links:

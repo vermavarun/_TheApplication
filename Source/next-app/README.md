@@ -6,10 +6,10 @@
 # TODO:
 - Interceptors https://requestly.com/blog/how-to-implement-axios-request-interceptors-in-next-js/
 - State management using Redux [Done]
-- Editing grid sometimes saves only one field either firstname or lastname
 - Pagination in admin grid
 - Sorting in admin grid
 - Toasts across the app pages
+  
 
 # Helpful links:
 - GitHub Login

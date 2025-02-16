@@ -14,7 +14,7 @@ export default function Home() {
   const [updatedFirstNameValue, setUpdatedFirstNameValue] = useState('');
   const [updatedLastNameValue, setUpdatedLastNameValue] = useState('');
   const [searchValue, setSearchValue] = useState('');
-  const [IsLoading, setIsLoading] = useState(false);
+  const [IsLoading, setIsLoading] = useState(true);
 
   function updateUser(id: string, firstName: string,lastName:string) : boolean {
     try {
@@ -134,7 +134,7 @@ export default function Home() {
   }
 
   useEffect(() => {
-    setIsLoading(true);
+
     getAllUsers();
     setIsLoading(false);
   }, []);
@@ -143,7 +143,6 @@ export default function Home() {
     <main>
       <TopNav />
       <div className="main-content">
-        This is admin Page
         <h1>Users</h1>
         <div key="users" className="users">
 
@@ -155,7 +154,7 @@ export default function Home() {
             <div className="column-header">Search <input type="search" spellCheck="false" className="search-txt" onChange={(e)=>{filterResults(e.target.value)}}  placeholder="Search.." /></div>
           </div>
 
-          {Object.keys(users).length > 0 && <div className="users-count">Total {Object.keys(users).length} users found</div>}
+          {Object.keys(users).length > 0 && <div className="users-count">Total users: {Object.keys(users).length} </div>}
 
           {Object.keys(users).map((key) => (
             <div key={key}>
@@ -184,11 +183,10 @@ export default function Home() {
 
         </div>
 
-        {Object.keys(users).length === 0 && <div>No users found</div>}
+        {Object.keys(users).length === 0 && IsLoading !== true && <div>No users found</div>}
         { IsLoading && <div><img src="/static/images/loading.gif" alt="spinner" /></div> }
 
       </div>
-
       <Toaster position="top-right" reverseOrder={false} />
     </main>
 

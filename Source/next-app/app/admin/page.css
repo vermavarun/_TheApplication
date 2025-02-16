@@ -47,7 +47,7 @@
   .editable-firstName,
   .editable-txtbox {
     display: inline-block;
-    width: 100%;
+    width: 95%;
     color:#e75f5f;
     font-weight: bold;
   }

@@ -6,6 +6,7 @@
     background-color: #e75f5f;
     position: fixed;
     z-index: 1;
+    display: inline-flex;
     .topnav-logo {
         display: inline-block;
         width: 10%;
@@ -18,28 +19,30 @@
     .topnav-pages {
         display: inline-block;
         width: 70%;
+        text-align: center;
     }
     .topnav-user {
         display: inline-block;
         width: 20%;
         div {
             display: inline-block;
-            padding: 2%;
             vertical-align: middle;
         }
         .topnav-user-name {
             display: inline-block;
             padding: 2%;
             vertical-align: middle;
+            margin-top: 5%;
+            width: 30%;
         }
         .topnav-user-logout {
             display: inline-block;
             padding: 2%;
             vertical-align: middle;
+            margin-top: 5%;
         }
         .topnav-user-avatar {
             display: inline-block;
-            padding: 2%;
             vertical-align: middle;
             img {
                 width: 50px;

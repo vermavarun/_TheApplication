@@ -28,7 +28,11 @@ function TopNav() {
   return (
     <div className="topnav">
 
-      <div className="topnav-pages">
+        <div className="topnav-logo">
+          <img src="/static/images/logo.png" alt="logo" />
+        </div>
+
+        <div className="topnav-pages">
         <Link href="/">Home</Link>
         <Link href="/admin">Admin</Link>
           {
@@ -41,13 +45,13 @@ function TopNav() {
         </div>
 
 
-          <div className="topnav-user">
-            <div>
+        <div className="topnav-user">
+            <div className="topnav-user-avatar">
               <img src={userValue?.avatar_url ? userValue?.avatar_url : '/static/images/avatar_logoff.avif'} alt="avatar" referrerPolicy="no-referrer" />
             </div>
 
-            {userValue?.name && <><div>{userValue?.name}</div> <div style={{cursor:"pointer"}} onClick={logout}>Logout</div></>}
-          </div>
+            {userValue?.name && <><div className="topnav-user-name">{userValue?.name}</div> <div className="topnav-user-logout" style={{cursor:"pointer"}} onClick={logout}>Logout</div></>}
+        </div>
 
     </div>
   );

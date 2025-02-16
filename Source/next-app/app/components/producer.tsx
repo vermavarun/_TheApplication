@@ -10,7 +10,7 @@ function Producer() {
 
     return <div>
     Producer
-    <input onChange={disChange}></input>
+    <input spellCheck="true" data-ms-editor="false" onChange={disChange}></input>
     </div>;
 }
 

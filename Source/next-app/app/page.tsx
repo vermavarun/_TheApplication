@@ -13,7 +13,6 @@ export default function Home() {
       <div className="main-content">
       <h1>Home</h1>
       <Producer />
-      <hr/>
       <Consumer  />
       </div>
 

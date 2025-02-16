@@ -148,7 +148,7 @@ export default function Home() {
                 <div className="column-header">🌐 {users[key].email}</div>
                 <div className="column-header">{users[key].firstName}</div>
                 <div className="column-header">{users[key].lastName}</div>
-                <div className="display-btn edit-btn" onClick={()=>setId(users[key].id)}>✏️ </div>
+                <div className="display-btn edit-btn" onClick={()=>setId(users[key].id)}>✏️ </div> {/* save first name and last name in state IMPORTANT */}
                 <div className="display-btn delete-btn" onClick={()=>deleteUser(users[key].id)}>🗑️ </div>
               </div>
             {

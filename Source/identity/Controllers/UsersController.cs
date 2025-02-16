@@ -56,6 +56,7 @@ namespace Users.Controllers
             }
 
             userToUpdate.FirstName = user.FirstName;
+            userToUpdate.LastName = user.LastName;
 
             var result = await _userManager.UpdateAsync(userToUpdate);
 

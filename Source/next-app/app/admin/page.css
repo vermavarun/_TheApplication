@@ -38,27 +38,14 @@
     border-color: white;
   }
 
-  .edit-btn {
-    text-align: right;
-    cursor: pointer;
-  }
 
-  .delete-btn {
-    text-align: right;
-    cursor: pointer;
-  }
-
-  .save-btn {
-    text-align: left;
-    padding-left: 2%;
-    cursor: pointer;
-  }
 
   .hidden {
     display: none;
   }
 
-  .editable-firstName {
+  .editable-firstName,
+  .editable-txtbox {
     display: inline-block;
     width: 100%;
     color:#e75f5f;
@@ -74,4 +61,34 @@
     color: #e75f5f;
   }
 
+}
+
+.edit-btn {
+  text-align: right;
+  cursor: pointer;
+  width: 1%;
+}
+
+.delete-btn {
+  text-align: right;
+  cursor: pointer;
+  width: 1%;
+}
+
+.save-btn {
+  text-align: left;
+  cursor: pointer;
+}
+
+.display-btn {
+  width: 1%;
+  display: inline-block;
+  margin-left: 1%;
+}
+
+.inedit-btn {
+  width: 1%;
+  display: inline-block;
+  cursor: pointer;
+  margin-left: 1%;
 }

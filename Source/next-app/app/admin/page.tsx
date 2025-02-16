@@ -11,30 +11,36 @@ export default function Home() {
   const [users, setUsers] = useState<Record<string, User>>({});
   const [editingId, setId] = useState('');
   const [updatedFirstNameValue, setUpdatedFirstNameValue] = useState('');
+  const [updatedLastNameValue, setUpdatedLastNameValue] = useState('');
   const [searchValue, setSearchValue] = useState('');
 
-  function updateUser(id: string, firstName: string) : boolean {
+  function updateUser(id: string, firstName: string,lastName:string) : boolean {
     try {
       fetch(`/api/users/`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ firstName: firstName, id: id }),
+        body: JSON.stringify({ firstName: firstName, id: id, lastName: lastName }),
       }).then((response) => {
-        toast.success('User updated');
-        console.log(response);
-        return true;
+        if (response.status === 200) {
+          toast.success('User updated');
+          console.log(response);
+          return true;
+        }
+        else {
+          toast.error('Error updating user');
+          return false;
+        }
       }).catch((e) => {
+          toast.error('Error updating user');
+          return false;
+      });
+          return true;
+    } catch (e) {
         toast.error('Error updating user');
         console.log(e);
         return false;
-      });
-      return true;
-    } catch (e) {
-      toast.error('Error updating user');
-      console.log(e);
-      return false;
     }
   }
 
@@ -68,6 +74,7 @@ export default function Home() {
     const filteredUsers = usersArray.filter((user) => {
       return (
               user.firstName.toLowerCase().includes(searchValue.toLowerCase()) ||
+              user.lastName.toLowerCase().includes(searchValue.toLowerCase()) ||
               user.email.toLowerCase().includes(searchValue.toLowerCase())
             );
     });
@@ -81,14 +88,15 @@ export default function Home() {
     setUsers(filteredUsersObject);
   }
 
-  const handleSave = (id:string,firstName:string) => {
+  const handleSave = (id:string,firstName:string,lastName:string) => {
     setId('');
-    const result = updateUser(id,firstName);
+    const result = updateUser(id,firstName,lastName);
     if(result) {
       let usersCopy = users;
       Object.values(usersCopy).map((user) => {
       if(user.id === id) {
         user.firstName = firstName;
+        user.lastName = lastName;
       }
       });
       setUsers(usersCopy);
@@ -128,6 +136,7 @@ export default function Home() {
             <div className="column-header">🌟 ID</div>
             <div className="column-header">🌐 Email</div>
             <div className="column-header">First Name</div>
+            <div className="column-header">Last Name</div>
             <div className="column-header">Search <input type="search" spellCheck="false" className="search-txt" onChange={(e)=>{filterResults(e.target.value)}}  placeholder="Search.." /></div>
           </div>
 
@@ -138,16 +147,19 @@ export default function Home() {
                 <div className="column-header">🌟 {users[key].id}</div>
                 <div className="column-header">🌐 {users[key].email}</div>
                 <div className="column-header">{users[key].firstName}</div>
-                <div className="column-header edit-btn" onClick={()=>setId(users[key].id)}>✏️ </div>
-                <div className="column-header delete-btn" onClick={()=>deleteUser(users[key].id)}>❌ </div>
+                <div className="column-header">{users[key].lastName}</div>
+                <div className="display-btn edit-btn" onClick={()=>setId(users[key].id)}>✏️ </div>
+                <div className="display-btn delete-btn" onClick={()=>deleteUser(users[key].id)}>🗑️ </div>
               </div>
             {
               editingId === users[key].id &&
               <div className="header user" row-id={users[key].id + "-edit"}>
                 <div className="column-header">🌟 {users[key].id}</div>
                 <div className="column-header">🌐 {users[key].email}</div>
-                <div className="column-header"><input type="text" className="editable-firstName" defaultValue={users[key].firstName} onChange={(e)=>{setUpdatedFirstNameValue(e.target.value)}}/></div>
-                <div className="column-header save-btn" onClick={()=>handleSave(users[key].id,updatedFirstNameValue)}>💾 </div>
+                <div className="column-header"><input type="text" className="editable-firstName editable-txtbox" defaultValue={users[key].firstName} onChange={(e)=>{setUpdatedFirstNameValue(e.target.value)}}/></div>
+                <div className="column-header"><input type="text" className="editable-lastName editable-txtbox" defaultValue={users[key].lastName} onChange={(e)=>{setUpdatedLastNameValue(e.target.value)}}/></div>
+                <div className="inedit-btn save-btn" onClick={()=>handleSave(users[key].id,updatedFirstNameValue,updatedLastNameValue)}>💾 </div>
+                <div className="inedit-btn cancel-btn" onClick={()=>setId('')}>❌ </div>
               </div>
             }
           </div>

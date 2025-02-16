@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 public class ApplicationDbContext : IdentityDbContext<UserModel>
 {
+    public DbSet<UserDetail> UserDetails { get; set; }
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) :
         base(options)
     { }
@@ -11,6 +12,13 @@ public class ApplicationDbContext : IdentityDbContext<UserModel>
     protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
+            // UserDetail has a one-to-one relationship with UserModel
+            builder.Entity<UserDetail>()
+                .HasOne<UserModel>()
+                .WithOne()
+                .HasForeignKey<UserDetail>(ud => ud.Id);
+
             this.SeedUsers(builder);
             this.SeedRoles(builder);
             this.SeedUserRoles(builder);

@@ -14,6 +14,7 @@ export default function Home() {
   const [updatedFirstNameValue, setUpdatedFirstNameValue] = useState('');
   const [updatedLastNameValue, setUpdatedLastNameValue] = useState('');
   const [searchValue, setSearchValue] = useState('');
+  const [IsLoading, setIsLoading] = useState(false);
 
   function updateUser(id: string, firstName: string,lastName:string) : boolean {
     try {
@@ -123,15 +124,19 @@ export default function Home() {
           setUsersInitial(data);
         })
         .catch((error) => {
+          toast.error('Error fetching users');
           setUsers({});
         });
     } catch (e) {
+      toast.error('Error fetching users');
       console.log(e);
     }
   }
 
   useEffect(() => {
+    setIsLoading(true);
     getAllUsers();
+    setIsLoading(false);
   }, []);
 
   return (
@@ -150,6 +155,7 @@ export default function Home() {
             <div className="column-header">Search <input type="search" spellCheck="false" className="search-txt" onChange={(e)=>{filterResults(e.target.value)}}  placeholder="Search.." /></div>
           </div>
 
+          {Object.keys(users).length > 0 && <div className="users-count">Total {Object.keys(users).length} users found</div>}
 
           {Object.keys(users).map((key) => (
             <div key={key}>
@@ -158,7 +164,7 @@ export default function Home() {
                 <div className="column-header">🌐 {users[key].email}</div>
                 <div className="column-header">{users[key].firstName}</div>
                 <div className="column-header">{users[key].lastName}</div>
-                <div className="display-btn edit-btn" onClick={()=>handleEdit(users[key].id)}>✏️ </div> 
+                <div className="display-btn edit-btn" onClick={()=>handleEdit(users[key].id)}>✏️ </div>
                 <div className="display-btn delete-btn" onClick={()=>deleteUser(users[key].id)}>🗑️ </div>
               </div>
             {
@@ -177,7 +183,12 @@ export default function Home() {
           ))}
 
         </div>
+
+        {Object.keys(users).length === 0 && <div>No users found</div>}
+        { IsLoading && <div><img src="/static/images/loading.gif" alt="spinner" /></div> }
+
       </div>
+
       <Toaster position="top-right" reverseOrder={false} />
     </main>
 

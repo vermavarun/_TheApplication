@@ -92,3 +92,10 @@
   cursor: pointer;
   margin-left: 1%;
 }
+
+.users-count {
+  text-align: right;
+  margin-right: 2%;
+  font-weight: bold;
+  color: #e75f5f;
+}

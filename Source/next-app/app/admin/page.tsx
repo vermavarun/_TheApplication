@@ -5,6 +5,7 @@ import { User } from "../interfaces/user";
 import TopNav from "../components/topnav";
 import "./page.css";
 import toast, { Toaster } from 'react-hot-toast';
+import { UserToUpdate } from "../models/userToUpdate";
 
 export default function Home() {
   const [usersInitial, setUsersInitial] = useState<Record<string, User>>({});
@@ -71,11 +72,11 @@ export default function Home() {
   function filterResults(searchValue: string) {
     setSearchValue(searchValue);
     const usersArray = Object.values(usersInitial); // Convert users object to an array
-    const filteredUsers = usersArray.filter((user) => {
+    const filteredUsers = usersArray.filter((user:UserToUpdate) => {
       return (
-              user.firstName.toLowerCase().includes(searchValue.toLowerCase()) ||
-              user.lastName.toLowerCase().includes(searchValue.toLowerCase()) ||
-              user.email.toLowerCase().includes(searchValue.toLowerCase())
+              user.firstName?.toLowerCase().includes(searchValue.toLowerCase()) ||
+              user.lastName?.toLowerCase().includes(searchValue.toLowerCase()) ||
+              user.email?.toLowerCase().includes(searchValue.toLowerCase())
             );
     });
 
@@ -88,12 +89,21 @@ export default function Home() {
     setUsers(filteredUsersObject);
   }
 
+  const handleEdit = (id:string) => {
+
+    setId(id);
+    const user = Object.values(users).find((user:UserToUpdate) => user.id === id);
+    if (user) {
+      setUpdatedFirstNameValue(user.firstName);
+      setUpdatedLastNameValue(user.lastName);
+    }
+  }
   const handleSave = (id:string,firstName:string,lastName:string) => {
     setId('');
     const result = updateUser(id,firstName,lastName);
     if(result) {
       let usersCopy = users;
-      Object.values(usersCopy).map((user) => {
+      Object.values(usersCopy).map((user:UserToUpdate) => {
       if(user.id === id) {
         user.firstName = firstName;
         user.lastName = lastName;
@@ -148,7 +158,7 @@ export default function Home() {
                 <div className="column-header">🌐 {users[key].email}</div>
                 <div className="column-header">{users[key].firstName}</div>
                 <div className="column-header">{users[key].lastName}</div>
-                <div className="display-btn edit-btn" onClick={()=>setId(users[key].id)}>✏️ </div> {/* save first name and last name in state IMPORTANT */}
+                <div className="display-btn edit-btn" onClick={()=>handleEdit(users[key].id)}>✏️ </div> 
                 <div className="display-btn delete-btn" onClick={()=>deleteUser(users[key].id)}>🗑️ </div>
               </div>
             {

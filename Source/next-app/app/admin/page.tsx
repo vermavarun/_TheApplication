@@ -42,7 +42,7 @@ export default function Home() {
     setSearchValue(searchValue);
     const usersArray = Object.values(usersInitial); // Convert users object to an array
     const filteredUsers = usersArray.filter((user) => {
-      return user.firstName.includes(searchValue);
+      return user.firstName.toLowerCase().includes(searchValue.toLowerCase());
     });
 
     // Convert the filtered array back to an object

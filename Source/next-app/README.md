@@ -8,8 +8,9 @@
 - State management using Redux [Done]
 - Pagination in admin grid
 - Sorting in admin grid
+- Very large files upload and download [https://chatgpt.com/share/67b3609b-29b0-8009-9c5c-869800586a50]
 - Toasts across the app pages
-  
+
 
 # Helpful links:
 - GitHub Login

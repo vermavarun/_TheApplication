@@ -68,30 +68,33 @@ namespace Users.Controllers
         [Route("profile")]
         public async Task<IActionResult> PostProfile([FromForm] UserDetailDto userDetailDto)
         {
-            try {
-            var userDetail = new UserDetail
+            try
             {
-                Id = userDetailDto.Id,
-                Address = userDetailDto.Address,
-                City = userDetailDto.City,
-                State = userDetailDto.State,
-                Country = userDetailDto.Country
-            };
+                var userDetail = new UserDetail
+                {
+                    Id = userDetailDto.Id,
+                    Address = userDetailDto.Address,
+                    City = userDetailDto.City,
+                    State = userDetailDto.State,
+                    Country = userDetailDto.Country
+                };
 
-            if (userDetailDto.ProfilePicture != null)
-            {
-                using var memoryStream = new MemoryStream();
-                await userDetailDto.ProfilePicture.CopyToAsync(memoryStream);
-                userDetail.ProfilePicture = memoryStream.ToArray();
+                if (userDetailDto.ProfilePicture != null)
+                {
+                    using var memoryStream = new MemoryStream();
+                    await userDetailDto.ProfilePicture.CopyToAsync(memoryStream);
+                    userDetail.ProfilePicture = memoryStream.ToArray();
+                }
+
+
+
+                _context.UserDetails.Add(userDetail);
+                await _context.SaveChangesAsync();
+
+                return Ok(new { message = "User details uploaded successfully" });
             }
-
-
-
-            _context.UserDetails.Add(userDetail);
-            await _context.SaveChangesAsync();
-
-            return Ok(new { message = "User details uploaded successfully" });
-            } catch (Exception ex) {
+            catch (Exception ex)
+            {
                 return BadRequest(new { message = ex.Message });
             }
         }
@@ -101,36 +104,39 @@ namespace Users.Controllers
         [Route("profile")]
         public async Task<IActionResult> PutProfile([FromForm] UserDetailDto userDetailDto)
         {
-            try {
-            var userDetail = new UserDetail
+            try
             {
-                Id = userDetailDto.Id,
-                Address = userDetailDto.Address,
-                City = userDetailDto.City,
-                State = userDetailDto.State,
-                Country = userDetailDto.Country
-            };
+                var userDetail = new UserDetail
+                {
+                    Id = userDetailDto.Id,
+                    Address = userDetailDto.Address,
+                    City = userDetailDto.City,
+                    State = userDetailDto.State,
+                    Country = userDetailDto.Country
+                };
 
-            if (userDetailDto.ProfilePicture != null)
-            {
-                using var memoryStream = new MemoryStream();
-                await userDetailDto.ProfilePicture.CopyToAsync(memoryStream);
-                userDetail.ProfilePicture = memoryStream.ToArray();
+                if (userDetailDto.ProfilePicture != null)
+                {
+                    using var memoryStream = new MemoryStream();
+                    await userDetailDto.ProfilePicture.CopyToAsync(memoryStream);
+                    userDetail.ProfilePicture = memoryStream.ToArray();
+                }
+
+                if (userDetailDto.Resume != null)
+                {
+                    using var memoryStream = new MemoryStream();
+                    await userDetailDto.Resume.CopyToAsync(memoryStream);
+                    userDetail.Resume = memoryStream.ToArray();
+                }
+
+
+                _context.UserDetails.Update(userDetail);
+                await _context.SaveChangesAsync();
+
+                return Ok(new { message = "User details updated successfully" });
             }
-
-            if (userDetailDto.Resume != null)
+            catch (Exception ex)
             {
-                using var memoryStream = new MemoryStream();
-                await userDetailDto.Resume.CopyToAsync(memoryStream);
-                userDetail.Resume = memoryStream.ToArray();
-            }
-
-
-            _context.UserDetails.Update(userDetail);
-            await _context.SaveChangesAsync();
-
-            return Ok(new { message = "User details updated successfully" });
-            } catch (Exception ex) {
                 return BadRequest(new { message = ex.Message });
             }
         }
@@ -197,6 +203,45 @@ namespace Users.Controllers
             var memoryStream = new MemoryStream(userDetail.Resume);
             return File(memoryStream, "application/pdf", "resume.pdf");
         }
+
+        [HttpPost("upload-large-file")]
+        public async Task<IActionResult> UploadLargeFile(CancellationToken cancellationToken)
+        {
+            var request = HttpContext.Request;
+            if (!request.HasFormContentType || !request.Form.Files.Any())
+            {
+                return BadRequest("No file uploaded.");
+            }
+
+            var file = request.Form.Files[0];
+            var filePath = Path.Combine("Uploads", file.FileName); // Store in "Uploads" folder
+
+            // Create the directory if not exists
+            Directory.CreateDirectory("Uploads");
+
+            // Open file stream and write in chunks
+            await using var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.None, 4096, true);
+            await file.CopyToAsync(fileStream, cancellationToken);
+
+            return Ok(new { message = "File uploaded successfully", fileName = file.FileName });
+        }
+
+
+        [HttpGet("download-large-file/{fileName}")]
+        public async Task<IActionResult> DownloadLargeFile(string fileName)
+        {
+            var filePath = Path.Combine("Uploads", fileName);
+
+            if (!System.IO.File.Exists(filePath))
+            {
+                return NotFound("File not found.");
+            }
+
+            var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            return File(fileStream, "application/octet-stream", fileName, enableRangeProcessing: true);
+        }
+
+
 
 
     }

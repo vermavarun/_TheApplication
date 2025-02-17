@@ -24,6 +24,7 @@ function TopNav() {
         <div className="topnav-pages">
           <Link href="/">Home</Link>
           <Link href="/admin">Admin</Link>
+          <Link href="/upload">Upload</Link>
             {
               !userValue?.name &&
               <React.Fragment key={"topnav-register"}>

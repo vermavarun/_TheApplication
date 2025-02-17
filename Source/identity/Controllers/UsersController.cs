@@ -10,11 +10,11 @@ namespace Users.Controllers
     public class UsersController : ControllerBase
     {
         private readonly UserManager<UserModel> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
-        public UsersController(UserManager<UserModel> userManager, RoleManager<IdentityRole> roleManager)
+        private readonly ApplicationDbContext _context;
+        public UsersController(UserManager<UserModel> userManager, ApplicationDbContext context)
         {
             _userManager = userManager;
-            _roleManager = roleManager;
+            _context = context;
         }
 
         [HttpGet]
@@ -61,6 +61,52 @@ namespace Users.Controllers
             var result = await _userManager.UpdateAsync(userToUpdate);
 
             return Ok(result);
+        }
+
+        [HttpPost]
+        [Route("profile")]
+        public async Task<IActionResult> PostProfile([FromForm] UserDetailDto userDetailDto)
+        {
+            try {
+            var userDetail = new UserDetail
+            {
+                Id = userDetailDto.Id,
+                Address = userDetailDto.Address,
+                City = userDetailDto.City,
+                State = userDetailDto.State,
+                Country = userDetailDto.Country
+            };
+
+            if (userDetailDto.ProfilePicture != null)
+            {
+                using var memoryStream = new MemoryStream();
+                await userDetailDto.ProfilePicture.CopyToAsync(memoryStream);
+                userDetail.ProfilePicture = memoryStream.ToArray();
+            }
+
+
+
+            _context.UserDetails.Add(userDetail);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "User details uploaded successfully" });
+            } catch (Exception ex) {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpGet]
+        [Route("profile/{id}")]
+        public async Task<IActionResult> GetProfile(string id)
+        {
+            var userDetail = await _context.UserDetails.FirstOrDefaultAsync(ud => ud.Id == id);
+
+            if (userDetail == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(userDetail);
         }
 
     }

@@ -1,3 +1,6 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
+
 public class UserDetail {
     public string Id { get; set; } = "";
     public string Address { get; set; } = "";

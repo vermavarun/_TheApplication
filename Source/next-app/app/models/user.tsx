@@ -3,4 +3,6 @@ export  interface User {
     avatar_url?: string;
     name?: string;
     picture?: string;
+    email?: string;
+    id?: string;
   }

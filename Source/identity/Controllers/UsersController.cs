@@ -144,5 +144,23 @@ namespace Users.Controllers
             return Ok(userDetail);
         }
 
+        // Individual profile picture download
+        [HttpGet]
+        [RequestSizeLimit(100 * 1024 * 1024)] // 100MB limit
+        [Route("profile/picture/{id}")]
+        public async Task<IActionResult> GetProfilePicture(string id)
+        {
+            var userDetail = await _context.UserDetails.FirstOrDefaultAsync(ud => ud.Id == id);
+
+            if (userDetail == null)
+            {
+                return NotFound();
+            }
+
+            return File(userDetail.ProfilePicture, "image/jpeg");
+        }
+
+
+
     }
 }

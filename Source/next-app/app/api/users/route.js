@@ -1,10 +1,5 @@
 import { NextResponse } from "next/server";
 
-// export async function GET() {
-//   const secretValue = process.env.SECRETKEY;
-//   return NextResponse.json({ name: 'Varun ' + secretValue });
-// }
-
 export async function GET() {
   try {
     const apiURL = process.env.API_URL + "/api/users";
@@ -13,6 +8,59 @@ export async function GET() {
     });
     const users = await res.json();
     return NextResponse.json(users);
+  } catch (error) {
+    return NextResponse.error(error);
+  }
+}
+
+export async function POST(request) {
+  try {
+    const apiURL = process.env.API_URL + "/api/users";
+    const res = await fetch(apiURL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(request.body),
+    });
+    const user = await res.json();
+    return NextResponse.json(user);
+  } catch (error) {
+    return NextResponse.error(error);
+  }
+}
+
+export async function PUT(payLoad) {
+  const userToPut = await payLoad.json();
+  try {
+    const apiURL = process.env.API_URL + "/api/users/";
+    const res = await fetch(apiURL, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(userToPut),
+    });
+    const user = await res.json();
+    return NextResponse.json(user);
+  } catch (error) {
+    return NextResponse.error(error);
+  }
+}
+
+export async function DELETE(payLoad) {
+  const userToPut = await payLoad.json();
+  try {
+    const apiURL = process.env.API_URL + "/api/users/";
+    const res = await fetch(apiURL, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(userToPut),
+    });
+    const user = await res.json();
+    return NextResponse.json(user);
   } catch (error) {
     return NextResponse.error(error);
   }

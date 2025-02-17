@@ -2,11 +2,13 @@ import { configureStore } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import userSlice from "./slices/userSlices"; // Example slice
 import producerSlice from "./slices/producerSlices"; // Example slice
+import toastSlice from "./slices/toastSlices"; // Example slice
 
 export const store = configureStore({
   reducer: {
     user: userSlice,
     producer: producerSlice,
+    toast: toastSlice,
   },
   devTools: process.env.NODE_ENV !== "production", // Enable Redux DevTools in development
 });

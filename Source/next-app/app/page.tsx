@@ -10,13 +10,12 @@ export default function Home() {
   return (
     <main >
       <TopNav />
-
       <div className="main-content">
       <h1>Home</h1>
       <Producer />
-      <hr/>
       <Consumer  />
       </div>
+
     </main>
   );
 }

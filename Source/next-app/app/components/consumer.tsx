@@ -7,10 +7,10 @@ function Consumer() {
     const producerValue = useAppSelector((state) => state.producer.value);
 
 
-    return <div>
-    Consumer
-    producerValue: {producerValue}  
-    </div>;
+    return (
+    <div>
+        Consumer :: {producerValue}
+    </div>);
 }
 
 export default Consumer;

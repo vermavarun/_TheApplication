@@ -1,0 +1,63 @@
+.register-form {
+    color: #e75f5f;
+    margin-top: 5%;
+    margin-bottom: 5%;
+    border: 1px solid #e75f5f;
+    border-radius: 12%;
+    width: 20%;
+    margin: auto;
+    margin-top: 5%;
+    padding: 1%;
+    .register-email {
+      text-align: left;
+      div {
+        font-size: 0.8em;
+    }
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    .register-password {
+      text-align: left;
+        div {
+            font-size: 0.8em;
+        }
+    }
+    .register-submit {
+        background-color: #e75f5f;
+        color: white;
+        border: none;
+        border-radius: 12%;
+        margin-top: 3%;
+        margin-bottom: 1%;
+        width: 60%;
+        height: 30px;
+    }
+    .register-submit:hover {
+      background-color: #f2f2f2;
+      color: #e75f5f;
+    }
+    .register-submit:active {
+        background-color: #e75f5f;
+        color: white;
+    }
+}
+
+.lbl {
+    font-size: 0.8em;
+    color: #e75f5f;
+    display: inline-block;
+    min-width: 10em;
+
+}
+
+.txtBoxlbl
+{
+  display: inline-block;
+  input {
+    min-width: 16.5em;
+    background-color: black;
+    color:#e75f5f;
+    border: 1px dotted #e75f5f;
+  }
+}

@@ -1,13 +1,12 @@
 "use client";
 import TopNav from "../components/topnav";
-import styles from "./page.module.css";
+import "./page.css";
 import { FormEvent, useEffect, useState } from "react";
 
 export default function Home() {
-  const [registered, setRegistered] = useState({});
+  const [statusMessage, setStatusMessage] = useState<string>("");
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setRegistered({});
     const formData = new FormData(event.currentTarget);
     // Convert FormData to JSON object
     const jsonObject: Record<string, any> = {};
@@ -22,14 +21,12 @@ export default function Home() {
     try {
       const data = await response.json();
       if (data.status === 200) {
-        setRegistered("Registered Successfully");
+        setStatusMessage("Registration Successfully");
       } else {
-        setRegistered(
-          "Error: " + data.message + " " + JSON.stringify(data.details)
-        );
+        setStatusMessage("Registration Not Successfully");
       }
     } catch (error) {
-      setRegistered("Error: " + error);
+      setStatusMessage("Registration Not Successfully with some errors");
     }
   }
 
@@ -37,15 +34,22 @@ export default function Home() {
     <main>
       <TopNav />
       <div className="main-content">
+
+        <form onSubmit={onSubmit} className="register-form">
         <h1>Register</h1>
-        <form onSubmit={onSubmit}>
-          <div>Email</div>
-          <input type="text" name="email" />
-          <div>Password</div>
-          <input type="password" name="password" /> <br />
-          <button type="submit">Register</button>
+          <div className="register-email">
+            <div className="lbl">Email:</div>
+            <div className="txtBoxlbl"><input type="text" name="email" /></div>
+            </div>
+
+          <div className="register-password">
+            <div className="lbl">Password:</div>
+            <div className="txtBoxlbl"><input type="password" name="password" /></div>
+          </div>
+          <button type="submit" className="register-submit">Register</button>
+          <div>{statusMessage}</div>
         </form>
-        <div>{JSON.stringify(registered)}</div>
+
       </div>
     </main>
   );

@@ -8,10 +8,11 @@ function Producer() {
         dispatch(setProducerSlice({value: event.target.value}));
     }
 
-    return <div>
-    Producer
-    <input onChange={disChange} value="initial"></input>
-    </div>;
+    return (
+    <div>
+        <div>Producer</div>
+        <input spellCheck="true" data-ms-editor="false" onChange={disChange}></input>
+    </div>);
 }
 
 export default Producer;

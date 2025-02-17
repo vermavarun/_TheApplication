@@ -1,20 +1,20 @@
 "use client";
-import { useAppSelector } from "@/store/store";
 import TopNav from "../components/topnav";
-import { User } from "../models/user";
 import { use, useEffect, useRef, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
-
-
+import "./page.css";
 
 function Upload() {
-  const currentUser: User = useAppSelector((state) => state.user);
   const [profile, setProfile] = useState(null);
   const fileInput = useRef<HTMLInputElement>(null);
   const [IsLoading, setIsLoading] = useState(false);
 
   async function handleUpload() {
-    if (!fileInput.current || !fileInput.current.files || fileInput.current.files.length === 0) {
+    if (
+      !fileInput.current ||
+      !fileInput.current.files ||
+      fileInput.current.files.length === 0
+    ) {
       alert("Please select a file before uploading.");
       return;
     }
@@ -49,7 +49,9 @@ function Upload() {
   async function getProfileDetails() {
     setIsLoading(true);
     try {
-      const response = await fetch("api/profile?id=2141103f-b316-4f61-b3f8-5df4522681c3");
+      const response = await fetch(
+        "api/profile?id=2141103f-b316-4f61-b3f8-5df4522681c3"
+      );
       const data = await response.json();
       setIsLoading(false);
       setProfile(data);
@@ -57,49 +59,61 @@ function Upload() {
       console.error("Profile error:", error);
       setIsLoading(false);
     }
-
   }
 
   return (
     <main>
       <TopNav />
       <div className="main-content">
-        <br /><br /><br /><br />
-        Upload
         <br />
-        User: {currentUser?.name}
         <br />
-        ID: {currentUser?.id}
-        <br /><br /><br /><br />
-        <input type="file" ref={fileInput} />
-        <br /><br />
-        <button onClick={handleUpload}>Upload</button>
-        <br/><br/>
-        <button onClick={getProfileDetails}>Get Profile Details</button>
+        <br />
+        <br />
 
-      <br/>
-      <br/>
-      <br/>
+        <br />
+        <br />
+        <br />
+        <br />
+        <input className="app-button" type="file" ref={fileInput} />
+        <br />
+        <br />
+        <button className="app-button" onClick={handleUpload}>
+          Upload
+        </button>
+        <br />
+        <br />
+        <button className="app-button" onClick={getProfileDetails}>
+          Get Profile Details
+        </button>
+
+        <br />
+        <br />
+        <br />
 
         <div>
-        {IsLoading && <div><img src="/static/images/loading.gif"/></div>}
-        <h1>Profile Details</h1>
-        <div>
-          <div>ID: {profile?.id}</div>
-          <div>Address: {profile?.address}</div>
-          <div>City: {profile?.city}</div>
-          <div>State: {profile?.state}</div>
-          <div>Country: {profile?.country}</div>
-          <div>Profile Picture: </div>
+          {IsLoading && (
+            <div>
+              <img src="/static/images/loading.gif" />
+            </div>
+          )}
+          <h1>Profile Details</h1>
           <div>
-            {profile?.profilePicture && (
-            <img src={`data:image/jpeg;base64,${profile?.profilePicture}`} alt="Profile Picture" />
-            )}
+            <div>ID: {profile?.id}</div>
+            <div>Address: {profile?.address}</div>
+            <div>City: {profile?.city}</div>
+            <div>State: {profile?.state}</div>
+            <div>Country: {profile?.country}</div>
+            <div>Profile Picture: </div>
+            <div>
+              {profile?.profilePicture && (
+                <img
+                  src={`data:image/jpeg;base64,${profile?.profilePicture}`}
+                  alt="Profile Picture"
+                />
+              )}
+            </div>
           </div>
-
         </div>
-      </div>
-
       </div>
 
       <Toaster position="top-right" reverseOrder={false} />

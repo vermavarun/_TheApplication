@@ -118,6 +118,12 @@ namespace Users.Controllers
                 userDetail.ProfilePicture = memoryStream.ToArray();
             }
 
+            if (userDetailDto.Resume != null)
+            {
+                using var memoryStream = new MemoryStream();
+                await userDetailDto.Resume.CopyToAsync(memoryStream);
+                userDetail.Resume = memoryStream.ToArray();
+            }
 
 
             _context.UserDetails.Update(userDetail);
@@ -160,6 +166,37 @@ namespace Users.Controllers
             return File(userDetail.ProfilePicture, "image/jpeg");
         }
 
+        // Individual resume display
+        [HttpGet]
+        [RequestSizeLimit(100 * 1024 * 1024)] // 100MB limit
+        [Route("profile/resume/{id}")]
+        public async Task<IActionResult> GetProfileResume(string id)
+        {
+            var userDetail = await _context.UserDetails.FirstOrDefaultAsync(ud => ud.Id == id);
+
+            if (userDetail == null)
+            {
+                return NotFound();
+            }
+
+            return File(userDetail.Resume, "application/pdf");
+        }
+
+        [HttpGet]
+        [RequestSizeLimit(100 * 1024 * 1024)] // 100MB limit
+        [Route("profile/download/{id}")]
+        public async Task<IActionResult> DownloadProfile(string id)
+        {
+            var userDetail = await _context.UserDetails.FirstOrDefaultAsync(ud => ud.Id == id);
+
+            if (userDetail == null)
+            {
+                return NotFound();
+            }
+
+            var memoryStream = new MemoryStream(userDetail.Resume);
+            return File(memoryStream, "application/pdf", "resume.pdf");
+        }
 
 
     }

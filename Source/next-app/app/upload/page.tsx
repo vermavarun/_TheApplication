@@ -7,6 +7,7 @@ import "./page.css";
 function Upload() {
   const [profile, setProfile] = useState(null);
   const fileInput = useRef<HTMLInputElement>(null);
+  const fileInputResume = useRef<HTMLInputElement>(null);
   const [IsLoading, setIsLoading] = useState(false);
 
   async function handleUpload() {
@@ -19,6 +20,15 @@ function Upload() {
       return;
     }
 
+    if (
+      !fileInputResume.current ||
+      !fileInputResume.current.files ||
+      fileInputResume.current.files.length === 0
+    ) {
+      alert("Please select a file before uploading.");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("Id", "2141103f-b316-4f61-b3f8-5df4522681c3");
     formData.append("Address", "123 Street");
@@ -26,6 +36,7 @@ function Upload() {
     formData.append("State", "NY");
     formData.append("Country", "USA");
     formData.append("ProfilePicture", fileInput.current.files[0]);
+    formData.append("Resume", fileInputResume.current.files[0]);
 
     try {
       setIsLoading(true);
@@ -83,8 +94,16 @@ function Upload() {
 
     <div className="fileUpload-wrapper">
       <div className="fileUploadInput">
-      <label>✨ Upload File</label>
+      <label>✨ Upload Picture</label>
       <input ref={fileInput} type="file" />
+      <button>+</button>
+      </div>
+    </div>
+
+    <div className="fileUpload-wrapper">
+      <div className="fileUploadInput">
+      <label>✨ Upload Resume</label>
+      <input ref={fileInputResume} type="file" />
       <button>+</button>
       </div>
     </div>

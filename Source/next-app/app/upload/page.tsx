@@ -74,7 +74,22 @@ function Upload() {
         <br />
         <br />
         <br />
-        <input className="app-button" type="file" ref={fileInput} />
+        {/* <label htmlFor="profile-picture">
+
+          <button className="app-button">Click to Upload Profile Picture</button>
+
+        </label>
+         */}
+
+    <div className="fileUpload-wrapper">
+      <div className="fileUploadInput">
+      <label>✨ Upload File</label>
+      <input ref={fileInput} type="file" />
+      <button>+</button>
+      </div>
+    </div>
+
+        {/* <input id="profile-picture"  className="app-button" type="file" ref={fileInput} /> */}
         <br />
         <br />
         <button className="app-button" onClick={handleUpload}>

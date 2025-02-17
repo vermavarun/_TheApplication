@@ -11,6 +11,7 @@ function Upload() {
   const currentUser: User = useAppSelector((state) => state.user);
   const [profile, setProfile] = useState(null);
   const fileInput = useRef<HTMLInputElement>(null);
+  const [IsLoading, setIsLoading] = useState(false);
 
   async function handleUpload() {
     if (!fileInput.current || !fileInput.current.files || fileInput.current.files.length === 0) {
@@ -27,6 +28,7 @@ function Upload() {
     formData.append("ProfilePicture", fileInput.current.files[0]);
 
     try {
+      setIsLoading(true);
       const response = await fetch("api/upload", {
         method: "PUT",
         body: formData,
@@ -35,21 +37,27 @@ function Upload() {
       const data = await response.json();
       console.log(data);
       toast.success("Upload successful");
+      setIsLoading(false);
     } catch (error) {
       console.error("Upload error:", error);
 
       toast.error("Upload failed");
+      setIsLoading(false);
     }
   }
 
   async function getProfileDetails() {
+    setIsLoading(true);
     try {
       const response = await fetch("api/profile?id=2141103f-b316-4f61-b3f8-5df4522681c3");
       const data = await response.json();
+      setIsLoading(false);
       setProfile(data);
     } catch (error) {
       console.error("Profile error:", error);
+      setIsLoading(false);
     }
+
   }
 
   return (
@@ -74,6 +82,7 @@ function Upload() {
       <br/>
 
         <div>
+        {IsLoading && <div><img src="/static/images/loading.gif"/></div>}
         <h1>Profile Details</h1>
         <div>
           <div>ID: {profile?.id}</div>
@@ -87,6 +96,7 @@ function Upload() {
             <img src={`data:image/jpeg;base64,${profile?.profilePicture}`} alt="Profile Picture" />
             )}
           </div>
+
         </div>
       </div>
 

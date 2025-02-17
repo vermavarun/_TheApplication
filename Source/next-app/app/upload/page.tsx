@@ -3,7 +3,7 @@ import { useAppSelector } from "@/store/store";
 import TopNav from "../components/topnav";
 import { User } from "../models/user";
 import { use, useEffect, useRef, useState } from "react";
-import toast from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 
 
 
@@ -28,7 +28,7 @@ function Upload() {
 
     try {
       const response = await fetch("api/upload", {
-        method: "POST",
+        method: "PUT",
         body: formData,
       });
 
@@ -66,7 +66,7 @@ function Upload() {
         <input type="file" ref={fileInput} />
         <br /><br />
         <button onClick={handleUpload}>Upload</button>
-
+        <br/><br/>
         <button onClick={getProfileDetails}>Get Profile Details</button>
 
       <br/>
@@ -92,7 +92,7 @@ function Upload() {
 
       </div>
 
-
+      <Toaster position="top-right" reverseOrder={false} />
     </main>
   );
 }

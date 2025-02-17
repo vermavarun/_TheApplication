@@ -205,6 +205,7 @@ namespace Users.Controllers
         }
 
         [HttpPost("upload-large-file")]
+        [RequestSizeLimit(1024 * 1024 * 1024 * 1)] // 1GB limit
         public async Task<IActionResult> UploadLargeFile(CancellationToken cancellationToken)
         {
             var request = HttpContext.Request;

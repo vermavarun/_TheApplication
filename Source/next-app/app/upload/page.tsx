@@ -76,21 +76,7 @@ function Upload() {
     <main>
       <TopNav />
       <div className="main-content">
-        <br />
-        <br />
-        <br />
-        <br />
 
-        <br />
-        <br />
-        <br />
-        <br />
-        {/* <label htmlFor="profile-picture">
-
-          <button className="app-button">Click to Upload Profile Picture</button>
-
-        </label>
-         */}
 
     <div className="fileUpload-wrapper">
       <div className="fileUploadInput">
@@ -108,21 +94,13 @@ function Upload() {
       </div>
     </div>
 
-        {/* <input id="profile-picture"  className="app-button" type="file" ref={fileInput} /> */}
-        <br />
-        <br />
         <button className="app-button" onClick={handleUpload}>
           Upload
         </button>
-        <br />
-        <br />
+
         <button className="app-button" onClick={getProfileDetails}>
           Get Profile Details
         </button>
-
-        <br />
-        <br />
-        <br />
 
         <div>
           {IsLoading && (

@@ -86,16 +86,23 @@ namespace Users.Controllers
                     userDetail.ProfilePicture = memoryStream.ToArray();
                 }
 
+                if (userDetailDto.Resume != null)
+                {
+                    using var memoryStream = new MemoryStream();
+                    await userDetailDto.Resume.CopyToAsync(memoryStream);
+                    userDetail.Resume = memoryStream.ToArray();
+                }
+
 
 
                 _context.UserDetails.Add(userDetail);
                 await _context.SaveChangesAsync();
 
-                return Ok(new { message = "User details uploaded successfully" });
+                return Ok(new { message = "User details uploaded successfully", statusCode = 200 });
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.Message });
+                return BadRequest(new { message = ex.Message, statusCode = 400 });
             }
         }
 
@@ -133,11 +140,11 @@ namespace Users.Controllers
                 _context.UserDetails.Update(userDetail);
                 await _context.SaveChangesAsync();
 
-                return Ok(new { message = "User details updated successfully" });
+                return Ok(new { message = "User details updated successfully", statusCode = 200 });
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.Message });
+                return BadRequest(new { message = ex.Message, statusCode = 400 });
             }
         }
 
@@ -203,47 +210,6 @@ namespace Users.Controllers
             var memoryStream = new MemoryStream(userDetail.Resume);
             return File(memoryStream, "application/pdf", "resume.pdf");
         }
-
-        [HttpPost("upload-large-file")]
-        [RequestSizeLimit(1024 * 1024 * 1024 * 1)] // 1GB limit
-        public async Task<IActionResult> UploadLargeFile(CancellationToken cancellationToken)
-        {
-            var request = HttpContext.Request;
-            if (!request.HasFormContentType || !request.Form.Files.Any())
-            {
-                return BadRequest("No file uploaded.");
-            }
-
-            var file = request.Form.Files[0];
-            var filePath = Path.Combine("Uploads", file.FileName); // Store in "Uploads" folder
-
-            // Create the directory if not exists
-            Directory.CreateDirectory("Uploads");
-
-            // Open file stream and write in chunks
-            await using var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.None, 4096, true);
-            await file.CopyToAsync(fileStream, cancellationToken);
-
-            return Ok(new { message = "File uploaded successfully", fileName = file.FileName });
-        }
-
-
-        [HttpGet("download-large-file/{fileName}")]
-        public async Task<IActionResult> DownloadLargeFile(string fileName)
-        {
-            var filePath = Path.Combine("Uploads", fileName);
-
-            if (!System.IO.File.Exists(filePath))
-            {
-                return NotFound("File not found.");
-            }
-
-            var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-            return File(fileStream, "application/octet-stream", fileName, enableRangeProcessing: true);
-        }
-
-
-
 
     }
 }

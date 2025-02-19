@@ -21,6 +21,15 @@ export async function POST(req) {
       userToPost.ProfilePicture = buffer.toString("base64");
     }
 
+    const resume = formData.get("Resume")
+    if (resume) {
+      const arrayBuffer = await resume.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer); // Convert to buffer
+
+      // Optionally, convert buffer to base64 if needed
+      userToPost.Resume = buffer.toString("base64");
+    }
+
     const apiURL = `${process.env.API_URL}/api/users/profile`;
     const res = await fetch(apiURL, {
       method: "POST",
@@ -28,6 +37,9 @@ export async function POST(req) {
     });
 
     const user = await res.json();
+    if (user.statusCode === 400) {
+      return NextResponse.json(user, { status: 400 });
+    }
     return NextResponse.json(user);
   } catch (error) {
     console.error("Error processing form data:", error);
@@ -64,6 +76,9 @@ export async function PUT(req) {
     });
 
     const user = await res.json();
+    if (user.statusCode === 400) {
+      return NextResponse.json(user, { status: 400 });
+    }
     return NextResponse.json(user);
   } catch (error) {
     console.error("Error processing form data:", error);

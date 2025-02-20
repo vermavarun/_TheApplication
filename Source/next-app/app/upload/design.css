@@ -1,5 +1,6 @@
 div {
     border: 1px solid #e75f5f;
+
 }
 .main-content{
 
@@ -10,24 +11,30 @@ div {
 .user-details-form{
     display: inline-block;
     margin-left: 10px;
-    vertical-align: middle;
+    vertical-align: top;
+}
+.user-form-row {
+    text-align: left;
 }
 .user-profile-picture{
     display: inline-block;
-    margin-left: 10px;
-    vertical-align: middle;
+    vertical-align: top;
 
 }
 .user-resume{
     display: inline-block;
     margin-left: 10px;
-    vertical-align: middle;
+    vertical-align: top;
+    height: 500px;
+    overflow: scroll;
+    min-width: 20%;
 }
+
 .display-label{
     display: inline-block;
     vertical-align: middle;
     text-align: left;
-    margin-left: 0 zcsss
+    min-width: 65px;
 }
 .app-input-text{
     display: inline-block;

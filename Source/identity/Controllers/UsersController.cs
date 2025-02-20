@@ -95,7 +95,7 @@ namespace Users.Controllers
                 }
 
 
-                var user = await _context.UserDetails.FindAsync(userDetail.Id);
+                var user = await _context.UserDetails.AsNoTracking().FirstOrDefaultAsync(ud => ud.Id == userDetail.Id); // AsNoTracking because we are retrieving data and update/add also to avoid exception
                 if (user != null)
                 {
                     _context.UserDetails.Update(userDetail);
@@ -118,7 +118,7 @@ namespace Users.Controllers
                 return BadRequest(new { message = ex.Message, statusCode = 400 });
             }
         }
-               
+
 
         [HttpPut]
         [RequestSizeLimit(100 * 1024 * 1024)] // 100MB limit

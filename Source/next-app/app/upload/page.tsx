@@ -20,23 +20,23 @@ function Upload() {
 
 
   async function handleUpload() {
-    if (
-      !pictureFileInput.current ||
-      !pictureFileInput.current.files ||
-      pictureFileInput.current.files.length === 0
-    ) {
-      alert("Please select a file before uploading.");
-      return;
-    }
+    // if (
+    //   !pictureFileInput.current ||
+    //   !pictureFileInput.current.files ||
+    //   pictureFileInput.current.files.length === 0
+    // ) {
+    //   alert("Please select a file before uploading.");
+    //   return;
+    // }
 
-    if (
-      !resumeFileInput.current ||
-      !resumeFileInput.current.files ||
-      resumeFileInput.current.files.length === 0
-    ) {
-      alert("Please select a file before uploading.");
-      return;
-    }
+    // if (
+    //   !resumeFileInput.current ||
+    //   !resumeFileInput.current.files ||
+    //   resumeFileInput.current.files.length === 0
+    // ) {
+    //   alert("Please select a file before uploading.");
+    //   return;
+    // }
 
     const formData = new FormData();
     formData.append("Id", selectedUserId);
@@ -44,8 +44,12 @@ function Upload() {
     formData.append("City", city);
     formData.append("State", state);
     formData.append("Country", country);
-    formData.append("ProfilePicture", pictureFileInput.current.files[0]);
-    formData.append("Resume", resumeFileInput.current.files[0]);
+    if (pictureFileInput.current && pictureFileInput.current.files && pictureFileInput.current.files.length > 0) {
+      formData.append("ProfilePicture", pictureFileInput.current.files[0]);
+    }
+    if (resumeFileInput.current && resumeFileInput.current.files && resumeFileInput.current.files.length > 0) {
+      formData.append("Resume", resumeFileInput.current.files[0]);
+    }
 
     try {
       setIsLoading(true);
@@ -78,7 +82,16 @@ function Upload() {
     setCity('');
     setState('');
     setCountry('');
+    setProfile(null);
   }
+
+  function clearForm() {
+    setAddress('');
+    setCity('');
+    setState('');
+    setCountry('');
+  }
+
 
   async function getProfileDetails(id: string) {
     if (!id) {
@@ -167,30 +180,43 @@ function Upload() {
           </select>
         </div>
 
+         {/* Users Profile Picture */}
+         <div className="user-profile-picture">
+          <h1>Profile Picture</h1>
+          <div>
+                {profile?.profilePicture && (
+                  <img
+                    src={`data:image/jpeg;base64,${profile?.profilePicture}`}
+                    alt="Profile Picture"
+                  />
+                )}
+          </div>
+        </div>
+
         <div className="user-details-form">
           <h1>User Details</h1>
 
-          <div>
+          <div className="user-form-row">
             <div className="display-label">Address</div>
             <div className="app-input-text"><input defaultValue={profile?.address} spellCheck="false" type="text" onChange={(e)=>{setAddress(e.target.value)}} placeholder="Address" /></div>
           </div>
 
-          <div>
+          <div className="user-form-row">
             <div className="display-label">City</div>
             <div className="app-input-text"><input defaultValue={profile?.city} spellCheck="false" type="text" onChange={(e)=>{setCity(e.target.value)}} placeholder="City" /></div>
           </div>
 
-          <div>
+          <div className="user-form-row">
             <div className="display-label">State</div>
             <div className="app-input-text"><input defaultValue={profile?.state} spellCheck="false" type="text" onChange={(e)=>{setState(e.target.value)}} placeholder="State" /></div>
           </div>
 
-          <div>
+          <div className="user-form-row">
             <div className="display-label">Country</div>
             <div className="app-input-text"><input defaultValue={profile?.country} spellCheck="false" type="text" onChange={(e)=>{setCountry(e.target.value)}} placeholder="Country" /></div>
           </div>
 
-          <div>
+          <div className="user-form-row">
             <div className="display-label">Profile Picture</div>
             <div className="app-input-file">
               <input type="file" ref={pictureFileInput} />
@@ -198,7 +224,7 @@ function Upload() {
             </div>
           </div>
 
-          <div>
+          <div className="user-form-row">
             <div className="display-label">Resume (pdf)</div>
             <div className="app-input-file">
               <input type="file" ref={resumeFileInput} />
@@ -211,19 +237,6 @@ function Upload() {
             <button className="app-button" onClick={handleCancel}>Cancel</button>
           </div>
 
-        </div>
-
-        {/* Users Profile Picture */}
-        <div className="user-profile-picture">
-          <h1>Profile Picture</h1>
-          <div>
-                {profile?.profilePicture && (
-                  <img
-                    src={`data:image/jpeg;base64,${profile?.profilePicture}`}
-                    alt="Profile Picture"
-                  />
-                )}
-          </div>
         </div>
 
         {/* Users Resume */}

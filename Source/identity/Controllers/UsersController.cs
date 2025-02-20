@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using identity.Migrations;
 
 namespace Users.Controllers
 {
@@ -94,17 +95,30 @@ namespace Users.Controllers
                 }
 
 
-
-                _context.UserDetails.Add(userDetail);
-                await _context.SaveChangesAsync();
-
-                return Ok(new { message = "User details uploaded successfully", statusCode = 200 });
+                var user = await _context.UserDetails.FindAsync(userDetail.Id);
+                if (user != null)
+                {
+                    _context.UserDetails.Update(userDetail);
+                    await _context.SaveChangesAsync();
+                    return Ok(new { message = "User details updated successfully", statusCode = 200 });
+                }
+                else if (user == null)
+                {
+                    _context.UserDetails.Add(userDetail);
+                    await _context.SaveChangesAsync();
+                    return Ok(new { message = "User details uploaded successfully", statusCode = 200 });
+                }
+                else
+                {
+                    return BadRequest(new { message = "User details not uploaded", statusCode = 400 });
+                }
             }
             catch (Exception ex)
             {
                 return BadRequest(new { message = ex.Message, statusCode = 400 });
             }
         }
+               
 
         [HttpPut]
         [RequestSizeLimit(100 * 1024 * 1024)] // 100MB limit

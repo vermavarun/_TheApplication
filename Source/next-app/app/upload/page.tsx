@@ -7,6 +7,7 @@ import { User } from "../models/user";
 
 function Upload() {
   const [profile, setProfile] = useState(null);
+  const [message, setMessage] = useState<unknown>();
   const pictureFileInput = useRef<HTMLInputElement>(null);
   const resumeFileInput = useRef<HTMLInputElement>(null);
   const [IsLoading, setIsLoading] = useState(false);
@@ -20,18 +21,18 @@ function Upload() {
 
   async function handleUpload() {
     if (
-      !fileInput.current ||
-      !fileInput.current.files ||
-      fileInput.current.files.length === 0
+      !pictureFileInput.current ||
+      !pictureFileInput.current.files ||
+      pictureFileInput.current.files.length === 0
     ) {
       alert("Please select a file before uploading.");
       return;
     }
 
     if (
-      !fileInputResume.current ||
-      !fileInputResume.current.files ||
-      fileInputResume.current.files.length === 0
+      !resumeFileInput.current ||
+      !resumeFileInput.current.files ||
+      resumeFileInput.current.files.length === 0
     ) {
       alert("Please select a file before uploading.");
       return;
@@ -43,17 +44,18 @@ function Upload() {
     formData.append("City", city);
     formData.append("State", state);
     formData.append("Country", country);
-    formData.append("ProfilePicture", fileInput.current.files[0]);
-    formData.append("Resume", fileInputResume.current.files[0]);
+    formData.append("ProfilePicture", pictureFileInput.current.files[0]);
+    formData.append("Resume", resumeFileInput.current.files[0]);
 
     try {
       setIsLoading(true);
       const response = await fetch("api/upload", {
-        method: "PUT",
+        method: "POST",
         body: formData,
       });
 
       const data = await response.json();
+      setMessage(data);
       console.log(data);
       if (response.status === 200) {
         toast.success("Upload successful");
@@ -64,6 +66,7 @@ function Upload() {
       setIsLoading(false);
     } catch (error) {
       console.error("Upload error:", error);
+      setMessage(error);
       toast.error("Upload failed");
       setIsLoading(false);
     }
@@ -77,15 +80,15 @@ function Upload() {
     setCountry('');
   }
 
-  async function getProfileDetails() {
-    if (!selectedUserId) {
+  async function getProfileDetails(id: string) {
+    if (!id) {
       alert("Please select a user before fetching profile details.");
       return;
     }
     setIsLoading(true);
     try {
       const response = await fetch(
-        "api/profile?id=" + selectedUserId
+        "api/profile?id=" + id
       );
       const data = await response.json();
       console.log(data);
@@ -100,9 +103,10 @@ function Upload() {
       setCity(data.city);
       setState(data.state);
       setCountry(data.country);
-
+      setMessage(data);
     } catch (error) {
       console.error("Profile error:", error);
+      setMessage(error);
       setIsLoading(false);
     }
   }
@@ -130,8 +134,9 @@ function Upload() {
   }, []);
 
   function handleUserChange(value: string): void {
-    setSelectedUserId(value);
-    getProfileDetails();
+    setSelectedUserId(preValue => value); // to wait for the value to be set
+    getProfileDetails(value);
+
   }
 
   return (
@@ -239,6 +244,8 @@ function Upload() {
         </div>
 
       </div>
+      <pre>{JSON.stringify(message, null, 2)}</pre>
+
       <Toaster position="top-right" reverseOrder={false} />
     </main>
   );

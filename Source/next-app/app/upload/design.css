@@ -1,0 +1,42 @@
+div {
+    border: 1px solid #e75f5f;
+}
+.main-content{
+
+}
+.users-list-dropdown{
+    display: block;
+}
+.user-details-form{
+    display: inline-block;
+    margin-left: 10px;
+    vertical-align: middle;
+}
+.user-profile-picture{
+    display: inline-block;
+    margin-left: 10px;
+    vertical-align: middle;
+
+}
+.user-resume{
+    display: inline-block;
+    margin-left: 10px;
+    vertical-align: middle;
+}
+.display-label{
+    display: inline-block;
+    vertical-align: middle;
+    text-align: left;
+    margin-left: 0 zcsss
+}
+.app-input-text{
+    display: inline-block;
+    margin-left: 10px;
+    vertical-align: middle;
+    width: 70%;
+    height: 30px;
+    border: none;
+    border-radius: 5px;
+    color: #e75f5f;
+    text-align: left;
+}

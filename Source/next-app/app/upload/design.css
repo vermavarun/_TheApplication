@@ -1,7 +1,4 @@
-div {
-    border: 1px solid #e75f5f;
 
-}
 .main-content{
 
 }
@@ -46,4 +43,7 @@ div {
     border-radius: 5px;
     color: #e75f5f;
     text-align: left;
+}
+.app-input-text input {
+    color: white;
 }

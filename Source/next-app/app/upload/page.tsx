@@ -6,44 +6,22 @@ import "./design.css";
 import { User } from "../models/user";
 
 function Upload() {
-  const [profile, setProfile] = useState(null);
   const [message, setMessage] = useState<unknown>();
   const pictureFileInput = useRef<HTMLInputElement>(null);
   const resumeFileInput = useRef<HTMLInputElement>(null);
   const [IsLoading, setIsLoading] = useState(false);
   const [users, setUsers] = useState<Record<string, User>>({});
-  const [selectedUserId, setSelectedUserId] = useState<string>('');
-  const [address, setAddress] = useState('');
-  const [city, setCity] = useState('');
-  const [state, setState] = useState('');
-  const [country, setCountry] = useState('');
-
+  const [currentUser, setCurrentUser] = useState<User>();
 
   async function handleUpload() {
-    // if (
-    //   !pictureFileInput.current ||
-    //   !pictureFileInput.current.files ||
-    //   pictureFileInput.current.files.length === 0
-    // ) {
-    //   alert("Please select a file before uploading.");
-    //   return;
-    // }
-
-    // if (
-    //   !resumeFileInput.current ||
-    //   !resumeFileInput.current.files ||
-    //   resumeFileInput.current.files.length === 0
-    // ) {
-    //   alert("Please select a file before uploading.");
-    //   return;
-    // }
 
     const formData = new FormData();
-    formData.append("Id", selectedUserId);
-    formData.append("Address", address);
-    formData.append("City", city);
-    formData.append("State", state);
-    formData.append("Country", country);
+    if (currentUser?.id) formData.append("Id", currentUser.id);
+    if (currentUser?.address) formData.append("Address", currentUser.address);
+    if (currentUser?.city) formData.append("City", currentUser.city);
+    if (currentUser?.state) formData.append("State", currentUser.state);
+    if (currentUser?.country) formData.append("Country", currentUser.country);
+
     if (pictureFileInput.current && pictureFileInput.current.files && pictureFileInput.current.files.length > 0) {
       formData.append("ProfilePicture", pictureFileInput.current.files[0]);
     }
@@ -77,21 +55,9 @@ function Upload() {
   }
 
   function handleCancel() {
-    setSelectedUserId('');
-    setAddress('');
-    setCity('');
-    setState('');
-    setCountry('');
-    setProfile(null);
+    setCurrentUser(undefined);
+    setMessage(undefined);
   }
-
-  function clearForm() {
-    setAddress('');
-    setCity('');
-    setState('');
-    setCountry('');
-  }
-
 
   async function getProfileDetails(id: string) {
     if (!id) {
@@ -108,18 +74,16 @@ function Upload() {
       if (response.status !== 200) {
         toast.error("Error fetching profile details");
         setIsLoading(false);
+        setCurrentUser({...currentUser,id:id});
         return;
       }
       setIsLoading(false);
-      setProfile(data);
-      setAddress(data.address);
-      setCity(data.city);
-      setState(data.state);
-      setCountry(data.country);
+      setCurrentUser(data);
       setMessage(data);
     } catch (error) {
       console.error("Profile error:", error);
       setMessage(error);
+      setCurrentUser({...currentUser,id:id});
       setIsLoading(false);
     }
   }
@@ -129,7 +93,6 @@ function Upload() {
       fetch("/api/users")
         .then((response) => response.json())
         .then((data) => {
-          console.log(data);
           setUsers(data);
         })
         .catch((error) => {
@@ -147,7 +110,10 @@ function Upload() {
   }, []);
 
   function handleUserChange(value: string): void {
-    setSelectedUserId(preValue => value); // to wait for the value to be set
+    if (!value) {
+      return;
+    }
+    setCurrentUser({...currentUser,id:value});
     getProfileDetails(value);
 
   }
@@ -182,11 +148,11 @@ function Upload() {
 
          {/* Users Profile Picture */}
          <div className="user-profile-picture">
-          <h1>Profile Picture</h1>
+          <h1>Avatar</h1>
           <div>
-                {profile?.profilePicture && (
+                {currentUser?.profilePicture && (
                   <img
-                    src={`data:image/jpeg;base64,${profile?.profilePicture}`}
+                    src={`data:image/jpeg;base64,${currentUser?.profilePicture}`}
                     alt="Profile Picture"
                   />
                 )}
@@ -198,22 +164,22 @@ function Upload() {
 
           <div className="user-form-row">
             <div className="display-label">Address</div>
-            <div className="app-input-text"><input defaultValue={profile?.address} spellCheck="false" type="text" onChange={(e)=>{setAddress(e.target.value)}} placeholder="Address" /></div>
+            <div className="app-input-text"><input value={currentUser?.address || ''} spellCheck="false" type="text" onChange={(e)=>{setCurrentUser({...currentUser,address:e.target.value})}} placeholder="Address" /></div>
           </div>
 
           <div className="user-form-row">
             <div className="display-label">City</div>
-            <div className="app-input-text"><input defaultValue={profile?.city} spellCheck="false" type="text" onChange={(e)=>{setCity(e.target.value)}} placeholder="City" /></div>
+            <div className="app-input-text"><input value={currentUser?.city || ''} spellCheck="false" type="text" onChange={(e)=>{setCurrentUser({...currentUser,city:e.target.value})}} placeholder="City" /></div>
           </div>
 
           <div className="user-form-row">
             <div className="display-label">State</div>
-            <div className="app-input-text"><input defaultValue={profile?.state} spellCheck="false" type="text" onChange={(e)=>{setState(e.target.value)}} placeholder="State" /></div>
+            <div className="app-input-text"><input value={currentUser?.state || ''} spellCheck="false" type="text" onChange={(e)=>{setCurrentUser({...currentUser,state:e.target.value})}} placeholder="State" /></div>
           </div>
 
           <div className="user-form-row">
             <div className="display-label">Country</div>
-            <div className="app-input-text"><input defaultValue={profile?.country} spellCheck="false" type="text" onChange={(e)=>{setCountry(e.target.value)}} placeholder="Country" /></div>
+            <div className="app-input-text"><input value={currentUser?.country || ''} spellCheck="false" type="text" onChange={(e)=>{setCurrentUser({...currentUser,country:e.target.value})}} placeholder="Country" /></div>
           </div>
 
           <div className="user-form-row">
@@ -243,15 +209,15 @@ function Upload() {
         <div className="user-resume">
           <h1>Resume</h1>
           <div>
-            {profile?.resume && (
-              <a href={`data:application/pdf;base64,${profile?.resume}`} download="resume.pdf">
+            {currentUser?.resume && (
+              <a href={`data:application/pdf;base64,${currentUser?.resume}`} download="resume.pdf">
                 Download Resume
               </a>
             )}
           </div>
           <div className="embedResumePDF">
-            {profile?.resume && (
-              <embed src={`data:application/pdf;base64,${profile?.resume}`} width="100%" height="600px" />
+            {currentUser?.resume && (
+              <embed src={`data:application/pdf;base64,${currentUser?.resume}`} width="100%" height="600px" />
             )}
           </div>
         </div>

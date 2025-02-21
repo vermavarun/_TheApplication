@@ -56,6 +56,8 @@ function Upload() {
 
   function handleCancel() {
     setCurrentUser(undefined);
+    pictureFileInput.current && (pictureFileInput.current.value = "");
+    resumeFileInput.current && (resumeFileInput.current.value = "");
     setMessage(undefined);
   }
 

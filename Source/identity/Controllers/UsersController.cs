@@ -80,11 +80,17 @@ namespace Users.Controllers
                     Country = userDetailDto.Country
                 };
 
+                var user = await _context.UserDetails.AsNoTracking().FirstOrDefaultAsync(ud => ud.Id == userDetail.Id); // AsNoTracking because we are retrieving data and update/add also to avoid exception
+
+
                 if (userDetailDto.ProfilePicture != null)
                 {
                     using var memoryStream = new MemoryStream();
                     await userDetailDto.ProfilePicture.CopyToAsync(memoryStream);
                     userDetail.ProfilePicture = memoryStream.ToArray();
+                }
+                else if (user != null){
+                    userDetail.ProfilePicture = user.ProfilePicture;
                 }
 
                 if (userDetailDto.Resume != null)
@@ -93,9 +99,12 @@ namespace Users.Controllers
                     await userDetailDto.Resume.CopyToAsync(memoryStream);
                     userDetail.Resume = memoryStream.ToArray();
                 }
+                else if (user != null)
+                {
+                    userDetail.Resume = user.Resume;
+                }
 
 
-                var user = await _context.UserDetails.AsNoTracking().FirstOrDefaultAsync(ud => ud.Id == userDetail.Id); // AsNoTracking because we are retrieving data and update/add also to avoid exception
                 if (user != null)
                 {
                     _context.UserDetails.Update(userDetail);

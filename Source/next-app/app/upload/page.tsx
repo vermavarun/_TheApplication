@@ -14,6 +14,10 @@ function Upload() {
   const [currentUser, setCurrentUser] = useState<User>();
 
   async function handleUpload() {
+    if (!currentUser?.id) {
+      alert("Please select a user before uploading.");
+      return;
+    }
 
     const formData = new FormData();
     if (currentUser?.id) formData.append("Id", currentUser.id);
@@ -139,7 +143,7 @@ function Upload() {
 
         {/* Users list Drop down */}
         <div className="users-list-dropdown">
-          <h1>Users</h1>
+          <h1>Select User</h1>
           <select onChange={(e) => handleUserChange(e.target.value)}>
           <option value="">Choose here</option>
             {Object.values(users).map((user: User) => (
@@ -168,7 +172,7 @@ function Upload() {
 
           <div className="user-form-row">
             <div className="display-label">Address</div>
-            <div className="app-input-text"><input value={currentUser?.address || ''} spellCheck="false" type="text" onChange={(e)=>{setCurrentUser({...currentUser,address:e.target.value})}} placeholder="Address" /></div>
+            <div className="app-input-text"><textarea value={currentUser?.address || ''} spellCheck="false" rows={5} cols={10} onChange={(e)=>{setCurrentUser({...currentUser,address:e.target.value})}} placeholder="Address" /></div>
           </div>
 
           <div className="user-form-row">
@@ -190,7 +194,7 @@ function Upload() {
             <div className="display-label">Profile Picture</div>
             <div className="app-input-file">
               <input type="file" ref={pictureFileInput} />
-              <button>+</button>
+              {/* <button>+</button> */}
             </div>
           </div>
 
@@ -198,7 +202,7 @@ function Upload() {
             <div className="display-label">Resume (pdf)</div>
             <div className="app-input-file">
               <input type="file" ref={resumeFileInput} />
-              <button>+</button>
+              {/* <button>+</button> */}
             </div>
           </div>
 

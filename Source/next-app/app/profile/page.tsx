@@ -36,7 +36,7 @@ function Upload() {
 
     try {
       setIsLoading(true);
-      const response = await fetch("api/upload", {
+      const response = await fetch("api/profile", {
         method: "POST",
         body: formData,
       });

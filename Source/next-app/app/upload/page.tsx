@@ -12,6 +12,7 @@ function Upload() {
   const [IsLoading, setIsLoading] = useState(false);
   const [users, setUsers] = useState<Record<string, User>>({});
   const [currentUser, setCurrentUser] = useState<User>();
+  const selectInput = useRef<HTMLSelectElement>(null);
 
   async function handleUpload() {
     if (!currentUser?.id) {
@@ -58,13 +59,22 @@ function Upload() {
     }
   }
 
-  function handleCancel() {
+  // TODO: Not working for input types
+  function handleClear() {
     let id = currentUser?.id;
-    setCurrentUser({});
-    setCurrentUser({...currentUser,id:id});
+    setCurrentUser({
+      id: id,
+      address: "",
+      city: "",
+      state: "",
+      country: "",
+      profilePicture: "",
+      resume: "",
+    });
     pictureFileInput.current && (pictureFileInput.current.value = "");
     resumeFileInput.current && (resumeFileInput.current.value = "");
     setMessage(undefined);
+    selectInput.current && (selectInput.current.selectedIndex = 0);
   }
 
   async function getProfileDetails(id: string) {
@@ -144,7 +154,7 @@ function Upload() {
         {/* Users list Drop down */}
         <div className="users-list-dropdown">
           <h1>Select User</h1>
-          <select onChange={(e) => handleUserChange(e.target.value)}>
+          <select ref={selectInput} onChange={(e) => handleUserChange(e.target.value)}>
           <option value="">Choose here</option>
             {Object.values(users).map((user: User) => (
               <option key={user.id} value={user.id}>
@@ -208,7 +218,7 @@ function Upload() {
 
           <div>
             <button className="app-button" onClick={handleUpload}>Save</button>
-            <button className="app-button" onClick={handleCancel}>Cancel</button>
+            <button className="app-button" onClick={handleClear}>Clear</button>
           </div>
 
         </div>

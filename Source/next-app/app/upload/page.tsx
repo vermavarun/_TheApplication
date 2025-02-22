@@ -98,6 +98,8 @@ function Upload() {
       setIsLoading(false);
       setCurrentUser(data);
       setMessage(data);
+      resumeFileInput.current && (resumeFileInput.current.value = "");
+      pictureFileInput.current && (pictureFileInput.current.value = "");
     } catch (error) {
       console.error("Profile error:", error);
       setMessage(error);

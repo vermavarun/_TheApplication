@@ -17,30 +17,50 @@ namespace Users.Controllers
             _context = context;
         }
 
-        
+
 
         [HttpPost("upload-large-file")]
-        [RequestSizeLimit(1024 * 1024 * 1024 * 1)] // 1GB limit
-        public async Task<IActionResult> UploadLargeFile(CancellationToken cancellationToken)
-        {
-            var request = HttpContext.Request;
-            if (!request.HasFormContentType || !request.Form.Files.Any())
-            {
-                return BadRequest("No file uploaded.");
-            }
+[RequestSizeLimit(1024L * 1024 * 1024 * 5)] // 5GB limit
+public async Task<IActionResult> UploadLargeFile(CancellationToken cancellationToken)
+{
+    var request = HttpContext.Request;
 
-            var file = request.Form.Files[0];
-            var filePath = Path.Combine("Uploads", file.FileName); // Store in "Uploads" folder
+    if (!request.HasFormContentType || !request.Form.Files.Any())
+    {
+        return BadRequest("No file uploaded.");
+    }
 
-            // Create the directory if not exists
-            Directory.CreateDirectory("Uploads");
+    var file = request.Form.Files[0];
+    var fileName = request.Form["fileName"].ToString();
+    var chunkStart = long.Parse(request.Form["chunkStart"].ToString()); // Position of this chunk
 
-            // Open file stream and write in chunks
-            await using var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.None, 4096, true);
-            await file.CopyToAsync(fileStream, cancellationToken);
+    var filePath = Path.Combine("Uploads", fileName);
+    Directory.CreateDirectory("Uploads"); // Ensure directory exists
 
-            return Ok(new { message = "File uploaded successfully", fileName = file.FileName });
-        }
+    try
+    {
+        // Open or create file and allow appending
+        await using var fileStream = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite);
+
+        // Move to the correct chunk position
+        fileStream.Seek(chunkStart, SeekOrigin.Begin);
+
+        // Write the chunk data
+        await file.CopyToAsync(fileStream, cancellationToken);
+
+        // Ensure all data is written before releasing the file
+        await fileStream.FlushAsync(cancellationToken);
+
+        return Ok(new { message = "Chunk uploaded successfully", fileName });
+    }
+    catch (Exception ex)
+    {
+        return StatusCode(500, new { error = "File upload failed", details = ex.Message });
+    }
+}
+
+
+
 
 
         [HttpGet("download-large-file/{fileName}")]

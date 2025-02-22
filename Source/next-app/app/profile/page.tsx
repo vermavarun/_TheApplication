@@ -59,7 +59,6 @@ function Upload() {
     }
   }
 
-  // TODO: Not working for input types
   function handleClear() {
     let id = currentUser?.id;
     setCurrentUser({

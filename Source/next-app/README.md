@@ -6,10 +6,14 @@
 # TODO:
 - Interceptors https://requestly.com/blog/how-to-implement-axios-request-interceptors-in-next-js/
 - State management using Redux [Done]
-- Pagination in admin grid
-- Sorting in admin grid
 - Very large files upload and download [https://chatgpt.com/share/67b3609b-29b0-8009-9c5c-869800586a50]
 - Toasts across the app pages
+- Profile Page:
+  - Preview of resume and image on selection of files
+- Admin Page:
+  - Sorting
+  - Pagination
+
 
 
 # Helpful links:

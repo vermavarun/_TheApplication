@@ -63,19 +63,49 @@ public async Task<IActionResult> UploadLargeFile(CancellationToken cancellationT
 
 
 
-        [HttpGet("download-large-file/{fileName}")]
-        public async Task<IActionResult> DownloadLargeFile(string fileName)
-        {
-            var filePath = Path.Combine("Uploads", fileName);
+        [HttpGet("download-large-file")]
+public async Task<IActionResult> DownloadLargeFile([FromQuery] string fileName, [FromQuery] bool metadata = false,
+    [FromQuery] long? start = null, [FromQuery] int? chunkSize = null, CancellationToken cancellationToken = default)
+{
+    var filePath = Path.Combine("Uploads", fileName);
+    if (!System.IO.File.Exists(filePath))
+    {
+        return NotFound(new { error = "File not found" });
+    }
 
-            if (!System.IO.File.Exists(filePath))
-            {
-                return NotFound("File not found.");
-            }
+    // Return metadata (file size)
+    if (metadata)
+    {
+        var fileInfo = new FileInfo(filePath);
+        return Ok(new { fileSize = fileInfo.Length });
+    }
 
-            var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-            return File(fileStream, "application/octet-stream", fileName, enableRangeProcessing: true);
-        }
+    // Validate chunk request
+    if (start == null || chunkSize == null)
+    {
+        return BadRequest(new { error = "Invalid chunk request" });
+    }
+
+    try
+    {
+        var fileInfo = new FileInfo(filePath);
+        var totalSize = fileInfo.Length;
+        var buffer = new byte[chunkSize.Value];
+
+        await using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+        fileStream.Seek(start.Value, SeekOrigin.Begin);
+
+        var bytesRead = await fileStream.ReadAsync(buffer, 0, buffer.Length, cancellationToken);
+        var chunk = new MemoryStream(buffer, 0, bytesRead);
+
+        return File(chunk, "application/octet-stream", fileName);
+    }
+    catch (Exception ex)
+    {
+        return StatusCode(500, new { error = "Error streaming file", details = ex.Message });
+    }
+}
+
 
 
 

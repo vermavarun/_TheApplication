@@ -4,6 +4,11 @@
 2. dotnet ef migrations add initial
 3. dotnet ef database update
 4. visit http://localhost:5074/swagger/index.html
+5. To kill
+   ```
+   kill -9 $(lsof -ti:3000)
+   ```
+
 
 # ef
 

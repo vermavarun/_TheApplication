@@ -25,3 +25,4 @@
   - https://chatgpt.com/share/67aa23b6-f510-8009-b158-7f8fe8940fa3
 - Streaming Video
   - https://wolenetz.github.io/mse-in-workers-demo/mse-in-workers-demo.html
+  - https://stackoverflow.com/questions/32789417/loading-chunks-into-html5-video

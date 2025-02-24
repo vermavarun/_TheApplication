@@ -30,7 +30,7 @@ const VideoPlayer = () => {
     <div>
       <h2>Video Streaming</h2>
       {videoUrl ? (
-        <video ref={videoRef} controls width="800">
+        <video ref={videoRef} controls width="800" height="450" controls controlsList="nodownload" onContextMenu={e => e.preventDefault()}>
           <source src={videoUrl} type="video/mp4" />
           Your browser does not support the video tag.
         </video>

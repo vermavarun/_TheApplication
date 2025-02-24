@@ -13,6 +13,7 @@
 - Admin Page:
   - Sorting
   - Pagination
+- Video Streaming
 
 
 
@@ -22,3 +23,5 @@
 - Google Login
   - https://medium.com/@tony.infisical/guide-to-using-oauth-2-0-to-access-google-apis-dead94d6866d
   - https://chatgpt.com/share/67aa23b6-f510-8009-b158-7f8fe8940fa3
+- Streaming Video
+  - https://wolenetz.github.io/mse-in-workers-demo/mse-in-workers-demo.html

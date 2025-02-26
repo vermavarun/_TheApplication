@@ -14,6 +14,9 @@
   - Sorting
   - Pagination
 - Video Streaming
+- Video page:
+  - Stream request of teh video
+  - https://stackoverflow.com/questions/16862782/streaming-large-video-files-net
 
 
 

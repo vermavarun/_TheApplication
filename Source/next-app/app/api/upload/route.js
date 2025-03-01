@@ -1,72 +1,31 @@
-import { NextResponse } from "next/server";
+
+///
+import { NextRequest, NextResponse } from "next/server";
+const apiURL = process.env.API_URL + "/api/users/upload-large-file";
 
 export async function POST(req) {
   try {
-    // Parse form data
-    const formData = await req.formData();
-
-    // Convert FormData to an object
-    const userToPost = {};
-    formData.forEach((value, key) => {
-      userToPost[key] = value;
-    });
-
-    // Handle the file (ProfilePicture)
-    const profilePicture = formData.get("ProfilePicture")
-    if (profilePicture) {
-      const arrayBuffer = await profilePicture.arrayBuffer();
-      const buffer = Buffer.from(arrayBuffer); // Convert to buffer
-
-      // Optionally, convert buffer to base64 if needed
-      userToPost.ProfilePicture = buffer.toString("base64");
+    // Ensure Next.js allows streamed requests
+    const contentType = req.headers.get("content-type");
+    if (!contentType?.includes("multipart/form-data")) {
+      return NextResponse.json({ error: "Invalid content type" }, { status: 400 });
     }
 
-    const apiURL = `${process.env.API_URL}/api/users/profile`;
-    const res = await fetch(apiURL, {
+    // Create a fetch stream to forward the request to ASP.NET Core API
+    const apiResponse = await fetch(apiURL, {
       method: "POST",
-      body: formData, // Directly send FormData
+      headers: {
+        "Content-Type": contentType,
+      },
+      body: req.body, // Pass streaming body directly
+      duplex: "half", // ✅ Required for streaming requests in Next.js API (server-side only)
+
     });
 
-    const user = await res.json();
-    return NextResponse.json(user);
+    const result = await apiResponse.json();
+    return NextResponse.json(result);
   } catch (error) {
-    console.error("Error processing form data:", error);
-    return NextResponse.json({ error: "Failed to process form data" }, { status: 500 });
-  }
-}
-
-
-export async function PUT(req) {
-  try {
-    // Parse form data
-    const formData = await req.formData();
-
-    // Convert FormData to an object
-    const userToPost = {};
-    formData.forEach((value, key) => {
-      userToPost[key] = value;
-    });
-
-    // Handle the file (ProfilePicture)
-    const profilePicture = formData.get("ProfilePicture")
-    if (profilePicture) {
-      const arrayBuffer = await profilePicture.arrayBuffer();
-      const buffer = Buffer.from(arrayBuffer); // Convert to buffer
-
-      // Optionally, convert buffer to base64 if needed
-      userToPost.ProfilePicture = buffer.toString("base64");
-    }
-
-    const apiURL = `${process.env.API_URL}/api/users/profile`;
-    const res = await fetch(apiURL, {
-      method: "PUT",
-      body: formData, // Directly send FormData
-    });
-
-    const user = await res.json();
-    return NextResponse.json(user);
-  } catch (error) {
-    console.error("Error processing form data:", error);
-    return NextResponse.json({ error: "Failed to process form data" }, { status: 500 });
+    console.error("Error forwarding file:", error);
+    return NextResponse.json({ error: "File upload failed" }, { status: 500 });
   }
 }

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using identity.Migrations;
 
 namespace Users.Controllers
 {
@@ -68,64 +69,105 @@ namespace Users.Controllers
         [Route("profile")]
         public async Task<IActionResult> PostProfile([FromForm] UserDetailDto userDetailDto)
         {
-            try {
-            var userDetail = new UserDetail
+            try
             {
-                Id = userDetailDto.Id,
-                Address = userDetailDto.Address,
-                City = userDetailDto.City,
-                State = userDetailDto.State,
-                Country = userDetailDto.Country
-            };
+                var userDetail = new UserDetail
+                {
+                    Id = userDetailDto.Id,
+                    Address = userDetailDto.Address,
+                    City = userDetailDto.City,
+                    State = userDetailDto.State,
+                    Country = userDetailDto.Country
+                };
 
-            if (userDetailDto.ProfilePicture != null)
-            {
-                using var memoryStream = new MemoryStream();
-                await userDetailDto.ProfilePicture.CopyToAsync(memoryStream);
-                userDetail.ProfilePicture = memoryStream.ToArray();
+                var user = await _context.UserDetails.AsNoTracking().FirstOrDefaultAsync(ud => ud.Id == userDetail.Id); // AsNoTracking because we are retrieving data and update/add also to avoid exception
+
+
+                if (userDetailDto.ProfilePicture != null)
+                {
+                    using var memoryStream = new MemoryStream();
+                    await userDetailDto.ProfilePicture.CopyToAsync(memoryStream);
+                    userDetail.ProfilePicture = memoryStream.ToArray();
+                }
+                else if (user != null){
+                    userDetail.ProfilePicture = user.ProfilePicture;
+                }
+
+                if (userDetailDto.Resume != null)
+                {
+                    using var memoryStream = new MemoryStream();
+                    await userDetailDto.Resume.CopyToAsync(memoryStream);
+                    userDetail.Resume = memoryStream.ToArray();
+                }
+                else if (user != null)
+                {
+                    userDetail.Resume = user.Resume;
+                }
+
+
+                if (user != null)
+                {
+                    _context.UserDetails.Update(userDetail);
+                    await _context.SaveChangesAsync();
+                    return Ok(new { message = "User details updated successfully", statusCode = 200 });
+                }
+                else if (user == null)
+                {
+                    _context.UserDetails.Add(userDetail);
+                    await _context.SaveChangesAsync();
+                    return Ok(new { message = "User details uploaded successfully", statusCode = 200 });
+                }
+                else
+                {
+                    return BadRequest(new { message = "User details not uploaded", statusCode = 400 });
+                }
             }
-
-
-
-            _context.UserDetails.Add(userDetail);
-            await _context.SaveChangesAsync();
-
-            return Ok(new { message = "User details uploaded successfully" });
-            } catch (Exception ex) {
-                return BadRequest(new { message = ex.Message });
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message, statusCode = 400 });
             }
         }
+
 
         [HttpPut]
         [RequestSizeLimit(100 * 1024 * 1024)] // 100MB limit
         [Route("profile")]
         public async Task<IActionResult> PutProfile([FromForm] UserDetailDto userDetailDto)
         {
-            try {
-            var userDetail = new UserDetail
+            try
             {
-                Id = userDetailDto.Id,
-                Address = userDetailDto.Address,
-                City = userDetailDto.City,
-                State = userDetailDto.State,
-                Country = userDetailDto.Country
-            };
+                var userDetail = new UserDetail
+                {
+                    Id = userDetailDto.Id,
+                    Address = userDetailDto.Address,
+                    City = userDetailDto.City,
+                    State = userDetailDto.State,
+                    Country = userDetailDto.Country
+                };
 
-            if (userDetailDto.ProfilePicture != null)
-            {
-                using var memoryStream = new MemoryStream();
-                await userDetailDto.ProfilePicture.CopyToAsync(memoryStream);
-                userDetail.ProfilePicture = memoryStream.ToArray();
+                if (userDetailDto.ProfilePicture != null)
+                {
+                    using var memoryStream = new MemoryStream();
+                    await userDetailDto.ProfilePicture.CopyToAsync(memoryStream);
+                    userDetail.ProfilePicture = memoryStream.ToArray();
+                }
+
+                if (userDetailDto.Resume != null)
+                {
+                    using var memoryStream = new MemoryStream();
+                    await userDetailDto.Resume.CopyToAsync(memoryStream);
+                    userDetail.Resume = memoryStream.ToArray();
+                }
+
+
+                _context.UserDetails.Update(userDetail);
+                await _context.SaveChangesAsync();
+
+                return Ok(new { message = "User details updated successfully", statusCode = 200 });
             }
-
-
-
-            _context.UserDetails.Update(userDetail);
-            await _context.SaveChangesAsync();
-
-            return Ok(new { message = "User details updated successfully" });
-            } catch (Exception ex) {
-                return BadRequest(new { message = ex.Message });
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message, statusCode = 400 });
             }
         }
 
@@ -142,6 +184,54 @@ namespace Users.Controllers
             }
 
             return Ok(userDetail);
+        }
+
+        // Individual profile picture download
+        [HttpGet]
+        [RequestSizeLimit(100 * 1024 * 1024)] // 100MB limit
+        [Route("profile/picture/{id}")]
+        public async Task<IActionResult> GetProfilePicture(string id)
+        {
+            var userDetail = await _context.UserDetails.FirstOrDefaultAsync(ud => ud.Id == id);
+
+            if (userDetail == null)
+            {
+                return NotFound();
+            }
+
+            return File(userDetail.ProfilePicture, "image/jpeg");
+        }
+
+        // Individual resume display
+        [HttpGet]
+        [RequestSizeLimit(100 * 1024 * 1024)] // 100MB limit
+        [Route("profile/resume/{id}")]
+        public async Task<IActionResult> GetProfileResume(string id)
+        {
+            var userDetail = await _context.UserDetails.FirstOrDefaultAsync(ud => ud.Id == id);
+
+            if (userDetail == null)
+            {
+                return NotFound();
+            }
+
+            return File(userDetail.Resume, "application/pdf");
+        }
+
+        [HttpGet]
+        [RequestSizeLimit(100 * 1024 * 1024)] // 100MB limit
+        [Route("profile/download/{id}")]
+        public async Task<IActionResult> DownloadProfile(string id)
+        {
+            var userDetail = await _context.UserDetails.FirstOrDefaultAsync(ud => ud.Id == id);
+
+            if (userDetail == null)
+            {
+                return NotFound();
+            }
+
+            var memoryStream = new MemoryStream(userDetail.Resume);
+            return File(memoryStream, "application/pdf", "resume.pdf");
         }
 
     }

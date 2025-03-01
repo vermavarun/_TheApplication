@@ -1,124 +1,71 @@
 "use client";
-import TopNav from "../components/topnav";
-import { use, useEffect, useRef, useState } from "react";
-import toast, { Toaster } from "react-hot-toast";
-import "./page.css";
+import { useState } from "react";
 
-function Upload() {
-  const [profile, setProfile] = useState(null);
-  const fileInput = useRef<HTMLInputElement>(null);
-  const [IsLoading, setIsLoading] = useState(false);
+const UploadPage = () => {
+  const [progress, setProgress] = useState(0);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
 
-  async function handleUpload() {
-    if (
-      !fileInput.current ||
-      !fileInput.current.files ||
-      fileInput.current.files.length === 0
-    ) {
-      alert("Please select a file before uploading.");
-      return;
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files?.length) {
+      setSelectedFile(event.target.files[0]);
+    }
+  };
+
+  const uploadFile = async () => {
+    if (!selectedFile) return;
+
+    setProgress(0);
+    setUploading(true);
+
+    const chunkSize = 5 * 1024 * 1024; // 5MB per chunk
+    const totalBytes = selectedFile.size;
+    let uploadedBytes = 0;
+
+    for (let start = 0; start < totalBytes; start += chunkSize) {
+      const chunk = selectedFile.slice(start, start + chunkSize);
+
+      const formData = new FormData();
+      formData.append("file", chunk);
+      formData.append("chunkStart", start.toString()); // Track chunk position
+      formData.append("fileName", selectedFile.name); // Use same file name
+
+      try {
+        const response = await fetch("/api/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!response.ok) {
+          throw new Error("Chunk upload failed");
+        }
+
+        uploadedBytes += chunk.size;
+        setProgress(Math.round((uploadedBytes / totalBytes) * 100));
+      } catch (error) {
+        console.error("Upload error:", error);
+        alert("File upload failed.");
+        setUploading(false);
+        return;
+      }
     }
 
-    const formData = new FormData();
-    formData.append("Id", "2141103f-b316-4f61-b3f8-5df4522681c3");
-    formData.append("Address", "123 Street");
-    formData.append("City", "New York");
-    formData.append("State", "NY");
-    formData.append("Country", "USA");
-    formData.append("ProfilePicture", fileInput.current.files[0]);
+    setProgress(100);
+    setUploading(false);
+    alert("File uploaded successfully!");
+  };
 
-    try {
-      setIsLoading(true);
-      const response = await fetch("api/upload", {
-        method: "PUT",
-        body: formData,
-      });
-
-      const data = await response.json();
-      console.log(data);
-      toast.success("Upload successful");
-      setIsLoading(false);
-    } catch (error) {
-      console.error("Upload error:", error);
-
-      toast.error("Upload failed");
-      setIsLoading(false);
-    }
-  }
-
-  async function getProfileDetails() {
-    setIsLoading(true);
-    try {
-      const response = await fetch(
-        "api/profile?id=2141103f-b316-4f61-b3f8-5df4522681c3"
-      );
-      const data = await response.json();
-      setIsLoading(false);
-      setProfile(data);
-    } catch (error) {
-      console.error("Profile error:", error);
-      setIsLoading(false);
-    }
-  }
 
   return (
-    <main>
-      <TopNav />
-      <div className="main-content">
-        <br />
-        <br />
-        <br />
-        <br />
-
-        <br />
-        <br />
-        <br />
-        <br />
-        <input className="app-button" type="file" ref={fileInput} />
-        <br />
-        <br />
-        <button className="app-button" onClick={handleUpload}>
-          Upload
-        </button>
-        <br />
-        <br />
-        <button className="app-button" onClick={getProfileDetails}>
-          Get Profile Details
-        </button>
-
-        <br />
-        <br />
-        <br />
-
-        <div>
-          {IsLoading && (
-            <div>
-              <img src="/static/images/loading.gif" />
-            </div>
-          )}
-          <h1>Profile Details</h1>
-          <div>
-            <div>ID: {profile?.id}</div>
-            <div>Address: {profile?.address}</div>
-            <div>City: {profile?.city}</div>
-            <div>State: {profile?.state}</div>
-            <div>Country: {profile?.country}</div>
-            <div>Profile Picture: </div>
-            <div>
-              {profile?.profilePicture && (
-                <img
-                  src={`data:image/jpeg;base64,${profile?.profilePicture}`}
-                  alt="Profile Picture"
-                />
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <Toaster position="top-right" reverseOrder={false} />
-    </main>
+    <div>
+      <input type="file" onChange={handleFileChange} />
+      <button onClick={uploadFile} disabled={!selectedFile || uploading}>
+        {uploading ? "Uploading..." : "Upload"}
+      </button>
+      <progress value={progress} max="100">{progress}%</progress>
+      <p>{progress}%</p>
+    </div>
   );
-}
+};
 
-export default Upload;
+export default UploadPage;

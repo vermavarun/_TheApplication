@@ -8,4 +8,5 @@ public class UserDetail {
     public string State { get; set; } = "";
     public string Country {get; set;} = "";
     public byte[] ProfilePicture {get; set;} = [];
+    public byte[] Resume {get; set;} = [];  
 }

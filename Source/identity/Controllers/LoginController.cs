@@ -6,15 +6,14 @@ using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Login.Controllers
-{
-    [ApiController]
+{    [ApiController]
     [Route("api/[controller]")]
     public class LoginController : ControllerBase
     {
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<UserModel> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IConfiguration _configuration;
-        public LoginController(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration)
+        public LoginController(UserManager<UserModel> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration)
         {
             _userManager = userManager;
             _roleManager = roleManager;

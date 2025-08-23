@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using identity.Migrations;
+//using identity.Migrations;
 
 namespace Users.Controllers
 {

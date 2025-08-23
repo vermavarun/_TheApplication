@@ -1,9 +1,12 @@
 # Steps to Start
 
-1. docker run -e "ACCEPT_EULA=1" -e "MSSQL_SA_PASSWORD=******" -e "MSSQL_PID=Developer" -e "MSSQL_USER=SA" -p 1433:1433 -d --name=sql mcr.microsoft.com/azure-sql-edge
+1. docker run -e "ACCEPT_EULA=1" -e "MSSQL_SA_PASSWORD=Ggn@1234Ggn@1234" -e "MSSQL_PID=Developer" -e "MSSQL_USER=sa" -p 1433:1433 -d --name=sql mcr.microsoft.com/azure-sql-edge
 2. dotnet ef migrations add initial
 3. dotnet ef database update
+4. dotnet run
 4. visit http://localhost:5074/swagger/index.html
+5. Update .env from .env.example for next-app
+5. npm run dev in next-app
 5. To kill
    ```
    kill -9 $(lsof -ti:3000)

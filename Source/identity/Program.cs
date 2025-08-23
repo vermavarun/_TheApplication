@@ -94,9 +94,6 @@ builder.Services.AddCors(options =>
                       });
 });
 
-builder.Services.AddScoped<UserManager<UserModel>>();
-builder.Services.AddScoped<RoleManager<IdentityRole>>();
-
 builder.Services.AddControllers(); // Add this line to use legacy way controllers in your app
 // App
 var app = builder.Build();

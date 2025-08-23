@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  # SQL Server Database
+  sqlserver:
+    image: mcr.microsoft.com/azure-sql-edge
+    container_name: sql-server
+    environment:
+      - ACCEPT_EULA=1
+      - MSSQL_SA_PASSWORD=Ggn@1234Ggn@1234
+      - MSSQL_PID=Developer
+      - MSSQL_USER=sa
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  # Identity API Service
+  identity-api:
+    build:
+      context: ./identity
+      dockerfile: Dockerfile
+    container_name: identity-api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__identitydb=Server=sqlserver,1433;Database=identitydb;User Id=sa;Password=Ggn@1234Ggn@1234;TrustServerCertificate=true;
+      - Jwt__Key=ThisIsASecretKeyForJWTTokenGenerationThatShouldBeAtLeast32Characters
+      - Jwt__Issuer=IdentityAPI
+      - Jwt__Audience=IdentityAPI
+    ports:
+      - "5074:8080"
+    depends_on:
+      - sqlserver
+    networks:
+      - app-network
+    restart: unless-stopped
+    volumes:
+      - ./identity/Uploads:/app/Uploads
+
+  # Next.js Frontend Application
+  next-app:
+    build:
+      context: ./next-app
+      dockerfile: Dockerfile
+    container_name: next-app
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=http://localhost:5074
+      - NEXT_TELEMETRY_DISABLED=1
+    ports:
+      - "3000:3000"
+    depends_on:
+      - identity-api
+    networks:
+      - app-network
+    restart: unless-stopped
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  sqlserver_data:
+    driver: local

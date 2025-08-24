@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 export async function GET() {
   try {
     const apiURL = process.env.API_URL + "/api/users";
+    console.log("Fetching users from:", apiURL);
     const res = await fetch(apiURL, {
       cache: "no-store",
     });

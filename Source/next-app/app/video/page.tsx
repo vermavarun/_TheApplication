@@ -155,7 +155,7 @@ export default function VideoPlayer() {
       <TopNav />
       <Toaster position="top-right" />
 
-      <div className="video-container">
+      <div className="video-container main-content">
         <h1>Video Player - Range Request Streaming</h1>
 
         <div className="video-wrapper">

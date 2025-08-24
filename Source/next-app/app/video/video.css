@@ -1,7 +1,11 @@
 .video-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 0;
+}
+
+.video-container.main-content {
+  padding: 0 20px;
 }
 
 .video-wrapper {

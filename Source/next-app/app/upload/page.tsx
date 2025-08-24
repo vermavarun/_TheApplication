@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
-
+import "./page.css";
+import TopNav from "../components/topnav";
 const UploadPage = () => {
   const [progress, setProgress] = useState(0);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -57,14 +58,21 @@ const UploadPage = () => {
 
 
   return (
-    <div>
-      <input type="file" onChange={handleFileChange} />
-      <button onClick={uploadFile} disabled={!selectedFile || uploading}>
-        {uploading ? "Uploading..." : "Upload"}
-      </button>
-      <progress value={progress} max="100">{progress}%</progress>
-      <p>{progress}%</p>
-    </div>
+    <main>
+      <TopNav />
+      <div className="main-content">
+        <h1 className="lbl">Upload File</h1>
+        <div>
+          <input className="txtBoxlbl" type="file" onChange={handleFileChange} />
+          <button onClick={uploadFile} disabled={!selectedFile || uploading}>
+            {uploading ? "Uploading..." : "Upload"}
+        </button>
+      </div>
+
+        <progress value={progress} max="100">{progress}%</progress>
+        <p>{progress}%</p>
+      </div>
+    </main>
   );
 };
 

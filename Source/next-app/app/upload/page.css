@@ -1,0 +1,18 @@
+.lbl {
+    font-size: 0.8em;
+    color: #e75f5f;
+    display: inline-block;
+    min-width: 10em;
+
+}
+
+.txtBoxlbl
+{
+  display: inline-block;
+  input {
+    min-width: 16.5em;
+    background-color: black;
+    color:#e75f5f;
+    border: 1px dotted #e75f5f;
+  }
+}

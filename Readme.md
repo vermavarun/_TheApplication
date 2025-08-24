@@ -17,3 +17,10 @@ React Authorization
 React Routes
 API Authorization AAD
 Remove logs in browser console window
+
+<hr>
+
+Version 1
+- Move to source folder
+- docker compose up --build
+- Visit http://localhost:3000

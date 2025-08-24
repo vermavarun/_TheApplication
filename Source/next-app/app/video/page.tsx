@@ -168,7 +168,7 @@ export default function VideoPlayer() {
           <video
             ref={videoRef}
             className="video-player"
-            src={videoUrl}
+            src={videoUrl || undefined}
             onLoadStart={handleLoadStart}
             onLoadedMetadata={handleLoadedMetadata}
             onCanPlay={handleCanPlay}

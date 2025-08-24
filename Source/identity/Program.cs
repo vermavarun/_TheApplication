@@ -97,6 +97,22 @@ builder.Services.AddCors(options =>
 builder.Services.AddControllers(); // Add this line to use legacy way controllers in your app
 // App
 var app = builder.Build();
+
+// Apply database migrations automatically
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    try
+    {
+        context.Database.Migrate();
+    }
+    catch (Exception ex)
+    {
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while migrating the database.");
+    }
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

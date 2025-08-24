@@ -2,6 +2,7 @@
 import TopNav from "../components/topnav";
 import "./page.css";
 import { FormEvent, useEffect, useState } from "react";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function Home() {
   const [statusMessage, setStatusMessage] = useState<string>("");
@@ -14,26 +15,41 @@ export default function Home() {
     formData.forEach((value, key) => {
       jsonObject[key] = value;
     });
-    const response = await fetch("/api/login", {
-      cache: "no-store",
-      method: "POST",
-      body: JSON.stringify(jsonObject),
-    });
+
+    // Show loading toast
+    const loadingToast = toast.loading("Signing you in...");
+
     try {
+      const response = await fetch("/api/login", {
+        cache: "no-store",
+        method: "POST",
+        body: JSON.stringify(jsonObject),
+      });
+
       const data = await response.json();
+
+      // Dismiss loading toast
+      toast.dismiss(loadingToast);
+
       if (data.status === 200) {
         setStatusMessage("Login successful");
         window.localStorage.setItem("accessToken", data.details.accessToken);
         window.localStorage.setItem("loggedIn", "true");
+        toast.success("Login successful! Welcome back.");
       } else {
         setStatusMessage("Login failed");
+        toast.error(data.message || "Login failed. Please check your credentials.");
       }
     } catch (error) {
+      // Dismiss loading toast
+      toast.dismiss(loadingToast);
       setStatusMessage("Login failed with some errors");
+      toast.error("Login failed with network error. Please try again.");
     }
   }
 
   function LoginWithGoogle() {
+    toast.loading("Redirecting to Google...");
     // the client id from GCP
     const google_client_id =
       "470832023584-s99974jriculdjrsbkfj5sn63lvhrd0k.apps.googleusercontent.com";
@@ -58,6 +74,7 @@ export default function Home() {
   }
 
   function LoginWithGitHub() {
+    toast.loading("Redirecting to GitHub...");
     const github_client_id = "Ov23liY25mp04UVg8UCL";
     const github_callback = "http://localhost:3000/callback?thirdParty=github";
 
@@ -69,6 +86,7 @@ export default function Home() {
   return (
     <main>
       <TopNav />
+      <Toaster position="top-right" />
       <div className="main-content">
         <form onSubmit={onSubmit} className="login-form">
           <h1>Login</h1>

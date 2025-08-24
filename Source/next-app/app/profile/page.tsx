@@ -15,11 +15,16 @@ function Upload() {
   const selectInput = useRef<HTMLSelectElement>(null);
 
   async function handleUpload() {
+    console.log("handleUpload called, currentUser:", currentUser);
+
     if (!currentUser?.id) {
+      console.log("No currentUser or ID found");
+      toast.error("Please select a user before uploading.");
       alert("Please select a user before uploading.");
       return;
     }
 
+    console.log("Creating FormData with user ID:", currentUser.id);
     const formData = new FormData();
     if (currentUser?.id) formData.append("Id", currentUser.id);
     if (currentUser?.address) formData.append("Address", currentUser.address);
@@ -44,8 +49,12 @@ function Upload() {
       const data = await response.json();
       setMessage(data);
       console.log(data);
+
       if (response.status === 200) {
         toast.success("Upload successful");
+      }
+      else if (response.status === 404) {
+        toast.error("Profile creation failed - user profile endpoint may not be properly configured");
       }
       else {
         toast.error("Upload failed");
@@ -86,14 +95,42 @@ function Upload() {
       const response = await fetch(
         "api/profile?id=" + id
       );
-      const data = await response.json();
-      console.log(data);
-      if (response.status !== 200) {
-        toast.error("Error fetching profile details");
+
+      if (response.status === 404) {
+        // User doesn't have profile data yet - this is normal for new users
+        console.log("No profile data found for user, creating empty profile");
+        const selectedUser = Object.values(users).find((user: User) => user.id === id);
+        if (selectedUser) {
+          setCurrentUser({
+            ...selectedUser,
+            address: "",
+            city: "",
+            state: "",
+            country: "",
+            profilePicture: "",
+            resume: ""
+          });
+        }
+        toast.success("No profile found. You can create one by filling the form and clicking Save.");
+        setMessage({ info: "No profile data found. You can create one by filling the form and clicking Save." });
         setIsLoading(false);
-        setCurrentUser({...currentUser,id:id});
         return;
       }
+
+      if (!response.ok) {
+        // Handle other HTTP errors (not 404 since we handled that above)
+        console.error("Profile API error:", response.status, response.statusText);
+        toast.error("Error fetching profile details");
+        setIsLoading(false);
+        const selectedUser = Object.values(users).find((user: User) => user.id === id);
+        if (selectedUser) {
+          setCurrentUser(selectedUser);
+        }
+        return;
+      }
+
+      const data = await response.json();
+      console.log("Profile data:", data);
       setIsLoading(false);
       setCurrentUser(data);
       setMessage(data);
@@ -102,7 +139,11 @@ function Upload() {
     } catch (error) {
       console.error("Profile error:", error);
       setMessage(error);
-      setCurrentUser({...currentUser,id:id});
+      // Set basic user info if profile fetch fails
+      const selectedUser = Object.values(users).find((user: User) => user.id === id);
+      if (selectedUser) {
+        setCurrentUser(selectedUser);
+      }
       setIsLoading(false);
     }
   }
@@ -110,17 +151,36 @@ function Upload() {
   function getAllUsers() {
     try {
       fetch("/api/users")
-        .then((response) => response.json())
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response.json();
+        })
         .then((data) => {
-          setUsers(data);
+          console.log("Users fetched successfully:", data);
+          console.log("First user structure:", data[0]);
+          console.log("Users array length:", data.length);
+
+          // Convert array to object with ID as key for easier lookup
+          const usersObj = data.reduce((acc: Record<string, User>, user: User) => {
+            if (user.id) {
+              acc[user.id] = user;
+            }
+            return acc;
+          }, {});
+
+          console.log("Converted users object:", usersObj);
+          setUsers(usersObj);
         })
         .catch((error) => {
-          toast.error('Error fetching users');
+          console.error("Error fetching users:", error);
+          toast.error('Error fetching users: ' + error.message);
           setUsers({});
         });
     } catch (e) {
+      console.error("Fetch users error:", e);
       toast.error('Error fetching users');
-      console.log(e);
     }
   }
 
@@ -130,11 +190,31 @@ function Upload() {
 
   function handleUserChange(value: string): void {
     if (!value) {
+      setCurrentUser(undefined);
+      setMessage(undefined);
       return;
     }
-    setCurrentUser({...currentUser,id:value});
-    getProfileDetails(value);
 
+    console.log("User selected:", value);
+
+    // Find the selected user from users list
+    const selectedUser = Object.values(users).find((user: User) => user.id === value);
+    if (selectedUser) {
+      console.log("Found user:", selectedUser);
+      // Set basic user info immediately
+      setCurrentUser({
+        ...selectedUser,
+        address: "",
+        city: "",
+        state: "",
+        country: "",
+        profilePicture: "",
+        resume: ""
+      });
+    }
+
+    // Get profile details for the selected user (this may return 404 for new users)
+    getProfileDetails(value);
   }
 
   return (

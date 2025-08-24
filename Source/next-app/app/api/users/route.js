@@ -34,10 +34,23 @@ export async function GET() {
     const res = await fetch(apiURL, {
       cache: "no-store",
     });
+
+    if (!res.ok) {
+      console.error("API response not ok:", res.status, res.statusText);
+      return NextResponse.json(
+        { error: `API returned ${res.status}: ${res.statusText}` },
+        { status: res.status }
+      );
+    }
+
     const users = await res.json();
     return NextResponse.json(users);
   } catch (error) {
-    return NextResponse.error(error);
+    console.error("Error fetching users:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch users", details: error.message },
+      { status: 500 }
+    );
   }
 }
 

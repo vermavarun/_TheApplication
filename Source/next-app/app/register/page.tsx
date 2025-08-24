@@ -2,6 +2,7 @@
 import TopNav from "../components/topnav";
 import "./page.css";
 import { FormEvent, useEffect, useState } from "react";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function Home() {
   const [statusMessage, setStatusMessage] = useState<string>("");
@@ -13,26 +14,41 @@ export default function Home() {
     formData.forEach((value, key) => {
       jsonObject[key] = value;
     });
-    const response = await fetch("/api/create", {
-      cache: "no-store",
-      method: "POST",
-      body: JSON.stringify(jsonObject),
-    });
+
+    // Show loading toast
+    const loadingToast = toast.loading("Creating your account...");
+
     try {
+      const response = await fetch("/api/create", {
+        cache: "no-store",
+        method: "POST",
+        body: JSON.stringify(jsonObject),
+      });
+
       const data = await response.json();
+
+      // Dismiss loading toast
+      toast.dismiss(loadingToast);
+
       if (data.status === 200) {
         setStatusMessage("Registration Successfully");
+        toast.success("Registration successful! You can now login.");
       } else {
         setStatusMessage("Registration Not Successfully");
+        toast.error(data.message || "Registration failed. Please try again.");
       }
     } catch (error) {
+      // Dismiss loading toast
+      toast.dismiss(loadingToast);
       setStatusMessage("Registration Not Successfully with some errors");
+      toast.error("Registration failed with network error. Please try again.");
     }
   }
 
   return (
     <main>
       <TopNav />
+      <Toaster position="top-right" />
       <div className="main-content">
 
         <form onSubmit={onSubmit} className="register-form">

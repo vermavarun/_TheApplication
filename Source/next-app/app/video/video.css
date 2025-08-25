@@ -184,16 +184,18 @@
   opacity: 1;
 }
 
+
 .video-info {
-  background: #f5f5f5;
+  background: black;
   padding: 20px;
+  color:red;
   border-radius: 8px;
   border: 1px solid #ddd;
 }
 
 .video-info h3 {
   margin: 0 0 15px 0;
-  color: #333;
+  color: #red;
 }
 
 .info-grid {
@@ -204,9 +206,10 @@
 
 .info-item {
   padding: 8px;
-  background: white;
+  background: black;
   border-radius: 4px;
   border: 1px solid #eee;
+  color: red;
 }
 
 .error-message {

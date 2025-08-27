@@ -12,7 +12,7 @@ export default function VideoPlayer() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [volume, setVolume] = useState(1);
+  const [volume, setVolume] = useState(.1);
   const [buffered, setBuffered] = useState<TimeRanges | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
 

@@ -1,11 +1,10 @@
 import { setUserSlice } from "@/store/slices/userSlices";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import toast from "react-hot-toast";
-import { User } from "../models/user";
 import { useRouter } from "next/navigation";
 
 function TopNavUser() {
-    const userValue:User = useAppSelector((state) => state.user);
+    const userValue = useAppSelector((state) => state.user);
     const dispatch = useAppDispatch();
     const router = useRouter()
 

@@ -8,7 +8,7 @@ public class VideoController : ControllerBase
     [HttpGet("stream")]
     public IActionResult StreamVideo()
     {
-        var filePath = Path.Combine("Uploads", "file1.mp4");
+        var filePath = Path.Combine("Uploads", "Big.mp4");
 
         if (!System.IO.File.Exists(filePath))
         {

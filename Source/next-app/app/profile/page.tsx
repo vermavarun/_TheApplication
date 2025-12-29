@@ -71,7 +71,7 @@ function Upload() {
   function handleClear() {
     let id = currentUser?.id;
     setCurrentUser({
-      id: id,
+      id: id || "",
       address: "",
       city: "",
       state: "",
@@ -263,22 +263,22 @@ function Upload() {
 
           <div className="user-form-row">
             <div className="display-label">Address</div>
-            <div className="app-input-text"><textarea value={currentUser?.address || ''} spellCheck="false" rows={5} cols={10} onChange={(e)=>{setCurrentUser({...currentUser,address:e.target.value})}} placeholder="Address" /></div>
+            <div className="app-input-text"><textarea value={currentUser?.address || ''} spellCheck="false" rows={5} cols={10} onChange={(e)=>{setCurrentUser({...currentUser, id: currentUser?.id || '', address:e.target.value})}} placeholder="Address" /></div>
           </div>
 
           <div className="user-form-row">
             <div className="display-label">City</div>
-            <div className="app-input-text"><input value={currentUser?.city || ''} spellCheck="false" type="text" onChange={(e)=>{setCurrentUser({...currentUser,city:e.target.value})}} placeholder="City" /></div>
+            <div className="app-input-text"><input value={currentUser?.city || ''} spellCheck="false" type="text" onChange={(e)=>{setCurrentUser({...currentUser, id: currentUser?.id || '', city:e.target.value})}} placeholder="City" /></div>
           </div>
 
           <div className="user-form-row">
             <div className="display-label">State</div>
-            <div className="app-input-text"><input value={currentUser?.state || ''} spellCheck="false" type="text" onChange={(e)=>{setCurrentUser({...currentUser,state:e.target.value})}} placeholder="State" /></div>
+            <div className="app-input-text"><input value={currentUser?.state || ''} spellCheck="false" type="text" onChange={(e)=>{setCurrentUser({...currentUser, id: currentUser?.id || '', state:e.target.value})}} placeholder="State" /></div>
           </div>
 
           <div className="user-form-row">
             <div className="display-label">Country</div>
-            <div className="app-input-text"><input value={currentUser?.country || ''} spellCheck="false" type="text" onChange={(e)=>{setCurrentUser({...currentUser,country:e.target.value})}} placeholder="Country" /></div>
+            <div className="app-input-text"><input value={currentUser?.country || ''} spellCheck="false" type="text" onChange={(e)=>{setCurrentUser({...currentUser, id: currentUser?.id || '', country:e.target.value})}} placeholder="Country" /></div>
           </div>
 
           <div className="user-form-row">

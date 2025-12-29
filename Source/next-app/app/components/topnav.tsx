@@ -3,7 +3,6 @@
 import "../components/components.css";
 import { useAppDispatch, useAppSelector } from "../../store/store";
 import { setUserSlice } from "../../store/slices/userSlices";
-import {User} from "../models/user";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
@@ -11,7 +10,7 @@ import React from "react";
 import TopNavUser from "./topNavUser";
 
 function TopNav() {
-  const userValue:User = useAppSelector((state) => state.user);
+  const userValue = useAppSelector((state) => state.user);
 
 
   return (

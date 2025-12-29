@@ -17,24 +17,89 @@ export default function VideoPlayer() {
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   useEffect(() => {
-    let objectUrl: string | null = null;
+    const CHUNK_SIZE = 5 * 1024 * 1024; // 5MB
+    let totalSize = 0;
+    let isCancelled = false;
+    let mediaSource: MediaSource | null = null;
+    let sourceBuffer: SourceBuffer | null = null;
+    let videoEl: HTMLVideoElement | null = null;
     setIsLoading(true);
-    fetch("/api/video/stream", { headers: { Range: `bytes=0-1048575` } })
-      .then(async (response) => {
-        if (!response.ok) throw new Error("Failed to fetch video");
-        const blob = await response.blob();
-        objectUrl = URL.createObjectURL(blob);
-        setVideoUrl(objectUrl);
-        setIsLoading(false);
-      })
-      .catch((err) => {
-        setError("Failed to load video");
-        setIsLoading(false);
-        toast.error("Failed to load video. Please try again.");
+
+    async function startStreaming() {
+      // Step 1: Get total size
+      const resp = await fetch("/api/video/stream", { method: "GET", headers: { Range: "bytes=0-1" } });
+      if (!resp.ok) throw new Error("Failed to get video size");
+      const contentRange = resp.headers.get("Content-Range");
+      if (!contentRange) throw new Error("No Content-Range header");
+      const match = contentRange.match(/\/(\d+)$/);
+      if (!match) throw new Error("Invalid Content-Range header");
+      totalSize = parseInt(match[1], 10);
+
+      // Step 2: Setup MediaSource
+      mediaSource = new window.MediaSource();
+      setVideoUrl(""); // Clear any previous src
+      const url = URL.createObjectURL(mediaSource);
+      setVideoUrl(url);
+
+      mediaSource.addEventListener("sourceopen", async () => {
+        if (!mediaSource) return;
+        videoEl = videoRef.current;
+        if (!videoEl) return;
+  sourceBuffer = mediaSource.addSourceBuffer('video/mp4; codecs="avc1.4d401e, mp4a.40.2"');
+
+        let start = 0;
+        let fetching = false;
+
+        async function fetchAndAppendChunk() {
+          if (isCancelled || !mediaSource || !sourceBuffer) return;
+          if (start >= totalSize) {
+            if (mediaSource.readyState === "open") mediaSource.endOfStream();
+            setIsLoading(false);
+            return;
+          }
+          if (fetching || sourceBuffer.updating) return;
+          fetching = true;
+          const end = Math.min(start + CHUNK_SIZE - 1, totalSize - 1);
+          try {
+            const chunkResp = await fetch("/api/video/stream", {
+              headers: { Range: `bytes=${start}-${end}` },
+            });
+            if (!chunkResp.ok) throw new Error(`Failed to fetch chunk: ${start}-${end}`);
+            const chunk = await chunkResp.arrayBuffer();
+            sourceBuffer.appendBuffer(chunk);
+            start = end + 1;
+          } catch (err) {
+            setError("Failed to load video");
+            setIsLoading(false);
+            toast.error("Failed to load video. Please try again.");
+            return;
+          } finally {
+            fetching = false;
+          }
+        }
+
+        sourceBuffer.addEventListener("updateend", fetchAndAppendChunk);
+        // Start first chunk
+        fetchAndAppendChunk();
       });
+    }
+
+    startStreaming().catch((err) => {
+      setError("Failed to load video");
+      setIsLoading(false);
+      toast.error("Failed to load video. Please try again.");
+    });
+
     return () => {
-      if (objectUrl) {
-        URL.revokeObjectURL(objectUrl);
+      isCancelled = true;
+      if (mediaSource) {
+        mediaSource.removeEventListener("sourceopen", () => {});
+      }
+      if (videoEl) {
+        videoEl.src = "";
+      }
+      if (videoUrl) {
+        URL.revokeObjectURL(videoUrl);
       }
     };
   }, []);

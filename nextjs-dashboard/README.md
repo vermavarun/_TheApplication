@@ -31,6 +31,7 @@ cd .local-scripts
 
 ## GitHub Build workflow
 
+### This will build the nextjs code locally, build docker image as well.
 ```
-
+.github\workflows\nextjs-dashboard.yaml
 ```

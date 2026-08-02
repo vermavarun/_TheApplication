@@ -9,10 +9,16 @@ on:
 jobs:
   build-and-upload:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
 
     defaults:
       run:
         working-directory: nextjs-dashboard
+
+    env:
+      IMAGE_NAME: nextjs-dashboard
 
     steps:
       - name: Checkout repository
@@ -30,6 +36,26 @@ jobs:
 
       - name: Build production app
         run: npm run build
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./nextjs-dashboard
+          file: ./nextjs-dashboard/Dockerfile
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/nextjs-dashboard:latest
+            ghcr.io/${{ github.repository_owner }}/nextjs-dashboard:${{ github.sha }}
 
       - name: Archive build output
         run: |

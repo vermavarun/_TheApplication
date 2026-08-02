@@ -1,0 +1,39 @@
+name: nextjs-dashboard-build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build-and-upload:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: nextjs-dashboard
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: nextjs-dashboard/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build production app
+        run: npm run build
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: nextjs-dashboard-build
+          path: nextjs-dashboard/.next
+          if-no-files-found: error

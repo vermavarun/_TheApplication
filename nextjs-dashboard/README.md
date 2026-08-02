@@ -21,3 +21,16 @@ bun dev
 docker build -t nextjs-dashboard .
 docker run -p 3000:3000 nextjs-dashboard
 ```
+
+## Local build
+
+```
+cd .local-scripts
+.\build-prod.ps1
+```
+
+## GitHub Build workflow
+
+```
+
+```

@@ -7,6 +7,8 @@ docker compose up --build
 docker compose down --build
 ```
 
+For the system overview, see [diagram.md](diagram.md).
+
 1) NextJs Dashboard
 - Build local and docker [![nextjs-dashboard-build](https://github.com/vermavarun/_TheApplication/actions/workflows/nextjs-dashboard.yaml/badge.svg)](https://github.com/vermavarun/_TheApplication/actions/workflows/nextjs-dashboard.yaml)
 

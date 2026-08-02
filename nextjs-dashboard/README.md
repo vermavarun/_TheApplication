@@ -35,3 +35,9 @@ cd .local-scripts
 ```
 .github\workflows\nextjs-dashboard.yaml
 ```
+
+## Secrets
+
+```
+NA
+```

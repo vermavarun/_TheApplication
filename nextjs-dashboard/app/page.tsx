@@ -1,11 +1,33 @@
-import Image from "next/image";
+"use client";
+
+import { useEffect, useState } from "react";
 
 export default function Home() {
+  const [isHealthy, setIsHealthy] = useState<boolean>(false);
+
+  useEffect(() => {
+    const checkHealth = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/health");
+        setIsHealthy(response.ok);
+      } catch {
+        setIsHealthy(false);
+      }
+    };
+
+    checkHealth();
+  }, []);
+
   return (
     <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-       This is a Next.js dashboard application. You can customize this page to display your dashboard components and data.
-        
+      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-center gap-6 py-32 px-16 bg-white dark:bg-black sm:items-start">
+        <h1 className="text-3xl font-semibold text-black dark:text-white">Dashboard</h1>
+        <div className="flex items-center gap-3 rounded-lg border border-zinc-200 px-4 py-3 text-sm text-zinc-700 dark:border-zinc-800 dark:text-zinc-200">
+          <span
+            className={`h-3 w-3 rounded-full ${isHealthy ? "bg-green-500" : "bg-gray-400"}`}
+          />
+          <span>{isHealthy ? "Healthy" : "Unavailable"}</span>
+        </div>
       </main>
     </div>
   );

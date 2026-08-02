@@ -1,0 +1,18 @@
+services:
+  nextjs-dashboard:
+    build:
+      context: ./nextjs-dashboard
+      dockerfile: Dockerfile
+    container_name: nextjs-dashboard
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+
+  dotnet-apis-dashboard:
+    build:
+      context: ./dotnet-apis-dashboard
+      dockerfile: Dockerfile
+    container_name: dotnet-apis-dashboard
+    ports:
+      - "8080:8080"
+    restart: unless-stopped

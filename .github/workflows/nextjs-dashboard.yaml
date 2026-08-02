@@ -31,18 +31,14 @@ jobs:
       - name: Build production app
         run: npm run build
 
-      - name: Confirm build output exists
+      - name: Archive build output
         run: |
-          if [ -d .next ]; then
-            echo "Build output directory found at $(pwd)/.next"
-          else
-            echo "Build output directory is missing"
-            exit 1
-          fi
+          mkdir -p ../artifacts
+          tar -czf ../artifacts/nextjs-dashboard-build.tar.gz .next
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: nextjs-dashboard-build
-          path: ${{ github.workspace }}/nextjs-dashboard/.next
+          path: artifacts/nextjs-dashboard-build.tar.gz
           if-no-files-found: error

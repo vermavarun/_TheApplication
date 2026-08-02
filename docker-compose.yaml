@@ -4,9 +4,13 @@ services:
       context: ./nextjs-dashboard
       dockerfile: Dockerfile
     container_name: nextjs-dashboard
+    environment:
+      API_BASE_URL: http://dotnet-apis-dashboard:8080
     ports:
       - "3000:3000"
     restart: unless-stopped
+    depends_on:
+      - dotnet-apis-dashboard
 
   dotnet-apis-dashboard:
     build:

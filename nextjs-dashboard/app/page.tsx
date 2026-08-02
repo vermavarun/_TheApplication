@@ -1,22 +1,7 @@
-"use client";
+import { getHealthStatus } from "./lib/health";
 
-import { useEffect, useState } from "react";
-
-export default function Home() {
-  const [isHealthy, setIsHealthy] = useState<boolean>(false);
-
-  useEffect(() => {
-    const checkHealth = async () => {
-      try {
-        const response = await fetch("http://localhost:8080/health");
-        setIsHealthy(response.ok);
-      } catch {
-        setIsHealthy(false);
-      }
-    };
-
-    checkHealth();
-  }, []);
+export default async function Home() {
+  const isHealthy = await getHealthStatus();
 
   return (
     <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">

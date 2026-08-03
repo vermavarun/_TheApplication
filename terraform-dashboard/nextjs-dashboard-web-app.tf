@@ -1,16 +1,8 @@
-resource "azurerm_service_plan" "nextjs" {
-  name                = var.service_plan_name
-  resource_group_name = var.resource_group_name
-  location            = var.location
-  os_type             = "Linux"
-  sku_name            = "B1"
-}
-
 resource "azurerm_linux_web_app" "nextjs_dashboard" {
   name                = var.nextjs_web_app_name
   resource_group_name = var.resource_group_name
   location            = var.location
-  service_plan_id     = azurerm_service_plan.nextjs.id
+  service_plan_id     = azurerm_service_plan.common_app_service_plan.id
 
   https_only          = true
   client_affinity_enabled = false
@@ -27,5 +19,6 @@ resource "azurerm_linux_web_app" "nextjs_dashboard" {
   app_settings = {
     WEBSITES_PORT = "3000"
     NODE_ENV      = "production"
+    API_BASE_URL  = var.dotnet_web_app_name
   }
 }

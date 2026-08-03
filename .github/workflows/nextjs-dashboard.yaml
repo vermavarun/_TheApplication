@@ -80,7 +80,7 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Deploy Next.js image to Azure Web App
-        uses: azure/webapps-deploy@v4
+        uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ vars.NEXTJS_DASHBOARD_WEB_APP_NAME }}
           images: ghcr.io/${{ github.repository_owner }}/nextjs-dashboard:${{ github.sha }}

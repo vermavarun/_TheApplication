@@ -19,6 +19,6 @@ resource "azurerm_linux_web_app" "nextjs_dashboard" {
   app_settings = {
     WEBSITES_PORT = "3000"
     NODE_ENV      = "production"
-    API_BASE_URL  = var.dotnet_web_app_name
+    API_BASE_URL  = "https://${var.dotnet_web_app_name}.azurewebsites.net"
   }
 }

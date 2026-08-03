@@ -1,6 +1,7 @@
 name: dotnet-apis-dashboard-build
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main

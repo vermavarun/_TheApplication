@@ -96,3 +96,10 @@ jobs:
         with:
           app-name: ${{ vars.NEXTJS_DASHBOARD_WEB_APP_NAME }}
           images: ghcr.io/${{ github.repository_owner }}/nextjs-dashboard:${{ github.sha }}
+
+      - name: Set Next.js app settings in Azure Web App
+        run: |
+          az webapp config appsettings set \
+            --resource-group "${{ vars.RESOURCE_GROUP_NAME }}" \
+            --name "${{ vars.NEXTJS_DASHBOARD_WEB_APP_NAME }}" \
+            --settings "API_BASE_URL=https://${{ vars.DOTNET_DASHBOARD_WEB_APP_NAME }}.azurewebsites.net"

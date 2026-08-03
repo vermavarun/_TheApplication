@@ -1,21 +1,34 @@
 export async function getHealthStatus() {
   const apiBaseUrl = process.env.API_BASE_URL;
+  const healthUrl = apiBaseUrl ? `${apiBaseUrl}/health` : null;
 
-  if (!apiBaseUrl) {
-    return false;
+  if (!healthUrl) {
+    return {
+      healthy: false,
+      healthUrl: null,
+    };
   }
 
   try {
-    const response = await fetch(`${apiBaseUrl}/health`, {
+    const response = await fetch(healthUrl, {
       cache: "no-store",
     });
 
     if (!response.ok) {
-      return false;
+      return {
+        healthy: false,
+        healthUrl,
+      };
     }
 
-    return true;
+    return {
+      healthy: true,
+      healthUrl,
+    };
   } catch {
-    return false;
+    return {
+      healthy: false,
+      healthUrl,
+    };
   }
 }

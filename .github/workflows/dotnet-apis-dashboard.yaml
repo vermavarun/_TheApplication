@@ -4,7 +4,13 @@ on:
   push:
     branches:
       - main
+    paths:
+      - dotnet-apis-dashboard/**
+      - .github/workflows/dotnet-apis-dashboard.yaml
   pull_request:
+    paths:
+      - dotnet-apis-dashboard/**
+      - .github/workflows/dotnet-apis-dashboard.yaml
 
 jobs:
   build-and-publish:

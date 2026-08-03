@@ -1,3 +1,10 @@
+# Prerequisites:
+# 1) Resource group must already exist.
+# 2) Managed identity must be configured for federated access to this repository.
+# 3) That managed identity must have Contributor access on the target resource group.
+# 4) Storage account with blob container named tfstate must already exist for remote Terraform state.
+# 5) Repository variables and secrets must be configured for the Azure deployment values.
+
 name: terraform-dashboard
 
 on:
@@ -16,12 +23,12 @@ permissions:
 jobs:
   terraform:
     runs-on: ubuntu-latest
+    environment: dev
     defaults:
       run:
         working-directory: terraform-dashboard
 
     env:
-      environment: dev
       ARM_USE_OIDC: true
       ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}

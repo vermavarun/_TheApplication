@@ -4,9 +4,58 @@ This folder is used to deploy the Azure infrastructure for the Next.js dashboard
 
 ## What it deploys
 
-- A shared Azure Linux App Service plan
+- A shared Azure Linux App Service plan for both dashboard apps
 - A Linux Web App for the Next.js frontend
 - A Linux Web App for the .NET API backend
+- A virtual network for private integration
+- A delegated subnet for App Service VNet integration
+- A dedicated subnet for the private endpoint NIC
+- An Azure private endpoint for the .NET app's `sites` subresource
+- A private DNS zone for `privatelink.azurewebsites.net`
+- A VNet link that attaches the private DNS zone to the VNet
+
+## Architecture
+
+```mermaid
+flowchart LR
+    subgraph Azure[Azure Resource Group]
+        SP[Shared App Service Plan<br/>Linux / B1]
+
+        subgraph VNet[Virtual Network]
+            subnetApp[SNet for App Service VNet Integration]
+            subnetPE[SNet for Private Endpoint]
+            dns[Private DNS Zone<br/>privatelink.azurewebsites.net]
+        end
+
+        subgraph Apps[Azure App Service]
+            FE[Next.js Web App<br/>Public HTTPS endpoint]
+            BE[.NET Web App<br/>Private backend]
+        end
+
+        PE[Private Endpoint<br/>for .NET Web App]
+        VNetLink[DNS VNet Link]
+    end
+
+    User[Browser / Client] -->|HTTPS| FE
+    FE -->|API calls| BE
+    BE -->|Private access path| PE
+    PE -->|Private DNS resolution| dns
+    subnetApp -->|VNet integration| BE
+    subnetPE -->|Private endpoint NIC| PE
+    VNet -->|linked zone| VNetLink
+    VNetLink --> dns
+    SP --> FE
+    SP --> BE
+```
+
+### Connection flow
+
+- The Next.js dashboard is deployed to a shared Linux App Service plan and is reachable over HTTPS.
+- The .NET dashboard is also hosted in the same App Service plan.
+- The .NET app is attached to the virtual network through `virtual_network_subnet_id`, which enables VNet integration.
+- A private endpoint is created in a dedicated subnet and connects to the `.NET` web app's `sites` subresource.
+- The private DNS zone `privatelink.azurewebsites.net` is linked to the VNet so the backend can resolve privately.
+- The frontend can call the backend using the backend's App Service hostname or internal private name as configured in application settings.
 
 ## Prerequisites
 

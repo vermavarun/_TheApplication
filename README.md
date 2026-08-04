@@ -21,20 +21,36 @@ flowchart LR
     subgraph AzureInfra[Azure Infrastructure via Terraform]
         RG[Resource Group]
         Plan[Linux App Service Plan]
-        FrontendWeb[Next.js Web App]
-        BackendWeb[.NET Web App]
+        VNet[Virtual Network]
+        subnetApp[Integration Subnet]
+        subnetPE[Private Endpoint Subnet]
+        FrontendWeb[Next.js Web App\nVNet integrated]
+        BackendWeb[.NET Web App\nVNet integrated]
+        PE[Private Endpoint\nfor .NET app sites]
+        DNS[Private DNS Zone\nprivatelink.azurewebsites.net]
+        VNetLink[DNS VNet Link]
         MI[Managed Identity\nOIDC federated access]
         State[Terraform State\nBlob Storage]
     end
 
     Terraform[Terraform Workflow] -->|provisions| RG
     RG --> Plan
+    RG --> VNet
+    VNet --> subnetApp
+    VNet --> subnetPE
     Plan --> FrontendWeb
     Plan --> BackendWeb
+    subnetApp -->|VNet integration| FrontendWeb
+    subnetApp -->|VNet integration| BackendWeb
+    subnetPE -->|Private endpoint NIC| PE
+    PE -->|private connection| BackendWeb
+    VNet -->|links private DNS| VNetLink
+    VNetLink --> DNS
     MI -->|OIDC + Contributor access| RG
     Terraform -->|remote state| State
 
     FrontendWeb -->|API_BASE_URL app setting| BackendWeb
+    BackendWeb -->|private DNS resolution| DNS
     BackendWeb -->|health endpoint| ApiService
 
     classDef frontend fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20,stroke-width:1px;
@@ -46,7 +62,7 @@ flowchart LR
     class Dashboard frontend;
     class NodeRoute frontend;
     class ApiService server;
-    class RG,Plan,FrontendWeb,BackendWeb,MI,State infra;
+    class RG,Plan,VNet,subnetApp,subnetPE,FrontendWeb,BackendWeb,PE,DNS,VNetLink,MI,State infra;
     class GitHub,GHCR,Terraform,Azure infra;
 ```
 
@@ -66,9 +82,14 @@ Access the apps at:
 This repository also includes a Terraform configuration for provisioning the Azure infrastructure that hosts both applications.
 
 ### Infrastructure provisioned
-- Shared Azure Linux App Service Plan
+- Shared Azure Linux App Service Plan for both dashboard apps
 - Azure Linux Web App for the Next.js dashboard
 - Azure Linux Web App for the .NET API backend
+- Azure Virtual Network with subnet delegation for App Service integration
+- Dedicated private endpoint subnet
+- Private endpoint for the .NET app's `sites` subresource
+- Private DNS zone for `privatelink.azurewebsites.net`
+- VNet DNS link for the private zone
 - Remote Terraform state stored in Azure Storage
 
 ### Terraform workflow prerequisites

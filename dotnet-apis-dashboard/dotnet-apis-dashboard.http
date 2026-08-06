@@ -1,6 +1,9 @@
 @dotnet_apis_dashboard_HostAddress = http://localhost:5294
 
-GET {{dotnet_apis_dashboard_HostAddress}}/weatherforecast/
+GET {{dotnet_apis_dashboard_HostAddress}}/health/
 Accept: application/json
 
 ###
+
+GET {{dotnet_apis_dashboard_HostAddress}}/news/
+Accept: application/json

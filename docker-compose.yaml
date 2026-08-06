@@ -17,6 +17,8 @@ services:
       context: ./dotnet-apis-dashboard
       dockerfile: Dockerfile
     container_name: dotnet-apis-dashboard
+    environment:
+      ConnectionStrings__DefaultConnection: "Server=sqlserver,1433;Database=dashboarddb;User Id=sa;Password=;TrustServerCertificate=True;"
     ports:
       - "8080:8080"
     restart: unless-stopped

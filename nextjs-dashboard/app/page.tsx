@@ -1,9 +1,12 @@
 import { getHealthStatus } from "./lib/health";
+import { getNews } from "./lib/news";
+import type { NewsItem } from "./lib/news";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
   const { healthy, healthUrl } = await getHealthStatus();
+  const { news } = await getNews();
 
   return (
     <div className="min-h-screen bg-zinc-50 font-sans text-zinc-900 dark:bg-black dark:text-zinc-100">
@@ -66,6 +69,25 @@ export default async function Home() {
               This page checks the configured backend health endpoint from the Next.js server side so the call stays out of the browser.
             </div>
           </article>
+        </section>
+
+        <section className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
+          <h2 className="text-lg font-semibold text-zinc-950 dark:text-white">News</h2>
+          {!news ? (
+            <p className="mt-4 text-sm text-zinc-500 dark:text-zinc-400">Could not load news.</p>
+          ) : (
+            <ul className="mt-4 flex flex-col gap-3">
+              {news.map((item: NewsItem) => (
+                <li
+                  key={item.id}
+                  className="rounded-xl border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-800 dark:bg-zinc-900"
+                >
+                  <p className="font-semibold text-zinc-900 dark:text-white">{item.title}</p>
+                  <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">{item.description}</p>
+                </li>
+              ))}
+            </ul>
+          )}
         </section>
       </main>
     </div>

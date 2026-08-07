@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 type NewsItem = {
   id: number;
@@ -54,6 +54,20 @@ export function LiveStatusDashboard({
   const [connectionState, setConnectionState] = useState<SseConnectionState>("connecting");
   const lastEventAtRef = useRef<number>(0);
   const mountedAtRef = useRef<number>(0);
+
+  const checkApiHealth = useCallback(async (): Promise<boolean> => {
+    try {
+      const response = await fetch("/api/health", { cache: "no-store" });
+      if (!response.ok) {
+        return false;
+      }
+
+      const payload: { healthy?: boolean } = await response.json();
+      return Boolean(payload.healthy);
+    } catch {
+      return false;
+    }
+  }, []);
 
   const connectionBadgeStyles: Record<SseConnectionState, { dot: string; label: string }> = {
     connecting: { dot: "bg-amber-500", label: "Connecting" },
@@ -122,8 +136,7 @@ export function LiveStatusDashboard({
           setDbHealthy(Boolean(payload.dbHealthy));
           setNews(normalizeNews(payload.news));
         } catch {
-          setHealthy(false);
-          setDbHealthy(false);
+          // Ignore malformed event payloads and preserve the last known state.
         }
       };
 
@@ -155,15 +168,23 @@ export function LiveStatusDashboard({
       const stale = Date.now() - lastSeenAt > staleAfterMs;
 
       if (stale) {
-        setHealthy(false);
         setDbHealthy(false);
+        void (async () => {
+          const apiHealthy = await checkApiHealth();
+
+          setHealthy(apiHealthy);
+          if (apiHealthy) {
+            // Prevent repeated fallback checks while stream is reconnecting.
+            lastEventAtRef.current = Date.now();
+          }
+        })();
       }
     }, 1000);
 
     return () => {
       window.clearInterval(timer);
     };
-  }, []);
+  }, [checkApiHealth]);
 
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 px-6 py-8 lg:px-10 lg:py-10">
@@ -185,30 +206,38 @@ export function LiveStatusDashboard({
         {healthUrl && (
           <p className="mt-2 break-all font-mono text-xs text-zinc-500 dark:text-zinc-400">{healthUrl}</p>
         )}
-      </section>
 
-      {/* SQL Server */}
-      <section className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
-        <p className="text-xs font-medium uppercase tracking-widest text-zinc-400 dark:text-zinc-500">SQL Server</p>
-        <div className="mt-3 flex items-center gap-2">
-          <span className={`h-2.5 w-2.5 rounded-full ${dbHealthy ? "bg-emerald-500" : "bg-red-500"}`} />
-          <span className="text-sm font-semibold text-zinc-900 dark:text-white">
-            {dbHealthy ? "Healthy" : "Unhealthy"}
-          </span>
+        {/* SQL Server child */}
+        <div className="mt-5 rounded-xl border border-zinc-200/80 bg-zinc-50/80 p-4 dark:border-zinc-800 dark:bg-zinc-900/40">
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-xs font-medium uppercase tracking-widest text-zinc-400 dark:text-zinc-500">SQL Server</p>
+            <div className="inline-flex items-center gap-2 rounded-full border border-zinc-200 px-2.5 py-1 text-[11px] font-medium text-zinc-600 dark:border-zinc-700 dark:text-zinc-300">
+              <span className={`h-2 w-2 rounded-full ${dbHealthy ? "bg-emerald-500" : "bg-red-500"}`} />
+              <span>{dbHealthy ? "Connected" : "Disconnected"}</span>
+            </div>
+          </div>
+
+          <div className="mt-3 flex items-center gap-2">
+            <span className={`h-2.5 w-2.5 rounded-full ${dbHealthy ? "bg-emerald-500" : "bg-red-500"}`} />
+            <span className="text-sm font-semibold text-zinc-900 dark:text-white">
+              {dbHealthy ? "Healthy" : "Unhealthy"}
+            </span>
+          </div>
+
+          {dbHealthy && news.length > 0 && (
+            <ul className="mt-4 flex flex-col gap-2">
+              {news.map((item) => (
+                <li
+                  key={item.id}
+                  className="rounded-lg border border-zinc-100 bg-white px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900"
+                >
+                  <p className="text-sm font-semibold text-zinc-900 dark:text-white">{item.title}</p>
+                  <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">{item.description}</p>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
-        {dbHealthy && news.length > 0 && (
-          <ul className="mt-4 flex flex-col gap-2">
-            {news.map((item) => (
-              <li
-                key={item.id}
-                className="rounded-lg border border-zinc-100 bg-zinc-50 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900"
-              >
-                <p className="text-sm font-semibold text-zinc-900 dark:text-white">{item.title}</p>
-                <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">{item.description}</p>
-              </li>
-            ))}
-          </ul>
-        )}
       </section>
     </div>
   );

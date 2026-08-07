@@ -72,7 +72,6 @@ app.MapGet("/status/stream", async (HttpContext context, IServiceScopeFactory sc
         catch
         {
             dbHealthy = false;
-            healthy = false;
         }
 
         var payload = JsonSerializer.Serialize(new

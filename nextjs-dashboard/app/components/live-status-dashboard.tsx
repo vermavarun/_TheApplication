@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type NewsItem = {
   id: number;
@@ -52,6 +52,8 @@ export function LiveStatusDashboard({
   const [news, setNews] = useState<NewsItem[]>(initialNews);
   const [dbHealthy, setDbHealthy] = useState(initialNews.length > 0);
   const [connectionState, setConnectionState] = useState<SseConnectionState>("connecting");
+  const lastEventAtRef = useRef<number>(0);
+  const mountedAtRef = useRef<number>(0);
 
   const connectionBadgeStyles: Record<SseConnectionState, { dot: string; label: string }> = {
     connecting: { dot: "bg-amber-500", label: "Connecting" },
@@ -63,41 +65,105 @@ export function LiveStatusDashboard({
   const connectionBadge = connectionBadgeStyles[connectionState];
 
   useEffect(() => {
-    const eventSource = new EventSource(sseUrl);
+    mountedAtRef.current = Date.now();
+    let stopped = false;
+    let eventSource: EventSource | null = null;
+    let reconnectTimer: number | null = null;
 
-    eventSource.onopen = () => {
-      setConnectionState("connected");
-    };
-
-    eventSource.onmessage = (event) => {
-      try {
-        const payload: {
-          healthy?: boolean;
-          dbHealthy?: boolean;
-          news?: unknown;
-        } = JSON.parse(event.data);
-
-        setConnectionState("connected");
-        setHealthy(Boolean(payload.healthy));
-        setDbHealthy(Boolean(payload.dbHealthy));
-        setNews(normalizeNews(payload.news));
-      } catch {
-        setHealthy(false);
-        setDbHealthy(false);
+    const clearReconnectTimer = () => {
+      if (reconnectTimer !== null) {
+        window.clearTimeout(reconnectTimer);
+        reconnectTimer = null;
       }
     };
 
-    eventSource.onerror = () => {
-      setConnectionState(
-        eventSource.readyState === EventSource.CLOSED ? "disconnected" : "reconnecting",
-      );
+    const syncSnapshot = async () => {
+      try {
+        const [healthRes, newsRes] = await Promise.all([
+          fetch("/api/health", { cache: "no-store" }),
+          fetch("/api/news", { cache: "no-store" }),
+        ]);
+
+        const healthJson: { healthy?: boolean } = await healthRes.json();
+        const newsJson: unknown = await newsRes.json();
+
+        lastEventAtRef.current = Date.now();
+        setHealthy(Boolean(healthJson.healthy));
+        setDbHealthy(newsRes.ok);
+        setNews(normalizeNews(newsJson));
+      } catch {
+        // Keep existing state; the stale watchdog handles prolonged outages.
+      }
     };
 
+    const connect = () => {
+      if (stopped) {
+        return;
+      }
+
+      eventSource = new EventSource(sseUrl);
+
+      eventSource.onopen = () => {
+        setConnectionState("connected");
+        void syncSnapshot();
+      };
+
+      eventSource.onmessage = (event) => {
+        try {
+          const payload: {
+            healthy?: boolean;
+            dbHealthy?: boolean;
+            news?: unknown;
+          } = JSON.parse(event.data);
+
+          setConnectionState("connected");
+          lastEventAtRef.current = Date.now();
+          setHealthy(Boolean(payload.healthy));
+          setDbHealthy(Boolean(payload.dbHealthy));
+          setNews(normalizeNews(payload.news));
+        } catch {
+          setHealthy(false);
+          setDbHealthy(false);
+        }
+      };
+
+      eventSource.onerror = () => {
+        setConnectionState("reconnecting");
+        eventSource?.close();
+
+        clearReconnectTimer();
+        reconnectTimer = window.setTimeout(() => {
+          connect();
+        }, 1500);
+      };
+    };
+
+    connect();
+
     return () => {
-      eventSource.close();
+      stopped = true;
+      clearReconnectTimer();
+      eventSource?.close();
       setConnectionState("disconnected");
     };
   }, [sseUrl]);
+
+  useEffect(() => {
+    const staleAfterMs = 9000;
+    const timer = window.setInterval(() => {
+      const lastSeenAt = lastEventAtRef.current || mountedAtRef.current;
+      const stale = Date.now() - lastSeenAt > staleAfterMs;
+
+      if (stale) {
+        setHealthy(false);
+        setDbHealthy(false);
+      }
+    }, 1000);
+
+    return () => {
+      window.clearInterval(timer);
+    };
+  }, []);
 
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 px-6 py-8 lg:px-10 lg:py-10">

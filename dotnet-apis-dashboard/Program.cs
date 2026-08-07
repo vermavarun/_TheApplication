@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,6 +43,50 @@ app.MapGet("/health", () => Results.Ok("Healthy"))
 app.MapGet("/news", async (ApplicationDbContext db) =>
 {
     return await db.News.ToListAsync();
+});
+
+var sseJsonOptions = new JsonSerializerOptions
+{
+    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+    DefaultIgnoreCondition = JsonIgnoreCondition.Never
+};
+
+app.MapGet("/status/stream", async (HttpContext context, IServiceScopeFactory scopeFactory) =>
+{
+    context.Response.Headers.Append("Content-Type", "text/event-stream");
+    context.Response.Headers.Append("Cache-Control", "no-cache");
+    context.Response.Headers.Append("Connection", "keep-alive");
+
+    while (!context.RequestAborted.IsCancellationRequested)
+    {
+        var healthy = true;
+        var dbHealthy = true;
+        List<News> news = [];
+
+        try
+        {
+            using var scope = scopeFactory.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            news = await db.News.ToListAsync(context.RequestAborted);
+        }
+        catch
+        {
+            dbHealthy = false;
+            healthy = false;
+        }
+
+        var payload = JsonSerializer.Serialize(new
+        {
+            healthy,
+            dbHealthy,
+            news
+        }, sseJsonOptions);
+
+        await context.Response.WriteAsync($"data: {payload}\n\n", context.RequestAborted);
+        await context.Response.Body.FlushAsync(context.RequestAborted);
+
+        await Task.Delay(TimeSpan.FromSeconds(3), context.RequestAborted);
+    }
 });
 
 // Seed the database

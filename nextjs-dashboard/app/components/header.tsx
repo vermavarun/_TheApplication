@@ -9,6 +9,7 @@ export function Header() {
   const [userOpen, setUserOpen] = useState(false);
   const loginRef = useRef<HTMLDivElement>(null);
   const userRef = useRef<HTMLDivElement>(null);
+  const backendTokenSyncedRef = useRef(false);
 
   // Close dropdowns on outside click
   useEffect(() => {
@@ -23,6 +24,24 @@ export function Header() {
     document.addEventListener("mousedown", handleClick);
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
+
+  // After OAuth login succeeds, mint a .NET access token and store it in an HTTP-only cookie.
+  useEffect(() => {
+    if (status !== "authenticated" || !session?.user) {
+      backendTokenSyncedRef.current = false;
+      return;
+    }
+
+    if (backendTokenSyncedRef.current) {
+      return;
+    }
+
+    backendTokenSyncedRef.current = true;
+    void fetch("/api/auth/backend-token", {
+      method: "POST",
+      credentials: "include",
+    });
+  }, [session?.user, status]);
 
   return (
     <header className="sticky top-0 z-10 border-b border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
@@ -125,7 +144,14 @@ export function Header() {
                     </p>
                   </div>
                   <button
-                    onClick={() => { setUserOpen(false); signOut(); }}
+                    onClick={async () => {
+                      setUserOpen(false);
+                      await fetch("/api/auth/backend-token", {
+                        method: "DELETE",
+                        credentials: "include",
+                      });
+                      await signOut();
+                    }}
                     className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-zinc-50 dark:text-red-400 dark:hover:bg-zinc-800"
                   >
                     Sign out

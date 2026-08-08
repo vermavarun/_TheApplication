@@ -45,6 +45,25 @@ app.MapGet("/news", async (ApplicationDbContext db) =>
     return await db.News.ToListAsync();
 });
 
+app.MapPost("/users/register", async (ApplicationDbContext db, UserRegistrationRequest req) =>
+{
+    var existing = await db.Users.FirstOrDefaultAsync(u =>
+        u.Provider == req.Provider && u.ProviderAccountId == req.ProviderAccountId);
+
+    if (existing is not null)
+        return Results.Ok(new { registered = false, message = "User already exists" });
+
+    db.Users.Add(new AppUser
+    {
+        Email = req.Email,
+        Name = req.Name,
+        Provider = req.Provider,
+        ProviderAccountId = req.ProviderAccountId
+    });
+    await db.SaveChangesAsync();
+    return Results.Created($"/users/{req.ProviderAccountId}", new { registered = true });
+});
+
 var sseJsonOptions = new JsonSerializerOptions
 {
     PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
@@ -125,3 +144,10 @@ catch (Exception ex)
 }
 
 app.Run();
+
+record UserRegistrationRequest(
+    string Email,
+    string Name,
+    string Provider,
+    string ProviderAccountId
+);

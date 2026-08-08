@@ -88,12 +88,12 @@ app.MapGet("/status/stream", async (HttpContext context, IServiceScopeFactory sc
     }
 });
 
-// Seed the database
-using (var scope = app.Services.CreateScope())
+// Seed the database (best-effort — app starts even if SQL Server is unavailable)
+try
 {
+    using var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-    // Create the database if it doesn't exist
     db.Database.EnsureCreated();
 
     if (!db.News.Any())
@@ -117,6 +117,11 @@ using (var scope = app.Services.CreateScope())
 
         db.SaveChanges();
     }
+}
+catch (Exception ex)
+{
+    var logger = app.Services.GetRequiredService<ILogger<Program>>();
+    logger.LogWarning(ex, "Database seeding skipped — SQL Server unavailable.");
 }
 
 app.Run();

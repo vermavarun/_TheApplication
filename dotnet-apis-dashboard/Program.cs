@@ -1,3 +1,7 @@
+using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+
 var builder = WebApplication.CreateBuilder(args);
 
 var allowedOrigins = builder.Configuration
@@ -18,6 +22,10 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection")));
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -31,4 +39,89 @@ app.UseHttpsRedirection();
 
 app.MapGet("/health", () => Results.Ok("Healthy"))
     .WithName("HealthCheck");
+
+app.MapGet("/news", async (ApplicationDbContext db) =>
+{
+    return await db.News.ToListAsync();
+});
+
+var sseJsonOptions = new JsonSerializerOptions
+{
+    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+    DefaultIgnoreCondition = JsonIgnoreCondition.Never
+};
+
+app.MapGet("/status/stream", async (HttpContext context, IServiceScopeFactory scopeFactory) =>
+{
+    context.Response.Headers.Append("Content-Type", "text/event-stream");
+    context.Response.Headers.Append("Cache-Control", "no-cache");
+    context.Response.Headers.Append("Connection", "keep-alive");
+
+    while (!context.RequestAborted.IsCancellationRequested)
+    {
+        var healthy = true;
+        var dbHealthy = true;
+        List<News> news = [];
+
+        try
+        {
+            using var scope = scopeFactory.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            news = await db.News.ToListAsync(context.RequestAborted);
+        }
+        catch
+        {
+            dbHealthy = false;
+        }
+
+        var payload = JsonSerializer.Serialize(new
+        {
+            healthy,
+            dbHealthy,
+            news
+        }, sseJsonOptions);
+
+        await context.Response.WriteAsync($"data: {payload}\n\n", context.RequestAborted);
+        await context.Response.Body.FlushAsync(context.RequestAborted);
+
+        await Task.Delay(TimeSpan.FromSeconds(3), context.RequestAborted);
+    }
+});
+
+// Seed the database (best-effort — app starts even if SQL Server is unavailable)
+try
+{
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+    db.Database.EnsureCreated();
+
+    if (!db.News.Any())
+    {
+        db.News.AddRange(
+            new News
+            {
+                Title = "2012 was end?",
+                Description = " Don't Believe rumours"
+            },
+            new News
+            {
+                Title = "Pluto is a planet?",
+                Description = "Why to care?"
+            },
+            new News
+            {
+                Title = "Aliens Exists?",
+                Description = "Of course yes!"
+            });
+
+        db.SaveChanges();
+    }
+}
+catch (Exception ex)
+{
+    var logger = app.Services.GetRequiredService<ILogger<Program>>();
+    logger.LogWarning(ex, "Database seeding skipped — SQL Server unavailable.");
+}
+
 app.Run();

@@ -9,10 +9,10 @@ resource "azurerm_linux_web_app" "nextjs_dashboard" {
   client_affinity_enabled = false
 
   site_config {
-    always_on                 = true
-    ftps_state                = "FtpsOnly"
-    minimum_tls_version       = "1.2"
-    vnet_route_all_enabled    = true
+    always_on              = true
+    ftps_state             = "FtpsOnly"
+    minimum_tls_version    = "1.2"
+    vnet_route_all_enabled = true
 
     application_stack {
       node_version = "20-lts"

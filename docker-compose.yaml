@@ -17,6 +17,27 @@ services:
       context: ./dotnet-apis-dashboard
       dockerfile: Dockerfile
     container_name: dotnet-apis-dashboard
+    environment:
+      ConnectionStrings__DefaultConnection: "Server=sqlserver,1433;Database=dashboarddb;User Id=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=True;"
     ports:
       - "8080:8080"
     restart: unless-stopped
+    depends_on:
+      - sqlserver
+
+  sqlserver:
+    image: mcr.microsoft.com/azure-sql-edge:latest
+    container_name: sqlserver
+    platform: linux/amd64
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "YourStrong@Passw0rd"
+      MSSQL_PID: "Developer"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+    restart: unless-stopped
+
+volumes:
+  sqlserver-data:

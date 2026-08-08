@@ -86,14 +86,14 @@ export function Header() {
                     className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-zinc-700 hover:bg-zinc-50 dark:text-zinc-200 dark:hover:bg-zinc-800"
                   >
                     <GitHubIcon />
-                    Continue with GitHub
+                    GitHub
                   </button>
                   <button
                     onClick={() => { setLoginOpen(false); signIn("google"); }}
                     className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-zinc-700 hover:bg-zinc-50 dark:text-zinc-200 dark:hover:bg-zinc-800"
                   >
                     <GoogleIcon />
-                    Continue with Google
+                    Google
                   </button>
                 </div>
               )}

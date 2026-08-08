@@ -8,4 +8,5 @@ public class ApplicationDbContext : DbContext
     }
 
     public DbSet<News> News { get; set; }
+    public DbSet<AppUser> Users { get; set; }
 }

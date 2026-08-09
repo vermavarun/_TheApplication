@@ -20,8 +20,15 @@ resource "azurerm_linux_web_app" "nextjs_dashboard" {
   }
 
   app_settings = {
-    WEBSITES_PORT = "3000"
-    NODE_ENV      = "production"
-    API_BASE_URL  = "https://${var.dotnet_web_app_name}.azurewebsites.net"
+    WEBSITES_PORT      = "3000"
+    NODE_ENV           = "production"
+    API_BASE_URL       = "https://${var.dotnet_web_app_name}.azurewebsites.net"
+    AUTH_SECRET        = "${var.auth_secret}"
+    AUTH_URL           = "https://${var.nextjs_web_app_name}.azurewebsites.net"
+    AUTH_GITHUB_ID     = "${var.auth_github_id}"
+    AUTH_GITHUB_SECRET = "${var.auth_github_secret}"
+    AUTH_GOOGLE_ID     = "${var.auth_google_id}"
+    AUTH_GOOGLE_SECRET = "${var.auth_google_secret}"
+
   }
 }

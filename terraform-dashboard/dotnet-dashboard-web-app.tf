@@ -24,5 +24,9 @@ resource "azurerm_linux_web_app" "dotnet_dashboard" {
     WEBSITES_PORT                        = "8080"
     ASPNETCORE_ENVIRONMENT               = "Production"
     ConnectionStrings__DefaultConnection = "Server=tcp:${azurerm_mssql_server.dashboard_sql_server.fully_qualified_domain_name},1433;Initial Catalog=${azurerm_mssql_database.dashboard_sql_database.name};Persist Security Info=False;User ID=${var.sql_admin_login};Password=${var.sql_admin_password};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+    Jwt__Secret                          = "${var.jwt_secret}"
+    Jwt__Audience                        = "${var.jwt_audience}"
+    Jwt__Issuer                          = "${var.jwt_issuer}"
+    Jwt__ExpiryMinutes                   = "${var.jwt_expiry_minutes}"
   }
 }

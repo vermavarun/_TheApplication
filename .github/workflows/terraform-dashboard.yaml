@@ -51,6 +51,7 @@ jobs:
       TF_VAR_auth_github_secret: ${{ secrets.AUTH_GITHUB_SECRET }}
       TF_VAR_auth_google_id: ${{secrets.AUTH_GOOGLE_ID}}
       TF_VAR_auth_google_secret: ${{secrets.AUTH_GOOGLE_SECRET}}
+      TF_VAR_auth_secret: ${{secrets.NEXTJS_AUTH_SECRET}}
 
 
     steps:

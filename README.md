@@ -1,6 +1,6 @@
 # _TheApplication
 
-A lightweight technology workspace that combines a Next.js dashboard with a .NET API service, orchestrated locally through Docker Compose and deployed to Azure through GitHub Actions and Terraform.
+A lightweight technology workspace that combines a Next.js dashboard with a .NET API service, orchestrated locally through Docker Compose and deployed to Azure through GitHub Actions.
 
 ## Architecture
 
@@ -18,41 +18,6 @@ flowchart LR
     GitHub[GitHub Actions] -->|build + push images| GHCR[GitHub Container Registry]
     GHCR -->|deploy container| Azure[Azure App Service]
 
-    subgraph AzureInfra[Azure Infrastructure via Terraform]
-        RG[Resource Group]
-        Plan[Linux App Service Plan]
-        VNet[Virtual Network]
-        subnetApp[Integration Subnet]
-        subnetPE[Private Endpoint Subnet]
-        FrontendWeb[Next.js Web App\nVNet integrated]
-        BackendWeb[.NET Web App\nVNet integrated]
-        PE[Private Endpoint\nfor .NET app sites]
-        DNS[Private DNS Zone\nprivatelink.azurewebsites.net]
-        VNetLink[DNS VNet Link]
-        MI[Managed Identity\nOIDC federated access]
-        State[Terraform State\nBlob Storage]
-    end
-
-    Terraform[Terraform Workflow] -->|provisions| RG
-    RG --> Plan
-    RG --> VNet
-    VNet --> subnetApp
-    VNet --> subnetPE
-    Plan --> FrontendWeb
-    Plan --> BackendWeb
-    subnetApp -->|VNet integration| FrontendWeb
-    subnetApp -->|VNet integration| BackendWeb
-    subnetPE -->|Private endpoint NIC| PE
-    PE -->|private connection| BackendWeb
-    VNet -->|links private DNS| VNetLink
-    VNetLink --> DNS
-    MI -->|OIDC + Contributor access| RG
-    Terraform -->|remote state| State
-
-    FrontendWeb -->|API_BASE_URL app setting| BackendWeb
-    BackendWeb -->|private DNS resolution| DNS
-    BackendWeb -->|health endpoint| ApiService
-
     classDef frontend fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20,stroke-width:1px;
     classDef server fill:#e3f2fd,stroke:#1565c0,color:#0d47a1,stroke-width:1px;
     classDef user fill:#fff3e0,stroke:#ef6c00,color:#e65100,stroke-width:1px;
@@ -62,9 +27,10 @@ flowchart LR
     class Dashboard frontend;
     class NodeRoute frontend;
     class ApiService server;
-    class RG,Plan,VNet,subnetApp,subnetPE,FrontendWeb,BackendWeb,PE,DNS,VNetLink,MI,State infra;
-    class GitHub,GHCR,Terraform,Azure infra;
+    class GitHub,GHCR,Azure infra;
 ```
+
+  Terraform-specific infrastructure details live in [terraform-dashboard/README.md](terraform-dashboard/README.md).
 
 ## Run locally
 
@@ -77,32 +43,9 @@ Access the apps at:
 - Dashboard: `http://localhost:3000`
 - API: `http://localhost:8080`
 
-## Azure deployment with Terraform and GitHub Actions
+## Azure deployment
 
-This repository also includes a Terraform configuration for provisioning the Azure infrastructure that hosts both applications.
-
-### Infrastructure provisioned
-- Shared Azure Linux App Service Plan for both dashboard apps
-- Azure Linux Web App for the Next.js dashboard
-- Azure Linux Web App for the .NET API backend
-- Azure Virtual Network with subnet delegation for App Service integration
-- Dedicated private endpoint subnet
-- Private endpoint for the .NET app's `sites` subresource
-- Private DNS zone for `privatelink.azurewebsites.net`
-- VNet DNS link for the private zone
-- Remote Terraform state stored in Azure Storage
-
-### Terraform workflow prerequisites
-Before running the Terraform workflow, the following Azure prerequisites must already exist:
-- A target Azure resource group
-- A managed identity configured for GitHub OIDC federation
-- Contributor access for that managed identity on the target resource group
-- A storage account with a blob container named `tfstate`
-
-### GitHub workflow and deployment model
-- The Next.js workflow builds the app, pushes the container image to GHCR, and deploys it to Azure Web Apps.
-- The .NET workflow follows the same build-and-push pattern, then deploys the backend container image to Azure.
-- The Terraform workflow uses GitHub OIDC authentication and remote state configuration to provision and manage the Azure app infrastructure.
+The Azure deployment is handled through GitHub Actions and container images. For the Terraform infrastructure details, see [terraform-dashboard/README.md](terraform-dashboard/README.md).
 
 ## Projects
 

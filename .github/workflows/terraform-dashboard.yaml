@@ -35,6 +35,7 @@ jobs:
       ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       TF_VAR_resource_group_name: ${{ vars.RESOURCE_GROUP_NAME }}
       TF_VAR_location: ${{ vars.AZURE_LOCATION }}
+      TF_VAR_sql_location: ${{ vars.SQL_LOCATION }}
       TF_VAR_nextjs_web_app_name: ${{ vars.NEXTJS_DASHBOARD_WEB_APP_NAME }}
       TF_VAR_dotnet_web_app_name: ${{ vars.DOTNET_DASHBOARD_WEB_APP_NAME }}
       TF_VAR_service_plan_name: ${{ vars.AZURE_SERVICE_PLAN_NAME }}
@@ -92,6 +93,7 @@ jobs:
       ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       TF_VAR_resource_group_name: ${{ vars.RESOURCE_GROUP_NAME }}
       TF_VAR_location: ${{ vars.AZURE_LOCATION }}
+      TF_VAR_sql_location: ${{ vars.SQL_LOCATION }}
       TF_VAR_nextjs_web_app_name: ${{ vars.NEXTJS_DASHBOARD_WEB_APP_NAME }}
       TF_VAR_dotnet_web_app_name: ${{ vars.DOTNET_DASHBOARD_WEB_APP_NAME }}
       TF_VAR_service_plan_name: ${{ vars.AZURE_SERVICE_PLAN_NAME }}

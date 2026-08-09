@@ -9,6 +9,12 @@ variable "sql_database_name" {
   default     = "dashboarddb"
 }
 
+variable "sql_location" {
+  description = "The Azure region for Azure SQL Server and its private endpoint."
+  type        = string
+  default     = null
+}
+
 variable "sql_admin_login" {
   description = "Admin login name for Azure SQL Server."
   type        = string
@@ -23,7 +29,7 @@ variable "sql_admin_password" {
 resource "azurerm_mssql_server" "dashboard_sql_server" {
   name                          = var.sql_server_name
   resource_group_name           = var.resource_group_name
-  location                      = var.location
+  location                      = coalesce(var.sql_location, var.location)
   version                       = "12.0"
   administrator_login           = var.sql_admin_login
   administrator_login_password  = var.sql_admin_password
@@ -54,7 +60,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "sql_vnet_link" {
 
 resource "azurerm_private_endpoint" "dashboard_sql_private_endpoint" {
   name                = "${var.sql_server_name}-pep"
-  location            = var.location
+  location            = coalesce(var.sql_location, var.location)
   resource_group_name = var.resource_group_name
   subnet_id           = azurerm_subnet.dashboard_private_endpoint.id
 

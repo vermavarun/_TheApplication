@@ -47,11 +47,11 @@ jobs:
       TF_VAR_jwt_audience: ${{ vars.JWT_AUDIENCE }}
       TF_VAR_jwt_issuer: ${{ vars.JWT_ISSUER }}
       TF_VAR_jwt_expiry_minutes: ${{ vars.JWT_EXPIRY_MINUTES }}
-      TF_VAR_auth_github_id: ${{ secrets.AUTH_GITHUB_ID}}
+      TF_VAR_auth_github_id: ${{ secrets.AUTH_GITHUB_ID }}
       TF_VAR_auth_github_secret: ${{ secrets.AUTH_GITHUB_SECRET }}
-      TF_VAR_auth_google_id: ${{secrets.AUTH_GOOGLE_ID}}
-      TF_VAR_auth_google_secret: ${{secrets.AUTH_GOOGLE_SECRET}}
-      TF_VAR_auth_secret: ${{secrets.NEXTJS_AUTH_SECRET}}
+      TF_VAR_auth_google_id: ${{ secrets.AUTH_GOOGLE_ID }}
+      TF_VAR_auth_google_secret: ${{ secrets.AUTH_GOOGLE_SECRET }}
+      TF_VAR_auth_secret: ${{ secrets.NEXTJS_AUTH_SECRET }}
 
 
     steps:
@@ -111,6 +111,15 @@ jobs:
       TF_VAR_sql_database_name: ${{ vars.SQL_DATABASE_NAME }}
       TF_VAR_sql_admin_login: ${{ vars.SQL_ADMIN_LOGIN }}
       TF_VAR_sql_admin_password: ${{ secrets.SQL_ADMIN_PASSWORD }}
+      TF_VAR_jwt_secret: ${{ secrets.JWT_SECRET_DOTNET }}
+      TF_VAR_jwt_audience: ${{ vars.JWT_AUDIENCE }}
+      TF_VAR_jwt_issuer: ${{ vars.JWT_ISSUER }}
+      TF_VAR_jwt_expiry_minutes: ${{ vars.JWT_EXPIRY_MINUTES }}
+      TF_VAR_auth_github_id: ${{ secrets.AUTH_GITHUB_ID }}
+      TF_VAR_auth_github_secret: ${{ secrets.AUTH_GITHUB_SECRET }}
+      TF_VAR_auth_google_id: ${{ secrets.AUTH_GOOGLE_ID }}
+      TF_VAR_auth_google_secret: ${{ secrets.AUTH_GOOGLE_SECRET }}
+      TF_VAR_auth_secret: ${{ secrets.NEXTJS_AUTH_SECRET }}
 
     steps:
       - name: Checkout repository

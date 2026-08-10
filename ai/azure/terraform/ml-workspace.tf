@@ -72,12 +72,12 @@ resource "azurerm_machine_learning_workspace" "mlops" {
 # Key Vault RBAC
 # ============================================================
 
-resource "azurerm_role_assignment" "ml_workspace_kv_secrets_officer" {
-  scope                = azurerm_key_vault.mlops.id
-  role_definition_name = "Key Vault Secrets Officer"
+# resource "azurerm_role_assignment" "ml_workspace_kv_secrets_officer" {
+#   scope                = azurerm_key_vault.mlops.id
+#   role_definition_name = "Key Vault Secrets Officer"
 
-  principal_id = azurerm_machine_learning_workspace.mlops.identity[0].principal_id
-}
+#   principal_id = azurerm_machine_learning_workspace.mlops.identity[0].principal_id
+# }
 
 
 # ============================================================

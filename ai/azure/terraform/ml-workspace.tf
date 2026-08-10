@@ -4,10 +4,10 @@ resource "azurerm_machine_learning_workspace" "mlops" {
   resource_group_name = azurerm_resource_group.mlops.name
   sku_name            = var.ml_workspace_sku
 
-  application_insights_id   = azurerm_application_insights.mlops.id
-  key_vault_id              = azurerm_key_vault.mlops.id
-  storage_account_id        = azurerm_storage_account.mlops.id
-  container_registry_id     = azurerm_container_registry.mlops.id
+  application_insights_id = azurerm_application_insights.mlops.id
+  key_vault_id            = azurerm_key_vault.mlops.id
+  storage_account_id      = azurerm_storage_account.mlops.id
+  container_registry_id   = azurerm_container_registry.mlops.id
 
   public_network_access_enabled = false
 

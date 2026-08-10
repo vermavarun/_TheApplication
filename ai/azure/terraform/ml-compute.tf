@@ -34,7 +34,7 @@ resource "azurerm_machine_learning_compute_cluster" "gpu" {
   scale_settings {
     min_node_count                       = 0
     max_node_count                       = 2
-    scale_down_nodes_after_idle_duration = "120s"
+    scale_down_nodes_after_idle_duration = "PT2M"
   }
 
   identity {

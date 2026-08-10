@@ -40,6 +40,7 @@ permissions:
 jobs:
   # ── Plan (runs on every PR and push to main) ─────────────────────────────────
   plan:
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'apply'
     runs-on: ubuntu-latest
     environment: dev
     defaults:

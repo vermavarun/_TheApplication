@@ -48,24 +48,24 @@ resource "azurerm_machine_learning_workspace" "mlops" {
 # Storage RBAC
 # ============================================================
 
-resource "azurerm_role_assignment" "ml_workspace_storage_blob_contributor" {
-  scope                = azurerm_storage_account.mlops.id
-  role_definition_name = "Storage Blob Data Contributor"
+# resource "azurerm_role_assignment" "ml_workspace_storage_blob_contributor" {
+#   scope                = azurerm_storage_account.mlops.id
+#   role_definition_name = "Storage Blob Data Contributor"
 
-  principal_id = azurerm_machine_learning_workspace.mlops.identity[0].principal_id
-}
+#   principal_id = azurerm_machine_learning_workspace.mlops.identity[0].principal_id
+# }
 
 
-# ============================================================
-# Azure Container Registry RBAC
-# ============================================================
+# # ============================================================
+# # Azure Container Registry RBAC
+# # ============================================================
 
-resource "azurerm_role_assignment" "ml_workspace_acr_pull" {
-  scope                = azurerm_container_registry.mlops.id
-  role_definition_name = "AcrPull"
+# resource "azurerm_role_assignment" "ml_workspace_acr_pull" {
+#   scope                = azurerm_container_registry.mlops.id
+#   role_definition_name = "AcrPull"
 
-  principal_id = azurerm_machine_learning_workspace.mlops.identity[0].principal_id
-}
+#   principal_id = azurerm_machine_learning_workspace.mlops.identity[0].principal_id
+# }
 
 
 # ============================================================

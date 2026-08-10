@@ -213,7 +213,7 @@ jobs:
   destroy:
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'destroy'
     runs-on: ubuntu-latest
-    environment: mlops-prod   # requires environment reviewers to approve
+    environment: dev   # requires environment reviewers to approve
     defaults:
       run:
         working-directory: ai/azure/terraform

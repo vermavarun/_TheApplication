@@ -2,8 +2,8 @@
 
 resource "azurerm_private_endpoint" "storage_blob" {
   name                = "${local.name_prefix}-pe-storage-blob"
-  location            = azurerm_resource_group.mlops.location
-  resource_group_name = azurerm_resource_group.mlops.name
+  location            = data.azurerm_resource_group.mlops.location
+  resource_group_name = data.azurerm_resource_group.mlops.name
   subnet_id           = azurerm_subnet.private_endpoints.id
   tags                = local.tags
 
@@ -22,8 +22,8 @@ resource "azurerm_private_endpoint" "storage_blob" {
 
 resource "azurerm_private_endpoint" "storage_file" {
   name                = "${local.name_prefix}-pe-storage-file"
-  location            = azurerm_resource_group.mlops.location
-  resource_group_name = azurerm_resource_group.mlops.name
+  location            = data.azurerm_resource_group.mlops.location
+  resource_group_name = data.azurerm_resource_group.mlops.name
   subnet_id           = azurerm_subnet.private_endpoints.id
   tags                = local.tags
 
@@ -44,8 +44,8 @@ resource "azurerm_private_endpoint" "storage_file" {
 
 resource "azurerm_private_endpoint" "acr" {
   name                = "${local.name_prefix}-pe-acr"
-  location            = azurerm_resource_group.mlops.location
-  resource_group_name = azurerm_resource_group.mlops.name
+  location            = data.azurerm_resource_group.mlops.location
+  resource_group_name = data.azurerm_resource_group.mlops.name
   subnet_id           = azurerm_subnet.private_endpoints.id
   tags                = local.tags
 
@@ -66,8 +66,8 @@ resource "azurerm_private_endpoint" "acr" {
 
 resource "azurerm_private_endpoint" "key_vault" {
   name                = "${local.name_prefix}-pe-kv"
-  location            = azurerm_resource_group.mlops.location
-  resource_group_name = azurerm_resource_group.mlops.name
+  location            = data.azurerm_resource_group.mlops.location
+  resource_group_name = data.azurerm_resource_group.mlops.name
   subnet_id           = azurerm_subnet.private_endpoints.id
   tags                = local.tags
 
@@ -88,8 +88,8 @@ resource "azurerm_private_endpoint" "key_vault" {
 
 resource "azurerm_private_endpoint" "ml_workspace" {
   name                = "${local.name_prefix}-pe-aml"
-  location            = azurerm_resource_group.mlops.location
-  resource_group_name = azurerm_resource_group.mlops.name
+  location            = data.azurerm_resource_group.mlops.location
+  resource_group_name = data.azurerm_resource_group.mlops.name
   subnet_id           = azurerm_subnet.private_endpoints.id
   tags                = local.tags
 

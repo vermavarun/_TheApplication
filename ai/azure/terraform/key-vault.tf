@@ -1,7 +1,7 @@
 resource "azurerm_key_vault" "mlops" {
   name                = var.key_vault_name
-  location            = azurerm_resource_group.mlops.location
-  resource_group_name = azurerm_resource_group.mlops.name
+  location            = data.azurerm_resource_group.mlops.location
+  resource_group_name = data.azurerm_resource_group.mlops.name
   tenant_id           = data.azurerm_client_config.current.tenant_id
   sku_name            = "premium"
 

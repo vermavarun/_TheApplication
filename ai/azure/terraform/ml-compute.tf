@@ -1,7 +1,7 @@
 # CPU cluster: scales to zero when idle, no public IP, VNet-integrated
 resource "azurerm_machine_learning_compute_cluster" "cpu" {
   name                          = var.compute_cluster_name
-  location                      = azurerm_resource_group.mlops.location
+  location                      = data.azurerm_resource_group.mlops.location
   vm_priority                   = "Dedicated"
   vm_size                       = var.compute_cluster_vm_size
   machine_learning_workspace_id = azurerm_machine_learning_workspace.mlops.id
@@ -24,7 +24,7 @@ resource "azurerm_machine_learning_compute_cluster" "cpu" {
 # GPU cluster for model training (optional, comment out to save cost)
 resource "azurerm_machine_learning_compute_cluster" "gpu" {
   name                          = "gpu-cluster"
-  location                      = azurerm_resource_group.mlops.location
+  location                      = data.azurerm_resource_group.mlops.location
   vm_priority                   = "LowPriority"
   vm_size                       = "Standard_NC6s_v3"
   machine_learning_workspace_id = azurerm_machine_learning_workspace.mlops.id

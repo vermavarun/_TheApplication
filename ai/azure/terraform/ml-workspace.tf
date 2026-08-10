@@ -4,8 +4,8 @@
 
 resource "azurerm_machine_learning_workspace" "mlops" {
   name                = var.ml_workspace_name
-  location            = azurerm_resource_group.mlops.location
-  resource_group_name = azurerm_resource_group.mlops.name
+  location            = data.azurerm_resource_group.mlops.location
+  resource_group_name = data.azurerm_resource_group.mlops.name
   sku_name            = var.ml_workspace_sku
 
   application_insights_id = azurerm_application_insights.mlops.id

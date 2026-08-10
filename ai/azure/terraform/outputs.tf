@@ -1,6 +1,6 @@
 output "resource_group_name" {
   description = "Name of the MLOps resource group"
-  value       = azurerm_resource_group.mlops.name
+  value       = data.azurerm_resource_group.mlops.name
 }
 
 output "ml_workspace_name" {

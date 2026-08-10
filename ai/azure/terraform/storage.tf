@@ -1,7 +1,7 @@
 resource "azurerm_storage_account" "mlops" {
   name                = var.storage_account_name
-  resource_group_name = azurerm_resource_group.mlops.name
-  location            = azurerm_resource_group.mlops.location
+  resource_group_name = data.azurerm_resource_group.mlops.name
+  location            = data.azurerm_resource_group.mlops.location
 
   account_tier             = "Standard"
   account_replication_type = var.storage_replication_type

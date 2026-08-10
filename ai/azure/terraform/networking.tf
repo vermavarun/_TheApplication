@@ -2,8 +2,8 @@
 
 resource "azurerm_virtual_network" "mlops" {
   name                = "${local.name_prefix}-vnet"
-  location            = azurerm_resource_group.mlops.location
-  resource_group_name = azurerm_resource_group.mlops.name
+  location            = data.azurerm_resource_group.mlops.location
+  resource_group_name = data.azurerm_resource_group.mlops.name
   address_space       = [var.vnet_address_space]
   tags                = local.tags
 }
@@ -12,7 +12,7 @@ resource "azurerm_virtual_network" "mlops" {
 
 resource "azurerm_subnet" "private_endpoints" {
   name                 = "snet-private-endpoints"
-  resource_group_name  = azurerm_resource_group.mlops.name
+  resource_group_name  = data.azurerm_resource_group.mlops.name
   virtual_network_name = azurerm_virtual_network.mlops.name
   address_prefixes     = [var.private_endpoint_subnet_prefix]
 
@@ -22,7 +22,7 @@ resource "azurerm_subnet" "private_endpoints" {
 
 resource "azurerm_subnet" "compute" {
   name                 = "snet-compute"
-  resource_group_name  = azurerm_resource_group.mlops.name
+  resource_group_name  = data.azurerm_resource_group.mlops.name
   virtual_network_name = azurerm_virtual_network.mlops.name
   address_prefixes     = [var.compute_subnet_prefix]
 
@@ -33,8 +33,8 @@ resource "azurerm_subnet" "compute" {
 
 resource "azurerm_network_security_group" "private_endpoints" {
   name                = "${local.name_prefix}-nsg-pe"
-  location            = azurerm_resource_group.mlops.location
-  resource_group_name = azurerm_resource_group.mlops.name
+  location            = data.azurerm_resource_group.mlops.location
+  resource_group_name = data.azurerm_resource_group.mlops.name
   tags                = local.tags
 
   # Deny all inbound from the internet; allow only intra-VNet
@@ -53,8 +53,8 @@ resource "azurerm_network_security_group" "private_endpoints" {
 
 resource "azurerm_network_security_group" "compute" {
   name                = "${local.name_prefix}-nsg-compute"
-  location            = azurerm_resource_group.mlops.location
-  resource_group_name = azurerm_resource_group.mlops.name
+  location            = data.azurerm_resource_group.mlops.location
+  resource_group_name = data.azurerm_resource_group.mlops.name
   tags                = local.tags
 
   security_rule {
@@ -110,14 +110,14 @@ resource "azurerm_subnet_network_security_group_association" "compute" {
 resource "azurerm_private_dns_zone" "zones" {
   for_each            = local.private_dns_zones
   name                = each.value
-  resource_group_name = azurerm_resource_group.mlops.name
+  resource_group_name = data.azurerm_resource_group.mlops.name
   tags                = local.tags
 }
 
 resource "azurerm_private_dns_zone_virtual_network_link" "zones" {
   for_each              = local.private_dns_zones
   name                  = "${each.key}-vnet-link"
-  resource_group_name   = azurerm_resource_group.mlops.name
+  resource_group_name   = data.azurerm_resource_group.mlops.name
   private_dns_zone_name = azurerm_private_dns_zone.zones[each.key].name
   virtual_network_id    = azurerm_virtual_network.mlops.id
   registration_enabled  = false

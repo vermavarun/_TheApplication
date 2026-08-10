@@ -9,7 +9,6 @@ resource "azurerm_container_registry" "mlops" {
 
   # Retain images for audit / rollback
   retention_policy_in_days = 90
-  trust_policy_enabled     = true
 
   tags = local.tags
 }

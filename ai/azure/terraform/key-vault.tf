@@ -6,7 +6,7 @@ resource "azurerm_key_vault" "mlops" {
   sku_name            = "premium"
 
   # RBAC instead of legacy access policies
-  enable_rbac_authorization = true
+  rbac_authorization_enabled = true
 
   # Production: prevent accidental permanent deletion
   purge_protection_enabled   = true

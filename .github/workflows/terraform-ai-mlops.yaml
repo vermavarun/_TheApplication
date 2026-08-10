@@ -41,7 +41,7 @@ jobs:
   # ── Plan (runs on every PR and push to main) ─────────────────────────────────
   plan:
     runs-on: ubuntu-latest
-    environment: mlops-prod
+    environment: dev
     defaults:
       run:
         working-directory: ai/azure/terraform

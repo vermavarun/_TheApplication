@@ -102,7 +102,7 @@ resource "azurerm_monitor_diagnostic_setting" "ml_workspace" {
     category = "AmlRunStatusChangedEvent"
   }
 
-  enabled_metric  {
+  enabled_metric {
     category = "AllMetrics"
   }
 }

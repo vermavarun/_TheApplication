@@ -207,6 +207,66 @@ jobs:
           name: tfplan
           path: ai/azure/terraform
 
+      # Import role assignments that may already exist in Azure but not in state
+      # (prevents 409 RoleAssignmentExists errors on re-runs)
+      - name: Import pre-existing role assignments
+        run: |
+          import_role_assignment() {
+            local tf_addr="$1" scope="$2" principal_id="$3" role_name="$4"
+            local assignment_name
+            assignment_name=$(az role assignment list \
+              --scope "$scope" \
+              --assignee "$principal_id" \
+              --role "$role_name" \
+              --query "[0].name" --output tsv 2>/dev/null || true)
+            if [[ -n "$assignment_name" && "$assignment_name" != "None" ]]; then
+              terraform import "$tf_addr" \
+                "$scope/providers/Microsoft.Authorization/roleAssignments/$assignment_name" \
+                2>/dev/null || true
+            fi
+          }
+
+          STORAGE_ID=$(az storage account show \
+            --name "${{ vars.MLOPS_STORAGE_ACCOUNT_NAME }}" \
+            --resource-group "${{ vars.MLOPS_RESOURCE_GROUP_NAME }}" \
+            --query id --output tsv 2>/dev/null || true)
+          ACR_ID=$(az acr show \
+            --name "${{ vars.MLOPS_ACR_NAME }}" \
+            --resource-group "${{ vars.MLOPS_RESOURCE_GROUP_NAME }}" \
+            --query id --output tsv 2>/dev/null || true)
+          KV_ID=$(az keyvault show \
+            --name "${{ vars.MLOPS_KEY_VAULT_NAME }}" \
+            --resource-group "${{ vars.MLOPS_RESOURCE_GROUP_NAME }}" \
+            --query id --output tsv 2>/dev/null || true)
+          WS_PRINCIPAL=$(az ml workspace show \
+            --name "${{ vars.MLOPS_AML_WORKSPACE_NAME }}" \
+            --resource-group "${{ vars.MLOPS_RESOURCE_GROUP_NAME }}" \
+            --query identity.principalId --output tsv 2>/dev/null || true)
+          CPU_PRINCIPAL=$(az ml compute show \
+            --name "${{ vars.MLOPS_COMPUTE_CLUSTER_NAME }}" \
+            --workspace-name "${{ vars.MLOPS_AML_WORKSPACE_NAME }}" \
+            --resource-group "${{ vars.MLOPS_RESOURCE_GROUP_NAME }}" \
+            --query identity.principalId --output tsv 2>/dev/null || true)
+
+          [[ -n "$STORAGE_ID" && -n "$WS_PRINCIPAL" ]] && \
+            import_role_assignment "azurerm_role_assignment.ml_workspace_storage_blob_contributor" \
+              "$STORAGE_ID" "$WS_PRINCIPAL" "Storage Blob Data Contributor"
+          [[ -n "$ACR_ID" && -n "$WS_PRINCIPAL" ]] && \
+            import_role_assignment "azurerm_role_assignment.ml_workspace_acr_pull" \
+              "$ACR_ID" "$WS_PRINCIPAL" "AcrPull"
+          [[ -n "$KV_ID" && -n "$WS_PRINCIPAL" ]] && \
+            import_role_assignment "azurerm_role_assignment.ml_workspace_kv_secrets_officer" \
+              "$KV_ID" "$WS_PRINCIPAL" "Key Vault Secrets Officer"
+          [[ -n "$KV_ID" && -n "$WS_PRINCIPAL" ]] && \
+            import_role_assignment "azurerm_role_assignment.ml_workspace_kv_crypto_officer" \
+              "$KV_ID" "$WS_PRINCIPAL" "Key Vault Crypto Officer"
+          [[ -n "$STORAGE_ID" && -n "$CPU_PRINCIPAL" ]] && \
+            import_role_assignment "azurerm_role_assignment.cpu_cluster_storage_blob_contributor" \
+              "$STORAGE_ID" "$CPU_PRINCIPAL" "Storage Blob Data Contributor"
+          [[ -n "$ACR_ID" && -n "$CPU_PRINCIPAL" ]] && \
+            import_role_assignment "azurerm_role_assignment.cpu_cluster_acr_pull" \
+              "$ACR_ID" "$CPU_PRINCIPAL" "AcrPull"
+
       - name: Terraform apply
         run: terraform apply -auto-approve tfplan
 

@@ -41,17 +41,8 @@ resource "azurerm_role_assignment" "cpu_cluster_acr_pull" {
   principal_id         = azurerm_machine_learning_compute_cluster.cpu.identity[0].principal_id
 }
 
-resource "azurerm_role_assignment" "gpu_cluster_storage_blob_contributor" {
-  scope                = azurerm_storage_account.mlops.id
-  role_definition_name = "Storage Blob Data Contributor"
-  principal_id         = azurerm_machine_learning_compute_cluster.gpu.identity[0].principal_id
-}
-
-resource "azurerm_role_assignment" "gpu_cluster_acr_pull" {
-  scope                = azurerm_container_registry.mlops.id
-  role_definition_name = "AcrPull"
-  principal_id         = azurerm_machine_learning_compute_cluster.gpu.identity[0].principal_id
-}
+# gpu_cluster_storage_blob_contributor and gpu_cluster_acr_pull are disabled
+# (GPU cluster is commented out due to zero vCPU quota)
 
 # ── Deploying identity (GitHub Actions OIDC) ──────────────────────────────────
 # The managed identity used by the workflow needs Contributor on the resource group

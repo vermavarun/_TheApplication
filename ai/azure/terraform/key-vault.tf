@@ -1,15 +1,15 @@
 resource "azurerm_key_vault" "mlops" {
   name                = var.key_vault_name
-  location            = azurerm_resource_group.mlops.location
-  resource_group_name = azurerm_resource_group.mlops.name
+  location            = data.azurerm_resource_group.mlops.location
+  resource_group_name = data.azurerm_resource_group.mlops.name
   tenant_id           = data.azurerm_client_config.current.tenant_id
   sku_name            = "premium"
 
   # RBAC instead of legacy access policies
-  enable_rbac_authorization = true
+  rbac_authorization_enabled = false
 
   # Production: prevent accidental permanent deletion
-  purge_protection_enabled   = true
+  purge_protection_enabled   = false
   soft_delete_retention_days = var.key_vault_soft_delete_retention_days
 
   public_network_access_enabled = false
@@ -35,7 +35,7 @@ resource "azurerm_monitor_diagnostic_setting" "key_vault" {
     category = "AzurePolicyEvaluationDetails"
   }
 
-  metric {
+  enabled_metric {
     category = "AllMetrics"
   }
 }

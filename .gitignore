@@ -1,1 +1,2 @@
 .env
+ai/azure/terraform/terraform.tfvars

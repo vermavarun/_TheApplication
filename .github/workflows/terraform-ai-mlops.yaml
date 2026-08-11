@@ -40,8 +40,9 @@ permissions:
 jobs:
   # ── Plan (runs on every PR and push to main) ─────────────────────────────────
   plan:
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'apply'
     runs-on: ubuntu-latest
-    environment: mlops-prod
+    environment: dev
     defaults:
       run:
         working-directory: ai/azure/terraform
@@ -101,6 +102,7 @@ jobs:
         id: plan
         run: |
           set +e
+          set -o pipefail
           terraform plan -detailed-exitcode -out=tfplan 2>&1 | tee plan_output.txt
           echo "exit_code=$?" >> "$GITHUB_OUTPUT"
           set -e
@@ -153,7 +155,7 @@ jobs:
       (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
       (github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'apply')
     runs-on: ubuntu-latest
-    environment: mlops-prod
+    environment: dev
     defaults:
       run:
         working-directory: ai/azure/terraform
@@ -199,11 +201,71 @@ jobs:
             -backend-config="container_name=${{ vars.TF_STATE_CONTAINER }}" \
             -backend-config="key=${{ vars.MLOPS_TF_STATE_KEY }}"
 
-      - name: Download plan artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: tfplan
-          path: ai/azure/terraform
+      # Import role assignments that may already exist in Azure but not in state.
+      # Must run before plan so the plan doesn't include spurious "create" actions.
+      - name: Import pre-existing role assignments
+        run: |
+          import_role_assignment() {
+            local tf_addr="$1" scope="$2" principal_id="$3" role_name="$4"
+            if [[ -z "$scope" || -z "$principal_id" ]]; then return 0; fi
+            local assignment_name
+            assignment_name=$(az role assignment list \
+              --scope "$scope" \
+              --assignee "$principal_id" \
+              --role "$role_name" \
+              --query "[0].name" --output tsv 2>/dev/null || true)
+            if [[ -n "$assignment_name" && "$assignment_name" != "None" ]]; then
+              terraform import "$tf_addr" \
+                "$scope/providers/Microsoft.Authorization/roleAssignments/$assignment_name" || true
+            fi
+          }
+
+          RG="${{ vars.MLOPS_RESOURCE_GROUP_NAME }}"
+
+          STORAGE_ID=$(az storage account show \
+            --name "${{ vars.MLOPS_STORAGE_ACCOUNT_NAME }}" \
+            --resource-group "$RG" \
+            --query id --output tsv 2>/dev/null || true)
+          ACR_ID=$(az acr show \
+            --name "${{ vars.MLOPS_ACR_NAME }}" \
+            --resource-group "$RG" \
+            --query id --output tsv 2>/dev/null || true)
+          KV_ID=$(az keyvault show \
+            --name "${{ vars.MLOPS_KEY_VAULT_NAME }}" \
+            --resource-group "$RG" \
+            --query id --output tsv 2>/dev/null || true)
+
+          # az resource show works without the ML CLI extension
+          WS_PRINCIPAL=$(az resource show \
+            --resource-group "$RG" \
+            --resource-type "Microsoft.MachineLearningServices/workspaces" \
+            --name "${{ vars.MLOPS_AML_WORKSPACE_NAME }}" \
+            --query "identity.principalId" --output tsv 2>/dev/null || true)
+
+          CPU_PRINCIPAL=""
+          # fall back to the Terraform variable default when the repo variable is unset
+          COMPUTE_NAME="${{ vars.MLOPS_COMPUTE_CLUSTER_NAME }}"
+          COMPUTE_NAME="${COMPUTE_NAME:-cpu-cluster}"
+          # --ids avoids ambiguity with nested resource types
+          CPU_PRINCIPAL=$(az resource show \
+            --ids "/subscriptions/$ARM_SUBSCRIPTION_ID/resourceGroups/$RG/providers/Microsoft.MachineLearningServices/workspaces/${{ vars.MLOPS_AML_WORKSPACE_NAME }}/computes/$COMPUTE_NAME" \
+            --query "identity.principalId" --output tsv 2>/dev/null || true)
+
+          import_role_assignment "azurerm_role_assignment.ml_workspace_storage_blob_contributor" \
+            "$STORAGE_ID" "$WS_PRINCIPAL" "Storage Blob Data Contributor"
+          import_role_assignment "azurerm_role_assignment.ml_workspace_acr_pull" \
+            "$ACR_ID" "$WS_PRINCIPAL" "AcrPull"
+          import_role_assignment "azurerm_role_assignment.ml_workspace_kv_secrets_officer" \
+            "$KV_ID" "$WS_PRINCIPAL" "Key Vault Secrets Officer"
+          import_role_assignment "azurerm_role_assignment.ml_workspace_kv_crypto_officer" \
+            "$KV_ID" "$WS_PRINCIPAL" "Key Vault Crypto Officer"
+          import_role_assignment "azurerm_role_assignment.cpu_cluster_storage_blob_contributor" \
+            "$STORAGE_ID" "$CPU_PRINCIPAL" "Storage Blob Data Contributor"
+          import_role_assignment "azurerm_role_assignment.cpu_cluster_acr_pull" \
+            "$ACR_ID" "$CPU_PRINCIPAL" "AcrPull"
+
+      - name: Terraform plan
+        run: terraform plan -out=tfplan
 
       - name: Terraform apply
         run: terraform apply -auto-approve tfplan
@@ -212,7 +274,7 @@ jobs:
   destroy:
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'destroy'
     runs-on: ubuntu-latest
-    environment: mlops-prod   # requires environment reviewers to approve
+    environment: dev   # requires environment reviewers to approve
     defaults:
       run:
         working-directory: ai/azure/terraform

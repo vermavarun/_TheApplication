@@ -1,15 +1,14 @@
 # Premium SKU required for private endpoints and geo-replication
 resource "azurerm_container_registry" "mlops" {
   name                          = var.acr_name
-  resource_group_name           = azurerm_resource_group.mlops.name
-  location                      = azurerm_resource_group.mlops.location
+  resource_group_name           = data.azurerm_resource_group.mlops.name
+  location                      = data.azurerm_resource_group.mlops.location
   sku                           = "Premium"
   admin_enabled                 = false
   public_network_access_enabled = false
 
   # Retain images for audit / rollback
   retention_policy_in_days = 90
-  trust_policy_enabled     = true
 
   tags = local.tags
 }
@@ -27,7 +26,7 @@ resource "azurerm_monitor_diagnostic_setting" "acr" {
     category = "ContainerRegistryRepositoryEvents"
   }
 
-  metric {
+  enabled_metric {
     category = "AllMetrics"
   }
 }

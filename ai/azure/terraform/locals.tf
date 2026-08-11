@@ -12,11 +12,11 @@ locals {
 
   # Private DNS zone names required by each service
   private_dns_zones = {
-    storage_blob  = "privatelink.blob.core.windows.net"
-    storage_file  = "privatelink.file.core.windows.net"
-    acr           = "privatelink.azurecr.io"
-    key_vault     = "privatelink.vaultcore.azure.net"
-    ml_api        = "privatelink.api.azureml.ms"
-    ml_notebooks  = "privatelink.notebooks.azure.net"
+    storage_blob = "privatelink.blob.core.windows.net"
+    storage_file = "privatelink.file.core.windows.net"
+    acr          = "privatelink.azurecr.io"
+    key_vault    = "privatelink.vaultcore.azure.net"
+    ml_api       = "privatelink.api.azureml.ms"
+    ml_notebooks = "privatelink.notebooks.azure.net"
   }
 }

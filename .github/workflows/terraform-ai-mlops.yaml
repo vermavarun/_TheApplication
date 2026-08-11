@@ -243,13 +243,14 @@ jobs:
             --query "identity.principalId" --output tsv 2>/dev/null || true)
 
           CPU_PRINCIPAL=""
-          if [[ -n "${{ vars.MLOPS_COMPUTE_CLUSTER_NAME }}" ]]; then
-            CPU_PRINCIPAL=$(az resource show \
-              --resource-group "$RG" \
-              --resource-type "Microsoft.MachineLearningServices/workspaces/computes" \
-              --name "${{ vars.MLOPS_AML_WORKSPACE_NAME }}/${{ vars.MLOPS_COMPUTE_CLUSTER_NAME }}" \
-              --query "identity.principalId" --output tsv 2>/dev/null || true)
-          fi
+          # fall back to the Terraform variable default when the repo variable is unset
+          COMPUTE_NAME="${{ vars.MLOPS_COMPUTE_CLUSTER_NAME }}"
+          COMPUTE_NAME="${COMPUTE_NAME:-cpu-cluster}"
+          CPU_PRINCIPAL=$(az resource show \
+            --resource-group "$RG" \
+            --resource-type "Microsoft.MachineLearningServices/workspaces/computes" \
+            --name "${{ vars.MLOPS_AML_WORKSPACE_NAME }}/$COMPUTE_NAME" \
+            --query "identity.principalId" --output tsv 2>/dev/null || true)
 
           import_role_assignment "azurerm_role_assignment.ml_workspace_storage_blob_contributor" \
             "$STORAGE_ID" "$WS_PRINCIPAL" "Storage Blob Data Contributor"

@@ -21,8 +21,10 @@ terraform {
 # Configures the Azure provider with default features enabled
 # This block initializes the Azure provider for resource creation
 provider "azurerm" {
-  # Enables default features for the Azure provider
-  # These features include resource cleanup, soft deletes, and other enhancements
-  features {}
+  features {
+    key_vault {
+      # Managed identity lacks purge permission at subscription scope; leave soft-deleted vault to expire naturally
+      purge_soft_delete_on_destroy = false
+    }
+  }
 }
-

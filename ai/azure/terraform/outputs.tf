@@ -49,7 +49,4 @@ output "cpu_compute_cluster_name" {
   value       = azurerm_machine_learning_compute_cluster.cpu.name
 }
 
-output "gpu_compute_cluster_name" {
-  description = "Name of the GPU training compute cluster"
-  value       = azurerm_machine_learning_compute_cluster.gpu.name
-}
+# gpu_compute_cluster_name output disabled — GPU cluster commented out due to zero vCPU quota

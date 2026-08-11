@@ -50,11 +50,11 @@ resource "azurerm_monitor_diagnostic_setting" "storage" {
   target_resource_id         = "${azurerm_storage_account.mlops.id}/blobServices/default"
   log_analytics_workspace_id = azurerm_log_analytics_workspace.mlops.id
 
-  metric {
+  enabled_metric {
     category = "Transaction"
   }
 
-  metric {
+  enabled_metric {
     category = "Capacity"
   }
 }

@@ -216,34 +216,39 @@ jobs:
               --query "[0].name" --output tsv 2>/dev/null || true)
             if [[ -n "$assignment_name" && "$assignment_name" != "None" ]]; then
               terraform import "$tf_addr" \
-                "$scope/providers/Microsoft.Authorization/roleAssignments/$assignment_name" \
-                2>/dev/null || true
+                "$scope/providers/Microsoft.Authorization/roleAssignments/$assignment_name" || true
             fi
           }
 
+          RG="${{ vars.MLOPS_RESOURCE_GROUP_NAME }}"
+
           STORAGE_ID=$(az storage account show \
             --name "${{ vars.MLOPS_STORAGE_ACCOUNT_NAME }}" \
-            --resource-group "${{ vars.MLOPS_RESOURCE_GROUP_NAME }}" \
+            --resource-group "$RG" \
             --query id --output tsv 2>/dev/null || true)
           ACR_ID=$(az acr show \
             --name "${{ vars.MLOPS_ACR_NAME }}" \
-            --resource-group "${{ vars.MLOPS_RESOURCE_GROUP_NAME }}" \
+            --resource-group "$RG" \
             --query id --output tsv 2>/dev/null || true)
           KV_ID=$(az keyvault show \
             --name "${{ vars.MLOPS_KEY_VAULT_NAME }}" \
-            --resource-group "${{ vars.MLOPS_RESOURCE_GROUP_NAME }}" \
+            --resource-group "$RG" \
             --query id --output tsv 2>/dev/null || true)
-          WS_PRINCIPAL=$(az ml workspace show \
+
+          # az resource show works without the ML CLI extension
+          WS_PRINCIPAL=$(az resource show \
+            --resource-group "$RG" \
+            --resource-type "Microsoft.MachineLearningServices/workspaces" \
             --name "${{ vars.MLOPS_AML_WORKSPACE_NAME }}" \
-            --resource-group "${{ vars.MLOPS_RESOURCE_GROUP_NAME }}" \
-            --query identity.principalId --output tsv 2>/dev/null || true)
+            --query "identity.principalId" --output tsv 2>/dev/null || true)
+
           CPU_PRINCIPAL=""
           if [[ -n "${{ vars.MLOPS_COMPUTE_CLUSTER_NAME }}" ]]; then
-            CPU_PRINCIPAL=$(az ml compute show \
-              --name "${{ vars.MLOPS_COMPUTE_CLUSTER_NAME }}" \
-              --workspace-name "${{ vars.MLOPS_AML_WORKSPACE_NAME }}" \
-              --resource-group "${{ vars.MLOPS_RESOURCE_GROUP_NAME }}" \
-              --query identity.principalId --output tsv 2>/dev/null || true)
+            CPU_PRINCIPAL=$(az resource show \
+              --resource-group "$RG" \
+              --resource-type "Microsoft.MachineLearningServices/workspaces/computes" \
+              --name "${{ vars.MLOPS_AML_WORKSPACE_NAME }}/${{ vars.MLOPS_COMPUTE_CLUSTER_NAME }}" \
+              --query "identity.principalId" --output tsv 2>/dev/null || true)
           fi
 
           import_role_assignment "azurerm_role_assignment.ml_workspace_storage_blob_contributor" \

@@ -201,7 +201,20 @@ jobs:
             -backend-config="container_name=${{ vars.TF_STATE_CONTAINER }}" \
             -backend-config="key=${{ vars.MLOPS_TF_STATE_KEY }}"
 
-      # Import role assignments that may already exist in Azure but not in state.
+      # Recover soft-deleted AML workspace so Terraform can recreate it after a destroy
+      - name: Recover soft-deleted AML workspace (if exists)
+        run: |
+          RG="${{ vars.MLOPS_RESOURCE_GROUP_NAME }}"
+          WS="${{ vars.MLOPS_AML_WORKSPACE_NAME }}"
+          DELETED=$(az rest --method get \
+            --url "https://management.azure.com/subscriptions/$ARM_SUBSCRIPTION_ID/providers/Microsoft.MachineLearningServices/locations/eastus/deletedWorkspaces?api-version=2024-04-01" \
+            --query "value[?name=='$WS'] | length(@)" --output tsv 2>/dev/null || echo "0")
+          if [[ "$DELETED" -gt 0 ]]; then
+            echo "Recovering soft-deleted workspace: $WS"
+            az rest --method post \
+              --url "https://management.azure.com/subscriptions/$ARM_SUBSCRIPTION_ID/resourceGroups/$RG/providers/Microsoft.MachineLearningServices/workspaces/$WS/restoredWorkspaces?api-version=2024-04-01" \
+              --body "{}" || true
+          fi
       # Must run before plan so the plan doesn't include spurious "create" actions.
       - name: Import pre-existing role assignments
         run: |

@@ -2,7 +2,11 @@
 
 A lightweight technology workspace that combines a Next.js dashboard with a .NET API service, orchestrated locally through Docker Compose and deployed to Azure through GitHub Actions.
 
-## Architecture
+# Projects
+
+## Web
+
+### Architecture
 
 ```mermaid
 flowchart LR
@@ -30,33 +34,32 @@ flowchart LR
     class GitHub,GHCR,Azure infra;
 ```
 
-  Terraform-specific infrastructure details live in [terraform-dashboard/README.md](terraform-dashboard/README.md).
-
-## Run locally
+### Local Build & Run
 
 ```bash
 docker compose up --build
 docker compose down
+
+# Access the apps at:
+# Dashboard: `http://localhost:3000`
+# API: `http://localhost:8080`
 ```
 
-Access the apps at:
-- Dashboard: `http://localhost:3000`
-- API: `http://localhost:8080`
 
-## Azure deployment
 
-The Azure deployment is handled through GitHub Actions and container images. For the Terraform infrastructure details, see [terraform-dashboard/README.md](terraform-dashboard/README.md).
+### Azure deployment
 
-## Projects
 
-### 1) Next.js Dashboard
-- Build local and docker
+#### 1) Next.js Dashboard
   [![nextjs-dashboard-build](https://github.com/vermavarun/_TheApplication/actions/workflows/nextjs-dashboard.yaml/badge.svg)](https://github.com/vermavarun/_TheApplication/actions/workflows/nextjs-dashboard.yaml)
 
-### 2) .NET APIs
-- Build local and docker
+#### 2) .NET APIs
   [![dotnet-apis-dashboard-build](https://github.com/vermavarun/_TheApplication/actions/workflows/dotnet-apis-dashboard.yaml/badge.svg)](https://github.com/vermavarun/_TheApplication/actions/workflows/dotnet-apis-dashboard.yaml)
 
-### 3) Terraform Azure Infrastructure
-- Provision Azure infrastructure and remote state
+#### 3) Terraform Azure Infrastructure
   [![terraform-dashboard](https://github.com/vermavarun/_TheApplication/actions/workflows/terraform-dashboard.yaml/badge.svg)](https://github.com/vermavarun/_TheApplication/actions/workflows/terraform-dashboard.yaml)
+
+## AI
+
+#### 1) Terraform Azure Infrastructure
+  [![terraform-ai-mlops](https://github.com/vermavarun/_TheApplication/actions/workflows/terraform-ai-mlops.yaml/badge.svg)](https://github.com/vermavarun/_TheApplication/actions/workflows/terraform-ai-mlops.yaml)

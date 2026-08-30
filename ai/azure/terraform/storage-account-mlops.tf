@@ -25,8 +25,10 @@ resource "azurerm_storage_account" "mlops" {
     }
   }
 
+  # Firewall left open since GitHub-hosted runners are not in the AzureServices bypass list;
+  # RBAC (Storage Blob/File Data Contributor) is the enforced access control layer instead.
   network_rules {
-    default_action = "Deny"
+    default_action = "Allow"
     bypass         = ["AzureServices"]
   }
 

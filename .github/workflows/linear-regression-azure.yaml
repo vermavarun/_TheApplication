@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+      - azure-linear-reg
     paths:
       - ai/azure/linear-regression/**
       - .github/workflows/linear-regression-azure.yaml

@@ -1,5 +1,5 @@
 $schema: https://azuremlschemas.azureedge.net/latest/batchDeployment.schema.json
-name: linear-regression-batch-deployment
+name: linreg-batch-deployment
 endpoint_name: linear-regression-batch-endpoint
 model: azureml:linear-regression-model@latest
 code_configuration:

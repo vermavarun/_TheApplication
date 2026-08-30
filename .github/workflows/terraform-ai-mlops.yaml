@@ -12,7 +12,7 @@ on:
   push:
     branches:
       - main
-      - azure-ai
+      - azure-linear-reg
     paths:
       - ai/azure/terraform/**
       - .github/workflows/terraform-ai-mlops.yaml
@@ -61,7 +61,24 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      
+      # One-time cleanup: a prior retried apply left role assignments in Azure for the compute
+      # cluster's managed identity that Terraform state doesn't know about. Safe to delete this
+      # step once a run applies cleanly.
+      - name: Remove stale compute-cluster role assignments
+        run: |
+          RESOURCE_GROUP="${{ vars.MLOPS_RESOURCE_GROUP_NAME }}"
+          STORAGE_ID="/subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/$RESOURCE_GROUP/providers/Microsoft.Storage/storageAccounts/${{ vars.MLOPS_STORAGE_ACCOUNT_NAME }}"
+          ACR_ID="/subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/$RESOURCE_GROUP/providers/Microsoft.ContainerRegistry/registries/${{ vars.MLOPS_ACR_NAME }}"
+          COMPUTE_ID="/subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/$RESOURCE_GROUP/providers/Microsoft.MachineLearningServices/workspaces/${{ vars.MLOPS_AML_WORKSPACE_NAME }}/computes/cpu-cluster"
+
+          COMPUTE_PRINCIPAL_ID=$(az resource show --ids "$COMPUTE_ID" --query identity.principalId -o tsv 2>/dev/null || true)
+
+          if [ -n "$COMPUTE_PRINCIPAL_ID" ]; then
+            az role assignment delete --assignee "$COMPUTE_PRINCIPAL_ID" --scope "$STORAGE_ID" --role "Storage Blob Data Contributor" || true
+            az role assignment delete --assignee "$COMPUTE_PRINCIPAL_ID" --scope "$ACR_ID" --role "AcrPull" || true
+          fi
+
+
       - name: Terraform init
         run: |
           terraform init \
@@ -78,6 +95,13 @@ jobs:
 
       - name: Terraform apply
         run: terraform apply -auto-approve tfplan
+
+      # The ML workspace caches ACR/storage/App Insights key credentials; resync them so job
+      # image pulls pick up the freshly enabled ACR admin password immediately.
+      - name: Resync workspace keys
+        run: |
+          az rest --method post \
+            --uri "https://management.azure.com/subscriptions/${ARM_SUBSCRIPTION_ID}/resourceGroups/${{ vars.MLOPS_RESOURCE_GROUP_NAME }}/providers/Microsoft.MachineLearningServices/workspaces/${{ vars.MLOPS_AML_WORKSPACE_NAME }}/resyncKeys?api-version=2024-04-01"
 
   destroy:
     needs: terraform

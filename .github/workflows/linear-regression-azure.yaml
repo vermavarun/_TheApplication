@@ -48,8 +48,77 @@ jobs:
 
       - name: Submit the pipeline job to Azure ML
         run: |
-          az ml job create \
+          JOB_NAME=$(az ml job create \
             --file pipeline.yml \
             --resource-group ${{ vars.MLOPS_RESOURCE_GROUP_NAME }} \
             --workspace-name ${{ vars.MLOPS_AML_WORKSPACE_NAME }} \
-            --stream
+            --query name -o tsv)
+          echo "JOB_NAME=$JOB_NAME" >> "$GITHUB_ENV"
+
+          az ml job stream \
+            --name "$JOB_NAME" \
+            --resource-group ${{ vars.MLOPS_RESOURCE_GROUP_NAME }} \
+            --workspace-name ${{ vars.MLOPS_AML_WORKSPACE_NAME }}
+
+      - name: Print failed child job logs
+        if: failure()
+        run: |
+          RESOURCE_GROUP=${{ vars.MLOPS_RESOURCE_GROUP_NAME }}
+          WORKSPACE=${{ vars.MLOPS_AML_WORKSPACE_NAME }}
+
+          az ml job download \
+            --name "$JOB_NAME" \
+            --resource-group "$RESOURCE_GROUP" \
+            --workspace-name "$WORKSPACE" \
+            --download-path ./job-logs --all || true
+
+          EXEC_LOG=$(find ./job-logs -name "executionlogs.txt" | head -n1)
+          echo "--- $EXEC_LOG ---"
+          cat "$EXEC_LOG" || true
+
+          CHILD_RUN_IDS=$(grep -oE '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}' "$EXEC_LOG" | sort -u || true)
+          echo "Child run ids: $CHILD_RUN_IDS"
+
+          for RUN_ID in $CHILD_RUN_IDS; do
+            echo "===== Downloading logs for child run $RUN_ID ====="
+            az ml job download \
+              --name "$RUN_ID" \
+              --resource-group "$RESOURCE_GROUP" \
+              --workspace-name "$WORKSPACE" \
+              --download-path "./job-logs/$RUN_ID" --all || true
+          done
+
+          find ./job-logs -type f \( -name "*.txt" -o -name "*.log" \) -print -exec echo "--- {} ---" \; -exec cat {} \; || true
+
+      - name: Upload pipeline logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: linear-regression-pipeline-logs
+          path: ai/azure/linear-regression/job-logs
+          retention-days: 14
+
+      - name: Register the trained model
+        run: |
+          az ml model create \
+            --name linear-regression-model \
+            --version ${{ github.run_number }} \
+            --type custom_model \
+            --path azureml://jobs/$JOB_NAME/outputs/model \
+            --resource-group ${{ vars.MLOPS_RESOURCE_GROUP_NAME }} \
+            --workspace-name ${{ vars.MLOPS_AML_WORKSPACE_NAME }}
+
+      - name: Create or update the batch endpoint
+        run: |
+          az ml batch-endpoint create \
+            --file endpoint/batch-endpoint.yml \
+            --resource-group ${{ vars.MLOPS_RESOURCE_GROUP_NAME }} \
+            --workspace-name ${{ vars.MLOPS_AML_WORKSPACE_NAME }}
+
+      - name: Create or update the batch deployment
+        run: |
+          az ml batch-deployment create \
+            --file endpoint/batch-deployment.yml \
+            --set-default \
+            --resource-group ${{ vars.MLOPS_RESOURCE_GROUP_NAME }} \
+            --workspace-name ${{ vars.MLOPS_AML_WORKSPACE_NAME }}

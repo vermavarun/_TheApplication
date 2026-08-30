@@ -61,6 +61,16 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
+      # One-time cleanup: removes stale role assignments left behind by a prior failed apply
+      # that are not tracked in Terraform state. Safe to delete this step after the next successful run.
+      - name: Remove stale role assignments
+        run: |
+          az role assignment delete --ids \
+            /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/${{ vars.MLOPS_RESOURCE_GROUP_NAME }}/providers/Microsoft.KeyVault/vaults/${{ vars.MLOPS_KEY_VAULT_NAME }}/providers/Microsoft.Authorization/roleAssignments/81040a9e80b44e1f93bc27e2f53a0c32 \
+            /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/${{ vars.MLOPS_RESOURCE_GROUP_NAME }}/providers/Microsoft.Storage/storageAccounts/${{ vars.MLOPS_STORAGE_ACCOUNT_NAME }}/providers/Microsoft.Authorization/roleAssignments/fc297dc86f584e2499aef6d4b64568c3 \
+            /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/${{ vars.MLOPS_RESOURCE_GROUP_NAME }}/providers/Microsoft.Storage/storageAccounts/${{ vars.MLOPS_STORAGE_ACCOUNT_NAME }}/providers/Microsoft.Authorization/roleAssignments/56e6c39507504ce8b23585d16acd20d0 \
+            || true
+
       - name: Terraform init
         run: |
           terraform init \

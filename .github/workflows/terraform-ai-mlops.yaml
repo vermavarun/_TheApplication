@@ -96,6 +96,13 @@ jobs:
       - name: Terraform apply
         run: terraform apply -auto-approve tfplan
 
+      # The ML workspace caches ACR/storage/App Insights key credentials; resync them so job
+      # image pulls pick up the freshly enabled ACR admin password immediately.
+      - name: Resync workspace keys
+        run: |
+          az rest --method post \
+            --uri "https://management.azure.com/subscriptions/${ARM_SUBSCRIPTION_ID}/resourceGroups/${{ vars.MLOPS_RESOURCE_GROUP_NAME }}/providers/Microsoft.MachineLearningServices/workspaces/${{ vars.MLOPS_AML_WORKSPACE_NAME }}/resyncKeys?api-version=2024-04-01"
+
   destroy:
     needs: terraform
     if: ${{ github.event_name == 'workflow_dispatch' }}

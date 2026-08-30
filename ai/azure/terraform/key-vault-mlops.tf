@@ -13,8 +13,10 @@ resource "azurerm_key_vault" "mlops" {
 
   public_network_access_enabled = true
 
+  # Firewall left open since GitHub-hosted runners are not in the AzureServices bypass list;
+  # RBAC (Key Vault Administrator) is the enforced access control layer instead.
   network_acls {
-    default_action = "Deny"
+    default_action = "Allow"
     bypass         = "AzureServices"
   }
 

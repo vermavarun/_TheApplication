@@ -1,0 +1,12 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
+name: linear_regression_data_prep
+display_name: Data Preparation
+version: "1"
+type: command
+code: ../src
+environment: azureml:linear-regression-env@latest
+outputs:
+  dataset:
+    type: uri_folder
+command: >-
+  python data_pipeline.py --output-dir ${{outputs.dataset}}

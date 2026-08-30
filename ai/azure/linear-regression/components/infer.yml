@@ -1,0 +1,17 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
+name: linear_regression_infer
+display_name: Batch Inference
+version: "1"
+type: command
+code: ../src
+environment: azureml:linear-regression-env@latest
+inputs:
+  model:
+    type: uri_folder
+  dataset:
+    type: uri_folder
+outputs:
+  predictions:
+    type: uri_folder
+command: >-
+  python infer.py --model-dir ${{inputs.model}} --data-dir ${{inputs.dataset}} --output-dir ${{outputs.predictions}}

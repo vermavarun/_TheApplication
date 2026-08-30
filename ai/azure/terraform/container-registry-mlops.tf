@@ -8,8 +8,10 @@ resource "azurerm_container_registry" "mlops" {
 
   public_network_access_enabled = true
 
+  # Firewall left open since GitHub-hosted runners and AML build compute are not on a fixed
+  # allow-list; RBAC (AcrPull) is the enforced access control layer instead.
   network_rule_set {
-    default_action = "Deny"
+    default_action = "Allow"
   }
 
   tags = {

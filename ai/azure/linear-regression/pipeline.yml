@@ -1,0 +1,24 @@
+$schema: https://azuremlschemas.azureedge.net/latest/pipelineJob.schema.json
+type: pipeline
+display_name: linear-regression-pipeline
+experiment_name: linear-regression
+settings:
+  default_compute: azureml:serverless
+
+jobs:
+  data_prep:
+    type: command
+    component: file:./components/data_pipeline.yml
+
+  train:
+    type: command
+    component: file:./components/train.yml
+    inputs:
+      dataset: ${{parent.jobs.data_prep.outputs.dataset}}
+
+  inference:
+    type: command
+    component: file:./components/infer.yml
+    inputs:
+      model: ${{parent.jobs.train.outputs.model}}
+      dataset: ${{parent.jobs.data_prep.outputs.dataset}}

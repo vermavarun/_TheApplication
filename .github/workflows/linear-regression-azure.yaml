@@ -1,0 +1,47 @@
+name: linear-regression-azure
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - ai/azure/linear-regression/**
+      - .github/workflows/linear-regression-azure.yaml
+  # schedule:
+  #   # Runs the pipeline daily to simulate scheduled batch inference automation.
+  #   - cron: "0 6 * * *"
+
+permissions:
+  contents: read
+
+jobs:
+  pipeline:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ai/azure/linear-regression
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run data pipeline, training and inference
+        run: python src/pipeline.py
+
+      - name: Upload model and predictions
+        uses: actions/upload-artifact@v4
+        with:
+          name: linear-regression-artifacts
+          path: |
+            ai/azure/linear-regression/model/
+            ai/azure/linear-regression/output/
+          retention-days: 30

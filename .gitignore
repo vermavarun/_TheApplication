@@ -1,2 +1,5 @@
 .env
 ai/azure/terraform/terraform.tfvars
+ai/azure/linear-regression/data/
+ai/azure/linear-regression/model/
+ai/azure/linear-regression/output/

@@ -14,11 +14,13 @@ on:
   #   - cron: "0 6 * * *"
 
 permissions:
+  id-token: write
   contents: read
 
 jobs:
   pipeline:
     runs-on: ubuntu-latest
+    environment: dev
     defaults:
       run:
         working-directory: ai/azure/linear-regression
@@ -27,22 +29,27 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Azure login with OIDC
+        uses: azure/login@v2
         with:
-          python-version: "3.12"
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Install dependencies
-        run: pip install -r requirements.txt
+      - name: Install Azure ML CLI extension
+        run: az extension add -n ml -y
 
-      - name: Run data pipeline, training and inference
-        run: python src/pipeline.py
+      - name: Create or update the ML environment
+        run: |
+          az ml environment create \
+            --file environment/environment.yml \
+            --resource-group ${{ vars.MLOPS_RESOURCE_GROUP_NAME }} \
+            --workspace-name ${{ vars.MLOPS_AML_WORKSPACE_NAME }}
 
-      - name: Upload model and predictions
-        uses: actions/upload-artifact@v4
-        with:
-          name: linear-regression-artifacts
-          path: |
-            ai/azure/linear-regression/model/
-            ai/azure/linear-regression/output/
-          retention-days: 30
+      - name: Submit the pipeline job to Azure ML
+        run: |
+          az ml job create \
+            --file pipeline.yml \
+            --resource-group ${{ vars.MLOPS_RESOURCE_GROUP_NAME }} \
+            --workspace-name ${{ vars.MLOPS_AML_WORKSPACE_NAME }} \
+            --stream

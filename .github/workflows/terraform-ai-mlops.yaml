@@ -1,33 +1,18 @@
 # Prerequisites:
-# 1) A managed identity with federated credentials for this repository must exist.
-# 2) That identity needs: Contributor + User Access Administrator on the resource group
-#    (User Access Administrator is required to create role assignments for ML resources).
-# 3) Storage account + blob container (tfstate) for remote Terraform state must exist.
-# 4) Repository variables and secrets must be set (see env: blocks below).
-# 5) A GitHub environment named "mlops-prod" with required reviewers is recommended.
+# 1) Resource group must already exist.
+# 2) Managed identity must be configured for federated access to this repository.
+# 3) That managed identity must have Contributor access on the target resource group.
+# 4) Storage account with blob container named tfstate must already exist for remote Terraform state.
+# 5) Repository variables and secrets must be configured for the Azure deployment values.
 
 name: terraform-ai-mlops
 
 on:
   workflow_dispatch:
-    inputs:
-      action:
-        description: "Terraform action to run"
-        required: true
-        default: apply
-        type: choice
-        options:
-          - apply
-          - destroy
   push:
     branches:
       - main
-    paths:
-      - ai/azure/terraform/**
-      - .github/workflows/terraform-ai-mlops.yaml
-  pull_request:
-    branches:
-      - main
+      - azure-ai
     paths:
       - ai/azure/terraform/**
       - .github/workflows/terraform-ai-mlops.yaml
@@ -35,12 +20,9 @@ on:
 permissions:
   id-token: write
   contents: read
-  pull-requests: write  # needed to post plan as PR comment
 
 jobs:
-  # ── Plan (runs on every PR and push to main) ─────────────────────────────────
-  plan:
-    if: github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'apply'
+  terraform:
     runs-on: ubuntu-latest
     environment: dev
     defaults:
@@ -52,24 +34,19 @@ jobs:
       ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
       ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-      TF_VAR_resource_group_name:           ${{ vars.MLOPS_RESOURCE_GROUP_NAME }}
-      TF_VAR_location:                      ${{ vars.AZURE_LOCATION }}
-      TF_VAR_environment:                   ${{ vars.MLOPS_ENVIRONMENT }}
-      TF_VAR_project:                       ${{ vars.MLOPS_PROJECT }}
-      TF_VAR_ml_workspace_name:             ${{ vars.MLOPS_AML_WORKSPACE_NAME }}
-      TF_VAR_storage_account_name:          ${{ vars.MLOPS_STORAGE_ACCOUNT_NAME }}
-      TF_VAR_storage_replication_type:      ${{ vars.MLOPS_STORAGE_REPLICATION_TYPE }}
-      TF_VAR_acr_name:                      ${{ vars.MLOPS_ACR_NAME }}
-      TF_VAR_key_vault_name:                ${{ vars.MLOPS_KEY_VAULT_NAME }}
-      TF_VAR_log_analytics_workspace_name:  ${{ vars.MLOPS_LOG_ANALYTICS_NAME }}
-
-    outputs:
-      # Pass the plan exit code so the apply job can skip when there are no changes
-      plan_exit_code: ${{ steps.plan.outputs.exit_code }}
+      TF_VAR_resource_group_name: ${{ vars.MLOPS_RESOURCE_GROUP_NAME }}
+      TF_VAR_location: ${{ vars.AZURE_LOCATION }}
+      TF_VAR_environment: ${{ vars.MLOPS_ENVIRONMENT }}
+      TF_VAR_project: ${{ vars.MLOPS_PROJECT }}
+      TF_VAR_ml_workspace_name: ${{ vars.MLOPS_AML_WORKSPACE_NAME }}
+      TF_VAR_storage_account_name: ${{ vars.MLOPS_STORAGE_ACCOUNT_NAME }}
+      TF_VAR_storage_replication_type: ${{ vars.MLOPS_STORAGE_REPLICATION_TYPE }}
+      TF_VAR_acr_name: ${{ vars.MLOPS_ACR_NAME }}
+      TF_VAR_key_vault_name: ${{ vars.MLOPS_KEY_VAULT_NAME }}
+      TF_VAR_log_analytics_workspace_name: ${{ vars.MLOPS_LOG_ANALYTICS_NAME }}
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set up Terraform
@@ -77,205 +54,24 @@ jobs:
         with:
           terraform_version: 1.9.8
 
-      - name: Azure login (OIDC)
+      - name: Azure login with OIDC
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
+      
       - name: Terraform init
         run: |
           terraform init \
             -backend-config="resource_group_name=${{ vars.TF_STATE_RESOURCE_GROUP }}" \
             -backend-config="storage_account_name=${{ vars.TF_STATE_STORAGE_ACCOUNT }}" \
             -backend-config="container_name=${{ vars.TF_STATE_CONTAINER }}" \
-            -backend-config="key=${{ vars.MLOPS_TF_STATE_KEY }}"
-
-      - name: Terraform format check
-        run: terraform fmt -check -recursive
+            -backend-config="key=ai-mlops.tfstate"
 
       - name: Terraform validate
         run: terraform validate
-
-      - name: Terraform plan
-        id: plan
-        run: |
-          set +e
-          set -o pipefail
-          terraform plan -detailed-exitcode -out=tfplan 2>&1 | tee plan_output.txt
-          echo "exit_code=$?" >> "$GITHUB_OUTPUT"
-          set -e
-
-      - name: Upload plan artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: tfplan
-          path: ai/azure/terraform/tfplan
-          retention-days: 1
-
-      # Post the plan diff as a PR comment so reviewers can see it inline
-      - name: Comment plan on PR
-        if: github.event_name == 'pull_request'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const fs = require('fs');
-            const plan = fs.readFileSync('ai/azure/terraform/plan_output.txt', 'utf8');
-            const truncated = plan.length > 60000
-              ? plan.substring(0, 60000) + '\n\n... (output truncated)'
-              : plan;
-            const body = `### Terraform Plan — \`ai/azure/terraform\`\n\`\`\`hcl\n${truncated}\n\`\`\``;
-            const { data: comments } = await github.rest.issues.listComments({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-            });
-            const existing = comments.find(c => c.body.startsWith('### Terraform Plan — `ai/azure/terraform`'));
-            if (existing) {
-              await github.rest.issues.updateComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                comment_id: existing.id,
-                body,
-              });
-            } else {
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: context.issue.number,
-                body,
-              });
-            }
-
-  # ── Apply (runs only on push to main or manual dispatch) ─────────────────────
-  apply:
-    needs: plan
-    if: |
-      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
-      (github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'apply')
-    runs-on: ubuntu-latest
-    environment: dev
-    defaults:
-      run:
-        working-directory: ai/azure/terraform
-
-    env:
-      ARM_USE_OIDC: true
-      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-      TF_VAR_resource_group_name:           ${{ vars.MLOPS_RESOURCE_GROUP_NAME }}
-      TF_VAR_location:                      ${{ vars.AZURE_LOCATION }}
-      TF_VAR_environment:                   ${{ vars.MLOPS_ENVIRONMENT }}
-      TF_VAR_project:                       ${{ vars.MLOPS_PROJECT }}
-      TF_VAR_ml_workspace_name:             ${{ vars.MLOPS_AML_WORKSPACE_NAME }}
-      TF_VAR_storage_account_name:          ${{ vars.MLOPS_STORAGE_ACCOUNT_NAME }}
-      TF_VAR_storage_replication_type:      ${{ vars.MLOPS_STORAGE_REPLICATION_TYPE }}
-      TF_VAR_acr_name:                      ${{ vars.MLOPS_ACR_NAME }}
-      TF_VAR_key_vault_name:                ${{ vars.MLOPS_KEY_VAULT_NAME }}
-      TF_VAR_log_analytics_workspace_name:  ${{ vars.MLOPS_LOG_ANALYTICS_NAME }}
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: 1.9.8
-
-      - name: Azure login (OIDC)
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-      - name: Terraform init
-        run: |
-          terraform init \
-            -backend-config="resource_group_name=${{ vars.TF_STATE_RESOURCE_GROUP }}" \
-            -backend-config="storage_account_name=${{ vars.TF_STATE_STORAGE_ACCOUNT }}" \
-            -backend-config="container_name=${{ vars.TF_STATE_CONTAINER }}" \
-            -backend-config="key=${{ vars.MLOPS_TF_STATE_KEY }}"
-
-      # # Recover soft-deleted AML workspace so Terraform can recreate it after a destroy
-      # - name: Recover soft-deleted AML workspace (if exists)
-      #   run: |
-      #     RG="${{ vars.MLOPS_RESOURCE_GROUP_NAME }}"
-      #     WS="${{ vars.MLOPS_AML_WORKSPACE_NAME }}"
-      #     DELETED=$(az rest --method get \
-      #       --url "https://management.azure.com/subscriptions/$ARM_SUBSCRIPTION_ID/providers/Microsoft.MachineLearningServices/locations/eastus/deletedWorkspaces?api-version=2024-04-01" \
-      #       --query "value[?name=='$WS'] | length(@)" --output tsv 2>/dev/null || echo "0")
-      #     if [[ "$DELETED" -gt 0 ]]; then
-      #       echo "Recovering soft-deleted workspace: $WS"
-      #       az rest --method post \
-      #         --url "https://management.azure.com/subscriptions/$ARM_SUBSCRIPTION_ID/resourceGroups/$RG/providers/Microsoft.MachineLearningServices/workspaces/$WS/restoredWorkspaces?api-version=2024-04-01" \
-      #         --body "{}" || true
-      #     fi
-      # # Must run before plan so the plan doesn't include spurious "create" actions.
-      # - name: Import pre-existing role assignments
-      #   run: |
-      #     import_role_assignment() {
-      #       local tf_addr="$1" scope="$2" principal_id="$3" role_name="$4"
-      #       if [[ -z "$scope" || -z "$principal_id" ]]; then return 0; fi
-      #       local assignment_name
-      #       assignment_name=$(az role assignment list \
-      #         --scope "$scope" \
-      #         --assignee "$principal_id" \
-      #         --role "$role_name" \
-      #         --query "[0].name" --output tsv 2>/dev/null || true)
-      #       if [[ -n "$assignment_name" && "$assignment_name" != "None" ]]; then
-      #         terraform import "$tf_addr" \
-      #           "$scope/providers/Microsoft.Authorization/roleAssignments/$assignment_name" || true
-      #       fi
-      #     }
-
-      #     RG="${{ vars.MLOPS_RESOURCE_GROUP_NAME }}"
-
-      #     STORAGE_ID=$(az storage account show \
-      #       --name "${{ vars.MLOPS_STORAGE_ACCOUNT_NAME }}" \
-      #       --resource-group "$RG" \
-      #       --query id --output tsv 2>/dev/null || true)
-      #     ACR_ID=$(az acr show \
-      #       --name "${{ vars.MLOPS_ACR_NAME }}" \
-      #       --resource-group "$RG" \
-      #       --query id --output tsv 2>/dev/null || true)
-      #     KV_ID=$(az keyvault show \
-      #       --name "${{ vars.MLOPS_KEY_VAULT_NAME }}" \
-      #       --resource-group "$RG" \
-      #       --query id --output tsv 2>/dev/null || true)
-
-      #     # az resource show works without the ML CLI extension
-      #     WS_PRINCIPAL=$(az resource show \
-      #       --resource-group "$RG" \
-      #       --resource-type "Microsoft.MachineLearningServices/workspaces" \
-      #       --name "${{ vars.MLOPS_AML_WORKSPACE_NAME }}" \
-      #       --query "identity.principalId" --output tsv 2>/dev/null || true)
-
-      #     CPU_PRINCIPAL=""
-      #     # fall back to the Terraform variable default when the repo variable is unset
-      #     COMPUTE_NAME="${{ vars.MLOPS_COMPUTE_CLUSTER_NAME }}"
-      #     COMPUTE_NAME="${COMPUTE_NAME:-cpu-cluster}"
-      #     # --ids avoids ambiguity with nested resource types
-      #     CPU_PRINCIPAL=$(az resource show \
-      #       --ids "/subscriptions/$ARM_SUBSCRIPTION_ID/resourceGroups/$RG/providers/Microsoft.MachineLearningServices/workspaces/${{ vars.MLOPS_AML_WORKSPACE_NAME }}/computes/$COMPUTE_NAME" \
-      #       --query "identity.principalId" --output tsv 2>/dev/null || true)
-
-      #     import_role_assignment "azurerm_role_assignment.ml_workspace_storage_blob_contributor" \
-      #       "$STORAGE_ID" "$WS_PRINCIPAL" "Storage Blob Data Contributor"
-      #     import_role_assignment "azurerm_role_assignment.ml_workspace_acr_pull" \
-      #       "$ACR_ID" "$WS_PRINCIPAL" "AcrPull"
-      #     import_role_assignment "azurerm_role_assignment.ml_workspace_kv_secrets_officer" \
-      #       "$KV_ID" "$WS_PRINCIPAL" "Key Vault Secrets Officer"
-      #     import_role_assignment "azurerm_role_assignment.ml_workspace_kv_crypto_officer" \
-      #       "$KV_ID" "$WS_PRINCIPAL" "Key Vault Crypto Officer"
-      #     import_role_assignment "azurerm_role_assignment.cpu_cluster_storage_blob_contributor" \
-      #       "$STORAGE_ID" "$CPU_PRINCIPAL" "Storage Blob Data Contributor"
-      #     import_role_assignment "azurerm_role_assignment.cpu_cluster_acr_pull" \
-      #       "$ACR_ID" "$CPU_PRINCIPAL" "AcrPull"
 
       - name: Terraform plan
         run: terraform plan -out=tfplan
@@ -283,11 +79,11 @@ jobs:
       - name: Terraform apply
         run: terraform apply -auto-approve tfplan
 
-  # ── Destroy (manual dispatch only, requires explicit selection) ───────────────
   destroy:
-    if: github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'destroy'
+    needs: terraform
+    if: ${{ github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
-    environment: dev   # requires environment reviewers to approve
+    environment: dev
     defaults:
       run:
         working-directory: ai/azure/terraform
@@ -297,20 +93,19 @@ jobs:
       ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
       ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-      TF_VAR_resource_group_name:           ${{ vars.MLOPS_RESOURCE_GROUP_NAME }}
-      TF_VAR_location:                      ${{ vars.AZURE_LOCATION }}
-      TF_VAR_environment:                   ${{ vars.MLOPS_ENVIRONMENT }}
-      TF_VAR_project:                       ${{ vars.MLOPS_PROJECT }}
-      TF_VAR_ml_workspace_name:             ${{ vars.MLOPS_AML_WORKSPACE_NAME }}
-      TF_VAR_storage_account_name:          ${{ vars.MLOPS_STORAGE_ACCOUNT_NAME }}
-      TF_VAR_storage_replication_type:      ${{ vars.MLOPS_STORAGE_REPLICATION_TYPE }}
-      TF_VAR_acr_name:                      ${{ vars.MLOPS_ACR_NAME }}
-      TF_VAR_key_vault_name:                ${{ vars.MLOPS_KEY_VAULT_NAME }}
-      TF_VAR_log_analytics_workspace_name:  ${{ vars.MLOPS_LOG_ANALYTICS_NAME }}
+      TF_VAR_resource_group_name: ${{ vars.MLOPS_RESOURCE_GROUP_NAME }}
+      TF_VAR_location: ${{ vars.AZURE_LOCATION }}
+      TF_VAR_environment: ${{ vars.MLOPS_ENVIRONMENT }}
+      TF_VAR_project: ${{ vars.MLOPS_PROJECT }}
+      TF_VAR_ml_workspace_name: ${{ vars.MLOPS_AML_WORKSPACE_NAME }}
+      TF_VAR_storage_account_name: ${{ vars.MLOPS_STORAGE_ACCOUNT_NAME }}
+      TF_VAR_storage_replication_type: ${{ vars.MLOPS_STORAGE_REPLICATION_TYPE }}
+      TF_VAR_acr_name: ${{ vars.MLOPS_ACR_NAME }}
+      TF_VAR_key_vault_name: ${{ vars.MLOPS_KEY_VAULT_NAME }}
+      TF_VAR_log_analytics_workspace_name: ${{ vars.MLOPS_LOG_ANALYTICS_NAME }}
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set up Terraform
@@ -318,7 +113,7 @@ jobs:
         with:
           terraform_version: 1.9.8
 
-      - name: Azure login (OIDC)
+      - name: Azure login with OIDC
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
@@ -331,7 +126,7 @@ jobs:
             -backend-config="resource_group_name=${{ vars.TF_STATE_RESOURCE_GROUP }}" \
             -backend-config="storage_account_name=${{ vars.TF_STATE_STORAGE_ACCOUNT }}" \
             -backend-config="container_name=${{ vars.TF_STATE_CONTAINER }}" \
-            -backend-config="key=${{ vars.MLOPS_TF_STATE_KEY }}"
+            -backend-config="key=ai-mlops.tfstate"
 
       - name: Terraform destroy
         run: terraform destroy -auto-approve

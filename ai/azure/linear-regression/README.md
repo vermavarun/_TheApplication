@@ -14,10 +14,14 @@ linear-regression/
 │   ├── train.yml           # AML command component: trains + evaluates the model
 │   └── infer.yml           # AML command component: batch inference
 ├── pipeline.yml            # AML pipeline job chaining the 3 components together
+├── endpoint/
+│   ├── batch-endpoint.yml    # AML batch endpoint definition
+│   └── batch-deployment.yml  # AML batch deployment (model + scoring script + compute)
 └── src/
     ├── data_pipeline.py
     ├── train.py
-    └── infer.py
+    ├── infer.py
+    └── score.py            # scoring script used by the batch deployment
 ```
 
 ## How it runs in Azure ML
@@ -28,12 +32,22 @@ linear-regression/
 
 All data, model, and prediction artifacts live in the AML workspace's storage — nothing is downloaded to, or generated on, the CI runner.
 
+## Model registration and batch endpoint
+
+After the pipeline job completes, the trained model isn't automatically visible in the AML Studio *Models* list or callable as an endpoint — those are separate registration/deployment steps:
+
+1. `az ml model create` registers the job's `model` output (`azureml://jobs/<job-name>/outputs/model`) as a versioned Model asset named `linear-regression-model`.
+2. `az ml batch-endpoint create` creates/updates the `linear-regression-batch-endpoint` batch endpoint.
+3. `az ml batch-deployment create --set-default` deploys the latest registered model behind that endpoint, running on the `cpu-cluster` AmlCompute cluster (scales to zero when idle).
+
+Batch endpoints require a real AmlCompute cluster — they can't run on serverless compute — so [../terraform/compute-cluster-mlops.tf](../terraform/compute-cluster-mlops.tf) provisions a small `cpu-cluster` (min 0, max 1 nodes) for this purpose.
+
 ## Automation
 
 [.github/workflows/linear-regression-azure.yaml](../../../.github/workflows/linear-regression-azure.yaml):
 1. Logs in to Azure via OIDC.
 2. Registers/updates the `linear-regression-env` Azure ML environment.
-3. Submits `pipeline.yml` with `az ml job create --stream`, which runs on Azure ML serverless compute inside the workspace and streams logs back to the workflow.
+3. Submits `pipeline.yml`, streams its logs, then registers the resulting model and creates/updates the batch endpoint and deployment.
 
 ## Local development (optional)
 

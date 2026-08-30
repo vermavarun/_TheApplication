@@ -1,0 +1,4 @@
+$schema: https://azuremlschemas.azureedge.net/latest/batchEndpoint.schema.json
+name: linear-regression-batch-endpoint
+description: Batch endpoint for linear regression inference.
+auth_mode: aad_token

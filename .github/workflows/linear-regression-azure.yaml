@@ -60,6 +60,24 @@ jobs:
             --resource-group ${{ vars.MLOPS_RESOURCE_GROUP_NAME }} \
             --workspace-name ${{ vars.MLOPS_AML_WORKSPACE_NAME }}
 
+      - name: Print failed child job logs
+        if: failure()
+        run: |
+          az ml job download \
+            --name "$JOB_NAME" \
+            --resource-group ${{ vars.MLOPS_RESOURCE_GROUP_NAME }} \
+            --workspace-name ${{ vars.MLOPS_AML_WORKSPACE_NAME }} \
+            --download-path ./job-logs --all || true
+          find ./job-logs -type f \( -name "*.txt" -o -name "*.log" \) -print -exec cat {} \; || true
+
+      - name: Upload pipeline logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: linear-regression-pipeline-logs
+          path: ai/azure/linear-regression/job-logs
+          retention-days: 14
+
       - name: Register the trained model
         run: |
           az ml model create \

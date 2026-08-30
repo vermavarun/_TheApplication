@@ -63,12 +63,32 @@ jobs:
       - name: Print failed child job logs
         if: failure()
         run: |
+          RESOURCE_GROUP=${{ vars.MLOPS_RESOURCE_GROUP_NAME }}
+          WORKSPACE=${{ vars.MLOPS_AML_WORKSPACE_NAME }}
+
           az ml job download \
             --name "$JOB_NAME" \
-            --resource-group ${{ vars.MLOPS_RESOURCE_GROUP_NAME }} \
-            --workspace-name ${{ vars.MLOPS_AML_WORKSPACE_NAME }} \
+            --resource-group "$RESOURCE_GROUP" \
+            --workspace-name "$WORKSPACE" \
             --download-path ./job-logs --all || true
-          find ./job-logs -type f \( -name "*.txt" -o -name "*.log" \) -print -exec cat {} \; || true
+
+          EXEC_LOG=$(find ./job-logs -name "executionlogs.txt" | head -n1)
+          echo "--- $EXEC_LOG ---"
+          cat "$EXEC_LOG" || true
+
+          CHILD_RUN_IDS=$(grep -oE '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}' "$EXEC_LOG" | sort -u || true)
+          echo "Child run ids: $CHILD_RUN_IDS"
+
+          for RUN_ID in $CHILD_RUN_IDS; do
+            echo "===== Downloading logs for child run $RUN_ID ====="
+            az ml job download \
+              --name "$RUN_ID" \
+              --resource-group "$RESOURCE_GROUP" \
+              --workspace-name "$WORKSPACE" \
+              --download-path "./job-logs/$RUN_ID" --all || true
+          done
+
+          find ./job-logs -type f \( -name "*.txt" -o -name "*.log" \) -print -exec echo "--- {} ---" \; -exec cat {} \; || true
 
       - name: Upload pipeline logs
         if: failure()

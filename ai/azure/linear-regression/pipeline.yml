@@ -5,6 +5,12 @@ experiment_name: linear-regression
 settings:
   default_compute: azureml:serverless
 
+# Promotes the train step's "model" output to the pipeline job itself, so it's addressable as
+# azureml://jobs/<pipeline-job-name>/outputs/model when registering the model afterwards.
+outputs:
+  model:
+    type: uri_folder
+
 jobs:
   data_prep:
     type: command
@@ -15,6 +21,8 @@ jobs:
     component: file:./components/train.yml
     inputs:
       dataset: ${{parent.jobs.data_prep.outputs.dataset}}
+    outputs:
+      model: ${{parent.outputs.model}}
 
   inference:
     type: command

@@ -1,7 +1,5 @@
 # Grants the ML workspace's system-assigned identity least-privilege data-plane access to its dependencies.
 
-# Grants the ML workspace's system-assigned identity least-privilege data-plane access to its dependencies.
-
 resource "azurerm_role_assignment" "mlops_workspace_kv_admin" {
   scope                = azurerm_key_vault.mlops.id
   role_definition_name = "Key Vault Administrator"
@@ -23,6 +21,14 @@ resource "azurerm_role_assignment" "mlops_workspace_storage_file_contributor" {
 resource "azurerm_role_assignment" "mlops_workspace_acr_pull" {
   scope                = azurerm_container_registry.mlops.id
   role_definition_name = "AcrPull"
+  principal_id         = azurerm_machine_learning_workspace.mlops.identity[0].principal_id
+}
+
+# AcrPush is required in addition to AcrPull because building a custom Azure ML environment
+# (base image + conda file) pushes the built image into the workspace-linked ACR.
+resource "azurerm_role_assignment" "mlops_workspace_acr_push" {
+  scope                = azurerm_container_registry.mlops.id
+  role_definition_name = "AcrPush"
   principal_id         = azurerm_machine_learning_workspace.mlops.identity[0].principal_id
 }
 
@@ -51,5 +57,11 @@ resource "azurerm_role_assignment" "mlops_ci_kv_admin" {
 resource "azurerm_role_assignment" "mlops_ci_acr_pull" {
   scope                = azurerm_container_registry.mlops.id
   role_definition_name = "AcrPull"
+  principal_id         = data.azurerm_client_config.current.object_id
+}
+
+resource "azurerm_role_assignment" "mlops_ci_acr_push" {
+  scope                = azurerm_container_registry.mlops.id
+  role_definition_name = "AcrPush"
   principal_id         = data.azurerm_client_config.current.object_id
 }

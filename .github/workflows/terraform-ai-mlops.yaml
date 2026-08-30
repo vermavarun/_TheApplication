@@ -96,13 +96,6 @@ jobs:
       - name: Terraform apply
         run: terraform apply -auto-approve tfplan
 
-      # The ML workspace caches its ACR connection credentials, which go stale whenever the ACR
-      # admin user is (re)enabled or its keys change; refresh them so job image pulls succeed.
-      - name: Sync workspace keys
-        run: |
-          az rest --method post \
-            --uri "https://management.azure.com/subscriptions/${ARM_SUBSCRIPTION_ID}/resourceGroups/${{ vars.MLOPS_RESOURCE_GROUP_NAME }}/providers/Microsoft.MachineLearningServices/workspaces/${{ vars.MLOPS_AML_WORKSPACE_NAME }}/syncKeys?api-version=2024-04-01"
-
   destroy:
     needs: terraform
     if: ${{ github.event_name == 'workflow_dispatch' }}

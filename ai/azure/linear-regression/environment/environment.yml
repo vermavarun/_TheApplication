@@ -1,6 +1,6 @@
 $schema: https://azuremlschemas.azureedge.net/latest/environment.schema.json
 name: linear-regression-env
-version: "1"
+version: "2"
 image: mcr.microsoft.com/azureml/openmpi4.1.0-ubuntu20.04
 conda_file: conda.yaml
-description: Environment for the linear regression data pipeline (pandas, scikit-learn, joblib).
+description: Environment for the linear regression data pipeline (pandas, scikit-learn, joblib, azureml-inference-server-http).

@@ -122,3 +122,18 @@ jobs:
             --set-default \
             --resource-group ${{ vars.MLOPS_RESOURCE_GROUP_NAME }} \
             --workspace-name ${{ vars.MLOPS_AML_WORKSPACE_NAME }}
+
+      - name: Create or update the online endpoint
+        run: |
+          az ml online-endpoint create \
+            --file endpoint/online-endpoint.yml \
+            --resource-group ${{ vars.MLOPS_RESOURCE_GROUP_NAME }} \
+            --workspace-name ${{ vars.MLOPS_AML_WORKSPACE_NAME }}
+
+      - name: Create or update the online deployment
+        run: |
+          az ml online-deployment create \
+            --file endpoint/online-deployment.yml \
+            --all-traffic \
+            --resource-group ${{ vars.MLOPS_RESOURCE_GROUP_NAME }} \
+            --workspace-name ${{ vars.MLOPS_AML_WORKSPACE_NAME }}

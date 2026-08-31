@@ -1,0 +1,4 @@
+$schema: https://azuremlschemas.azureedge.net/latest/managedOnlineEndpoint.schema.json
+name: linreg-online-endpoint
+description: Real-time managed online endpoint for linear regression inference — accepts feature data directly in the request payload (no storage account involved).
+auth_mode: aad_token

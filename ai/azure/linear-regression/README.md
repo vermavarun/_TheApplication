@@ -45,7 +45,7 @@ After the pipeline job completes, the trained model isn't automatically visible 
 1. `az ml model create` registers the job's `model` output (`azureml://jobs/<job-name>/outputs/model`) as a versioned Model asset named `linear-regression-model`.
 2. `az ml batch-endpoint create` creates/updates the `linear-regression-batch-endpoint` batch endpoint.
 3. `az ml batch-deployment create --set-default` deploys the latest registered model behind that endpoint, running on the `cpu-cluster` AmlCompute cluster (scales to zero when idle).
-4. `az ml online-endpoint create` creates/updates the `linear-regression-online-endpoint` managed online endpoint.
+4. `az ml online-endpoint create` creates/updates the `linreg-online-endpoint` managed online endpoint.
 5. `az ml online-deployment create --all-traffic` deploys the latest registered model behind that endpoint on its own dedicated `Standard_DS2_v2` instance (managed online endpoints don't use the shared `cpu-cluster`, and — unlike the batch deployment — are always-on and billed while running).
 
 Batch endpoints require a real AmlCompute cluster — they can't run on serverless compute — so [../terraform/compute-cluster-mlops.tf](../terraform/compute-cluster-mlops.tf) provisions a small `cpu-cluster` (min 0, max 1 nodes) for this purpose. Online endpoints provision their own compute per deployment, so no extra Terraform resource is needed for them, but the subscription needs enough `Standard_DS2_v2` quota in the workspace's region.
@@ -112,7 +112,7 @@ Unlike the batch endpoint, the online endpoint accepts feature data directly in 
 az extension add -n ml -y
 
 az ml online-endpoint invoke \
-  --name linear-regression-online-endpoint \
+  --name linreg-online-endpoint \
   --request-file endpoint/sample-data/online-request.json \
   --resource-group <MLOPS_RESOURCE_GROUP_NAME> \
   --workspace-name <MLOPS_AML_WORKSPACE_NAME>
@@ -125,7 +125,7 @@ This returns the list of predictions immediately (one per input row) — there's
 The online endpoint uses `auth_mode: aad_token`, so requests need a Microsoft Entra bearer token for the Azure ML audience:
 
 ```bash
-SCORING_URI=$(az ml online-endpoint show --name linear-regression-online-endpoint \
+SCORING_URI=$(az ml online-endpoint show --name linreg-online-endpoint \
   --resource-group <MLOPS_RESOURCE_GROUP_NAME> --workspace-name <MLOPS_AML_WORKSPACE_NAME> \
   --query scoring_uri -o tsv)
 

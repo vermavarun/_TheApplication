@@ -1,6 +1,6 @@
 $schema: https://azuremlschemas.azureedge.net/latest/managedOnlineDeployment.schema.json
 name: linreg-online-deployment
-endpoint_name: linear-regression-online-endpoint
+endpoint_name: linreg-online-endpoint
 model: azureml:linear-regression-model@latest
 code_configuration:
   code: ../src

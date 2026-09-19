@@ -39,12 +39,21 @@ jobs:
       - name: Install Azure ML CLI extension
         run: az extension add -n ml -y
 
+      - name: Verify Azure ML workspace
+        run: |
+          az account set --subscription "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+          az ml workspace show \
+            --resource-group "${{ vars.MLOPS_RESOURCE_GROUP_NAME }}" \
+            --name "${{ vars.MLOPS_AML_WORKSPACE_NAME }}" \
+            --subscription "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+
       - name: Create or update the ML environment
         run: |
           az ml environment create \
             --file environment/environment.yml \
             --resource-group ${{ vars.MLOPS_RESOURCE_GROUP_NAME }} \
-            --workspace-name ${{ vars.MLOPS_AML_WORKSPACE_NAME }}
+            --workspace-name ${{ vars.MLOPS_AML_WORKSPACE_NAME }} \
+            --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Submit the pipeline job to Azure ML
         run: |
@@ -52,13 +61,15 @@ jobs:
             --file pipeline.yml \
             --resource-group ${{ vars.MLOPS_RESOURCE_GROUP_NAME }} \
             --workspace-name ${{ vars.MLOPS_AML_WORKSPACE_NAME }} \
+            --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }} \
             --query name -o tsv)
           echo "JOB_NAME=$JOB_NAME" >> "$GITHUB_ENV"
 
           az ml job stream \
             --name "$JOB_NAME" \
             --resource-group ${{ vars.MLOPS_RESOURCE_GROUP_NAME }} \
-            --workspace-name ${{ vars.MLOPS_AML_WORKSPACE_NAME }}
+            --workspace-name ${{ vars.MLOPS_AML_WORKSPACE_NAME }} \
+            --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Print failed child job logs
         if: failure()
@@ -106,7 +117,8 @@ jobs:
             --type custom_model \
             --path azureml://jobs/$JOB_NAME/outputs/model \
             --resource-group ${{ vars.MLOPS_RESOURCE_GROUP_NAME }} \
-            --workspace-name ${{ vars.MLOPS_AML_WORKSPACE_NAME }}
+            --workspace-name ${{ vars.MLOPS_AML_WORKSPACE_NAME }} \
+            --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Create or update the batch endpoint
         run: |

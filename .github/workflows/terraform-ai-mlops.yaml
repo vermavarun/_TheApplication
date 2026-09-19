@@ -71,6 +71,26 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
+      - name: Remove stale workspace role assignments
+        run: |
+          az account set --subscription "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+
+          RESOURCE_GROUP="${{ vars.MLOPS_RESOURCE_GROUP_NAME }}"
+          SUBSCRIPTION_ID="${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+          STORAGE_ACCOUNT="${{ vars.MLOPS_STORAGE_ACCOUNT_NAME }}"
+          ACR_NAME="${{ vars.MLOPS_ACR_NAME }}"
+          KEY_VAULT_NAME="${{ vars.MLOPS_KEY_VAULT_NAME }}"
+
+          COMPUTE_ACR_ASSIGNMENT_ID="/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP/providers/Microsoft.ContainerRegistry/registries/$ACR_NAME/providers/Microsoft.Authorization/roleAssignments/f9dc303160ad490a8d3df43b7fef1d7a"
+          WORKSPACE_KEY_VAULT_ASSIGNMENT_ID="/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP/providers/Microsoft.KeyVault/vaults/$KEY_VAULT_NAME/providers/Microsoft.Authorization/roleAssignments/09be2d1cda7645c5894cbdc7dde0fe06"
+          WORKSPACE_STORAGE_BLOB_ASSIGNMENT_ID="/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP/providers/Microsoft.Storage/storageAccounts/$STORAGE_ACCOUNT/providers/Microsoft.Authorization/roleAssignments/6542a972b8e74564ab8eadebb993ed0f"
+          WORKSPACE_STORAGE_FILE_ASSIGNMENT_ID="/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP/providers/Microsoft.Storage/storageAccounts/$STORAGE_ACCOUNT/providers/Microsoft.Authorization/roleAssignments/b71a661c55f843ddb5a6e845250b06d6"
+
+          az role assignment delete --ids "$COMPUTE_ACR_ASSIGNMENT_ID" || true
+          az role assignment delete --ids "$WORKSPACE_KEY_VAULT_ASSIGNMENT_ID" || true
+          az role assignment delete --ids "$WORKSPACE_STORAGE_BLOB_ASSIGNMENT_ID" || true
+          az role assignment delete --ids "$WORKSPACE_STORAGE_FILE_ASSIGNMENT_ID" || true
+
       # One-time cleanup: a prior retried apply left role assignments in Azure for the compute
       # cluster's managed identity that Terraform state doesn't know about. Safe to delete this
       # step once a run applies cleanly.

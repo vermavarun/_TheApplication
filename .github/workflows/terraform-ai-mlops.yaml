@@ -9,6 +9,15 @@ name: terraform-ai-mlops
 
 on:
   workflow_dispatch:
+    inputs:
+      action:
+        description: Terraform action
+        required: true
+        type: choice
+        options:
+          - apply
+          - destroy
+        default: apply
   push:
     branches:
       - main
@@ -23,6 +32,7 @@ permissions:
 
 jobs:
   terraform:
+    if: ${{ github.event_name == 'push' || inputs.action == 'apply' }}
     runs-on: ubuntu-latest
     environment: dev
     defaults:
@@ -104,8 +114,7 @@ jobs:
             --uri "https://management.azure.com/subscriptions/${ARM_SUBSCRIPTION_ID}/resourceGroups/${{ vars.MLOPS_RESOURCE_GROUP_NAME }}/providers/Microsoft.MachineLearningServices/workspaces/${{ vars.MLOPS_AML_WORKSPACE_NAME }}/resyncKeys?api-version=2024-04-01"
 
   destroy:
-    needs: terraform
-    if: ${{ github.event_name == 'workflow_dispatch' }}
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.action == 'destroy' }}
     runs-on: ubuntu-latest
     environment: dev
     defaults:

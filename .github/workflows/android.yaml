@@ -43,7 +43,7 @@ jobs:
           packages: platform-tools
 
       - name: Install Android SDK components
-        run: sdkmanager "platform-tools" "platforms;android-37" "build-tools;37.0.0" "ndk;27.1.12297006"
+        run: sdkmanager "platforms;android-37.0" "build-tools;37.0.0" "ndk;27.1.12297006"
 
       - name: Install JavaScript dependencies
         working-directory: androidapp

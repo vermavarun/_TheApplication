@@ -1,0 +1,62 @@
+name: android-build
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - androidapp/**
+      - .github/workflows/android.yaml
+  pull_request:
+    paths:
+      - androidapp/**
+      - .github/workflows/android.yaml
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.11.0
+          cache: npm
+          cache-dependency-path: androidapp/package-lock.json
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK components
+        run: sdkmanager "platform-tools" "platforms;android-37" "build-tools;37.0.0" "ndk;27.1.12297006"
+
+      - name: Install JavaScript dependencies
+        working-directory: androidapp
+        run: npm ci
+
+      - name: Build release APK and AAB
+        working-directory: androidapp/android
+        run: bash ./gradlew --no-daemon :app:assembleRelease :app:bundleRelease
+
+      - name: Upload APK and AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-release
+          path: |
+            androidapp/android/app/build/outputs/apk/release/*.apk
+            androidapp/android/app/build/outputs/bundle/release/*.aab
+          if-no-files-found: error
+          retention-days: 14

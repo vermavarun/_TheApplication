@@ -12,6 +12,7 @@ import {
 } from 'react-native-safe-area-context';
 
 import CalculatorBasic from './components/calculatorBasic';
+import VinnyBday from './components/vinnybday';
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
@@ -29,8 +30,7 @@ function AppContent() {
 
   return (
     <View style={styles.container}>
-      {/* <Calculator/> */}
-      <CalculatorBasic/>
+     <VinnyBday />
     </View>
   );
 }

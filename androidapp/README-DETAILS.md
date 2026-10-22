@@ -7,6 +7,11 @@ npx react-native run-android
 npx react-native run-ios
 ```
 
+## apk
+.\gradlew.bat assembleRelease
+D:\Code\_TheApplication\androidapp\android\app\build\outputs\apk\release\app-release.apk
+adb install -r .\app\build\outputs\apk\release\app-release.apk
+
 ## Build Android AAB
 
 From `androidapp/android`:
